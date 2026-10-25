@@ -1,7 +1,7 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Pursuit</title>
+<title>King Of the Hill - Derby</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:#b9d3e8;font-family:system-ui,-apple-system,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;color:#fff}
@@ -53,6 +53,12 @@ canvas{display:block}
 .code{text-align:center;font-size:15px;margin-bottom:8px}.code b{font-size:26px;letter-spacing:4px;color:#ffd166}
 #rl{list-style:none;padding:0;margin:0 0 6px;font-size:14px;line-height:1.8}
 #rh{display:flex;flex-wrap:wrap;gap:6px}#rh button{flex:1}
+.back{background:#232833!important}
+.code b{letter-spacing:0!important;font-size:22px!important}
+#fl{list-style:none;padding:0;margin:0 0 6px;max-height:46vh;overflow-y:auto}
+#fl li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+#fl .ln{flex:1;min-width:0}#fl .ln b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#fl .ln i{font-style:normal;font-size:12px;opacity:.7}
+#fl .pc{font-size:14px;opacity:.85;min-width:34px;text-align:right}#fl button{height:36px}
 </style></head>
 <body>
 <div id="hud"><div id="spd">0 mph</div><div class="bar"><i id="hp"></i></div><div id="sc"></div></div>
@@ -81,29 +87,39 @@ canvas{display:block}
 </div></div>
 <div id="fade"></div>
 <div id="menu"><div class="card">
-  <h1>Pursuit</h1>
-  <div id="m-main">
-    <label>Name</label><input id="nm" maxlength="12">
+  <h1>King Of the Hill - Derby</h1>
+  <div id="m-main" class="scr">
+    <button id="b-play" class="big">Play</button>
     <button id="b-garage" class="big">Garage</button>
-    <button id="b-prac" class="big">Practice with bots</button>
     <button id="b-set2" class="big">Settings</button>
-    <button id="b-make" class="big">Create room</button>
-    <div class="row"><input id="code" maxlength="4" placeholder="CODE"><button id="b-join">Join</button></div>
-    <p class="err" id="m-err"></p>
     <p class="hint">First to park on the moving trailer wins the round.</p>
   </div>
-  <div id="m-room" style="display:none">
-    <div class="code">Room <b id="r-code"></b></div>
+  <div id="m-play" class="scr" style="display:none">
+    <label>Name</label><input id="nm" maxlength="12">
+    <button id="b-find" class="big">Find Match</button>
+    <button id="b-host" class="big">Host Match</button>
+    <button id="b-prac" class="big">Play vs AI</button>
+    <button id="b-back1" class="big back">Back</button>
+  </div>
+  <div id="m-find" class="scr" style="display:none">
+    <div class="code"><b>Find Match</b></div>
+    <ul id="fl"></ul>
+    <p class="hint" id="f-st">Looking for lobbies…</p>
+    <button id="b-back2" class="big back">Back</button>
+  </div>
+  <div id="m-room" class="scr" style="display:none">
+    <div class="code" id="r-title"></div>
     <ul id="rl"></ul>
     <div id="rh"><button id="b-bot">Add bot</button><button id="b-unbot">Remove bot</button><button id="b-start" class="big">Start</button></div>
     <p class="hint" id="r-wait">Waiting for the host to start</p>
-    <button id="b-leave" class="big">Leave</button>
+    <button id="b-leave" class="big back">Leave</button>
   </div>
+  <p class="err" id="m-err"></p>
 </div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const VERSION='v0.01';
+const VERSION='v0.02';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
@@ -790,6 +806,7 @@ $('b-reset').addEventListener('click',()=>{if(me&&!me.respawnT){me.respawnT=3;me
 $('b-exit').addEventListener('click',()=>leave());
 
 // ---------- rooms / net ----------
+const MAXP=8,PROTO=2;let dir=null,dirReady=false,dirMode='',dirLast='';
 let myJoined=0,chReady=false,sb=null,ch=null,net=false,isHost=true,hostId=null,players=[],R=null,roomCode='',offS=[],clockOff=0,shownWin=0,sendAcc=0;
 const myId=rid();let myName=store('pursuit_name')||('Driver'+((Math.random()*90+10)|0)),myCls=store('pursuit_car')||'1.0.0.6.0.0.0';
 const BOTN=['Dusty','Rusty','Mags','Tex','Bubba','Gravel','Hank','Skid'];
@@ -797,13 +814,13 @@ const hostNow=()=>Date.now()+(isHost?0:clockOff);
 const truckTime=()=>R&&R.phase==='play'?(hostNow()-R.t0)/1000:-5;
 function nameOf(id){if(id===myId)return myName;const p=players.find(q=>q.id===id);if(p)return p.name;const b=R&&R.bots.find(q=>q.id===id);return b?b.name:'Driver'}
 function newRoom(){return{phase:'lobby',n:0,t0:0,order:[myId],bots:[],scores:{},win:null}}
-function addBot(){if(!R||players.length+R.bots.length>=8)return;const used=R.bots.map(b=>b.name),name=BOTN.find(n=>!used.includes(n))||'Bot';const b={id:'b'+rid(),name,cls:randCfg()};R.bots.push(b);R.order.push(b.id)}
+function addBot(){if(!R||players.length+R.bots.length>=MAXP)return;const used=R.bots.map(b=>b.name),name=BOTN.find(n=>!used.includes(n))||'Bot';const b={id:'b'+rid(),name,cls:randCfg()};R.bots.push(b);R.order.push(b.id)}
 function clearWorld(){for(const c of cars.slice())removeCar(c);for(const g of gibs){scene.remove(g.o);g.o.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry.dispose()})}gibs.length=0;me=null}
 function startRound(){
  clearWorld();simT=truckTime();if(simT<HEAD+1||!RIGN)truckReset(Math.max(0,simT),true);const late=simT>HEAD;
  me=spawnLocal(myId,myCls,late?spawnPoint():gridPoint(R.order.indexOf(myId)),false,0);
  if(isHost)for(const b of R.bots)spawnLocal(b.id,b.cls,late?spawnPoint():gridPoint(R.order.indexOf(b.id)),true,0);
- flash()}
+ flash();dirSync()}
 function ensureBots(){if(!isHost||!R||R.phase!=='play')return;for(const b of R.bots){if(byId(b.id,'local'))continue;const old=byId(b.id,'remote');const life=old?old.life+1:0;if(old)huskify(old);spawnLocal(b.id,b.cls,spawnPoint(),true,life)}}
 function hostTick(){if(!isHost||!R||R.phase!=='play')return;ensureBots();if(R.win&&Date.now()-R.win.at>5000){R.n++;R.t0=Date.now()+300;R.win=null;startRound()}}
 function handleClaim(id,n){if(!R||R.phase!=='play'||R.win||n!==R.n||truckTime()<HEAD)return;R.win={id,n,at:Date.now()};R.scores[id]=(R.scores[id]||0)+1}
@@ -832,42 +849,67 @@ function onPresence(){
  const was=isHost,off=clockOff;isHost=hostId===myId;
  if(isHost){if(!R)R=newRoom();else if(!was){R.t0-=off;if(R.win)R.win.at-=off;clockOff=0}
   for(const p of players)if(!R.order.includes(p.id))R.order.push(p.id);
-  R.order=R.order.filter(id=>players.some(p=>p.id===id)||R.bots.some(b=>b.id===id))}
+  while(R.bots.length&&players.length+R.bots.length>MAXP){const b=R.bots.pop();R.order=R.order.filter(i=>i!==b.id)}
+  R.order=R.order.filter(id=>players.some(p=>p.id===id)||R.bots.some(b=>b.id===id));dirOpen('host');dirSync()}
  refreshRoom()}
 function netTick(dt){if(!net||!ch||!chReady)return;sendAcc+=dt;const play=R&&R.phase==='play',rate=play?1/12:1/3;if(sendAcc<rate)return;sendAcc=0;
  if(!play&&!isHost)return;
  const p={id:myId,cars:play?cars.filter(c=>c.net==='local').map(rec):[],ev:evQ.splice(0)};
  if(isHost){p.room=R;p.hn=Date.now();p.rig=rigRec(TRK).concat(rigRec(TRL),[r3(TK.steer)])}
  ch.send({type:'broadcast',event:'s',payload:p})}
+// ---------- lobby list: hosts advertise their lobby on a shared presence channel ----------
+function sbClient(){if(!window.supabase)return null;try{sb=sb||window.supabase.createClient(SB_URL,SB_KEY,{realtime:{params:{eventsPerSecond:40}}})}catch(e){return null}return sb}
+function dirOpen(mode){
+ if(dir){if(mode==='host'||!dirMode)dirMode=mode;if(dirReady){dirSync();renderFind()}return}
+ if(!sbClient()){if(mode==='find')$('f-st').textContent='Online play could not load here. Try Play vs AI.';return}
+ dirMode=mode;dirReady=false;dirLast='';dir=sb.channel('kohd-lobbies',{config:{presence:{key:myId}}});
+ dir.on('presence',{event:'sync'},renderFind);
+ const d=dir;d.subscribe(s=>{if(d!==dir)return;if(s==='SUBSCRIBED'){dirReady=true;dirSync();renderFind()}else if((s==='CHANNEL_ERROR'||s==='TIMED_OUT')&&!dirReady&&dirMode==='find')$('f-st').textContent="Couldn't reach the lobby list. Check your connection."})}
+function dirClose(){if(dir&&sb){try{sb.removeChannel(dir)}catch(e){}}dir=null;dirReady=false;dirMode='';dirLast=''}
+function dirSync(){if(!dir||!dirReady||dirMode!=='host'||!net||!isHost||!R||!chReady)return;
+ const info={p:PROTO,code:roomCode,name:myName+"'s lobby",n:players.length+R.bots.length,max:MAXP,phase:R.phase,round:R.n,mode:'park'},k=JSON.stringify(info);
+ if(k===dirLast)return;dirLast=k;dir.track(info)}
+function lobbies(){if(!dir)return[];const st=dir.presenceState(),L=[];for(const k in st){const m=st[k]&&st[k][0];if(m&&m.code&&m.p===PROTO)L.push(m)}
+ return L.sort((a,b)=>(a.phase==='lobby'?0:1)-(b.phase==='lobby'?0:1)||(a.name<b.name?-1:1))}
+function renderFind(){if($('m-find').style.display==='none')return;const ul=$('fl'),L=lobbies();ul.innerHTML='';
+ for(const m of L){const li=document.createElement('li'),ln=document.createElement('div'),nb=document.createElement('b'),st=document.createElement('i'),pc=document.createElement('span'),bt=document.createElement('button');
+  ln.className='ln';nb.textContent=m.name;st.textContent=m.phase==='lobby'?'Waiting to start':'In match · round '+m.round;ln.append(nb,st);
+  pc.className='pc';pc.textContent=m.n+'/'+m.max;bt.textContent=m.n>=m.max?'Full':'Join';bt.disabled=m.n>=m.max;bt.onclick=()=>joinLobby(m.code);
+  li.append(ln,pc,bt);ul.appendChild(li)}
+ if(dir)$('f-st').textContent=!dirReady?'Looking for lobbies…':L.length?'':'No open lobbies right now. Host one from the Play menu.'}
+function joinLobby(code){dirClose();connect(code)}
 function connect(code){
  if(!physReady){$('m-err').textContent='Loading physics…';return}
- if(!window.supabase){$('m-err').textContent='Online play could not load here. Try Practice.';return}
+ if(!sbClient()){$('m-err').textContent='Online play could not load here. Try Play vs AI.';return}
  $('m-err').textContent='Connecting…';roomCode=code;
- try{sb=sb||window.supabase.createClient(SB_URL,SB_KEY,{realtime:{params:{eventsPerSecond:40}}})}catch(e){$('m-err').textContent='Online play could not start. Try Practice.';return}
- ch=sb.channel('pursuit-'+code,{config:{broadcast:{self:false},presence:{key:myId}}});
+ ch=sb.channel('kohd-'+code,{config:{broadcast:{self:false},presence:{key:myId}}});
  ch.on('broadcast',{event:'s'},({payload})=>onState(payload));
  ch.on('broadcast',{event:'c'},({payload})=>{if(isHost)handleClaim(payload.id,payload.n)});
  ch.on('presence',{event:'sync'},onPresence);
- let ok=false;const to=setTimeout(()=>{if(!ok){leave();$('m-err').textContent="Couldn't reach the room. Check your connection or try Practice."}},9000);
+ let ok=false;const to=setTimeout(()=>{if(!ok){leave();$('m-err').textContent="Couldn't reach the lobby. Check your connection or try Play vs AI."}},9000);
  net=true;isHost=false;R=null;hostId=null;
- ch.subscribe(s=>{if(s==='SUBSCRIBED'){ok=true;chReady=true;clearTimeout(to);$('m-err').textContent='';myJoined=Date.now();ch.track({id:myId,name:myName,cls:myCls,joined:myJoined});showRoom()}else if((s==='CHANNEL_ERROR'||s==='TIMED_OUT')&&!ok){clearTimeout(to);leave();$('m-err').textContent="Couldn't reach the room. Try Practice."}})}
-function leave(){chReady=false;RIGN=null;truckReset(0,false);if(ch&&sb){try{sb.removeChannel(ch)}catch(e){}}ch=null;net=false;isHost=true;R=null;players=[];evQ=[];clearWorld();exitGame();$('m-room').style.display='none';$('m-main').style.display='block';$('menu').style.display='flex'}
-function showRoom(){$('menu').style.display='flex';$('m-main').style.display='none';$('m-room').style.display='block';$('r-code').textContent=roomCode;refreshRoom()}
+ ch.subscribe(s=>{if(s==='SUBSCRIBED'){ok=true;chReady=true;clearTimeout(to);$('m-err').textContent='';myJoined=Date.now();ch.track({id:myId,name:myName,cls:myCls,joined:myJoined});showRoom()}else if((s==='CHANNEL_ERROR'||s==='TIMED_OUT')&&!ok){clearTimeout(to);leave();$('m-err').textContent="Couldn't reach the lobby. Try Play vs AI."}})}
+function screen(id){for(const e of document.querySelectorAll('#menu .scr'))e.style.display=e.id===id?'block':'none';$('menu').style.display='flex';if(id!=='m-play')$('m-err').textContent='';if(id==='m-find'){$('fl').innerHTML='';$('f-st').textContent='Looking for lobbies…';dirOpen('find');renderFind()}}
+function leave(){chReady=false;RIGN=null;truckReset(0,false);dirClose();if(ch&&sb){try{sb.removeChannel(ch)}catch(e){}}ch=null;net=false;isHost=true;R=null;players=[];evQ=[];clearWorld();exitGame();screen('m-play')}
+function showRoom(){screen('m-room');refreshRoom()}
 function refreshRoom(){if($('m-room').style.display==='none')return;const ul=$('rl');ul.innerHTML='';
+ const h=players.find(p=>p.id===hostId);$('r-title').innerHTML='';const tb=document.createElement('b');tb.textContent=(h?h.name:'')+"'s lobby";const tn=document.createElement('div');tn.style.cssText='font-size:13px;opacity:.75;margin-top:2px';tn.textContent=(players.length+(R?R.bots.length:0))+'/'+MAXP+' players';$('r-title').append(tb,tn);
  for(const p of players){const li=document.createElement('li');li.textContent=p.name+' · '+MODELS[parseCfg(p.cls).m].name+(p.id===hostId?' · host':'')+(p.id===myId?' (you)':'');ul.appendChild(li)}
  for(const b of(R?R.bots:[])){const li=document.createElement('li');li.textContent=b.name+' · '+MODELS[parseCfg(b.cls).m].name+' · bot';ul.appendChild(li)}
  $('rh').style.display=isHost?'flex':'none';$('r-wait').style.display=isHost?'none':'block'}
 function enterGame(){$('menu').style.display='none';setTimeout(placeJoy,0);for(const id of['hud','joy'])$(id).style.display='block';$('tr').style.display='flex';for(const id of['gas','rev','hb'])$(id).style.display='block'}
 function exitGame(){for(const id of['hud','joy','tr','gas','rev','hb','park'])$(id).style.display='none';$('msg').textContent='';$('sub').textContent='';clearWorld()}
-function startPractice(){if(!physReady){$('m-err').textContent='Loading physics…';return}net=false;isHost=true;hostId=myId;players=[{id:myId,name:myName,cls:myCls,joined:0}];R=newRoom();for(let i=0;i<3;i++)addBot();R.phase='play';R.n=1;R.t0=Date.now()+300;enterGame();startRound()}
-function hostStart(){if(!isHost||!R)return;R.phase='play';R.n++;R.t0=Date.now()+300;R.scores={};R.win=null;enterGame();startRound()}
+function startPractice(){if(!physReady){$('m-err').textContent='Loading physics…';return}dirClose();net=false;isHost=true;hostId=myId;players=[{id:myId,name:myName,cls:myCls,joined:0}];R=newRoom();for(let i=0;i<3;i++)addBot();R.phase='play';R.n=1;R.t0=Date.now()+300;enterGame();startRound()}
+function hostStart(){if(!isHost||!R)return;R.phase='play';R.n++;R.t0=Date.now()+300;R.scores={};R.win=null;enterGame();startRound();dirSync()}
 {$('nm').value=myName;$('nm').addEventListener('input',()=>{myName=$('nm').value.trim().slice(0,12)||'Driver';store('pursuit_name',myName)});
  $('b-prac').addEventListener('click',startPractice);
- $('b-make').addEventListener('click',()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ';let c='';for(let i=0;i<4;i++)c+=A[(Math.random()*A.length)|0];connect(c)});
- $('b-join').addEventListener('click',()=>{const c=$('code').value.trim().toUpperCase();if(c.length!==4){$('m-err').textContent='Enter the 4-letter room code.';return}connect(c)});
- $('code').addEventListener('input',()=>$('m-err').textContent='');
- $('b-bot').addEventListener('click',()=>{addBot();refreshRoom()});
- $('b-unbot').addEventListener('click',()=>{if(R&&R.bots.length){const b=R.bots.pop();R.order=R.order.filter(i=>i!==b.id);refreshRoom()}});
+ $('b-play').addEventListener('click',()=>screen('m-play'));
+ $('b-back1').addEventListener('click',()=>screen('m-main'));
+ $('b-find').addEventListener('click',()=>{if(!physReady){$('m-err').textContent='Loading physics…';return}screen('m-find')});
+ $('b-back2').addEventListener('click',()=>{dirClose();screen('m-play')});
+ $('b-host').addEventListener('click',()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let c='';for(let i=0;i<8;i++)c+=A[(Math.random()*A.length)|0];connect(c)});
+ $('b-bot').addEventListener('click',()=>{addBot();refreshRoom();dirSync()});
+ $('b-unbot').addEventListener('click',()=>{if(R&&R.bots.length){const b=R.bots.pop();R.order=R.order.filter(i=>i!==b.id);refreshRoom();dirSync()}});
  $('b-start').addEventListener('click',hostStart);
  $('b-leave').addEventListener('click',leave)}
 

@@ -7,12 +7,14 @@
 html,body{margin:0;height:100%;overflow:hidden;background:#b9d3e8;font-family:system-ui,-apple-system,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;color:#fff}
 canvas{display:block}
 .sh,#hud,#msg,#sub,#park,#ver{text-shadow:0 1px 3px rgba(0,0,0,.75)}
-#hud{position:fixed;top:10px;left:12px;pointer-events:none;width:190px;display:none}
+#hud{position:fixed;top:10px;left:12px;pointer-events:none;width:165px;display:none}
 #spd{font-size:22px;font-weight:600}
 .bar{height:7px;background:rgba(0,0,0,.35);border-radius:4px;margin:4px 0 8px;overflow:hidden}
 #hp{display:block;height:100%;width:100%;background:#5dcaa5;border-radius:4px}
 #sc{font-size:13px;line-height:1.55}
 #sc .me{color:#ffd166;font-weight:600}
+#b-fs2{position:fixed;top:10px;right:10px}
+.ib svg{display:block;margin:auto}.ib.on{background:rgba(255,255,255,.35)}
 #tr{position:fixed;top:10px;right:10px;display:none;gap:8px}
 .ib{width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.5);background:rgba(10,15,20,.45);color:#fff;font-size:20px;padding:0;line-height:1;touch-action:manipulation}
 #ver{position:fixed;right:12px;top:58px;font-size:11px;opacity:.8;pointer-events:none}
@@ -62,7 +64,7 @@ canvas{display:block}
 </style></head>
 <body>
 <div id="hud"><div id="spd">0 mph</div><div class="bar"><i id="hp"></i></div><div id="sc"></div></div>
-<div id="tr"><button class="ib" id="b-set" aria-label="Settings">&#x2699;</button><button class="ib" id="b-reset" aria-label="Respawn">&#x21bb;</button><button class="ib" id="b-exit" aria-label="Leave">&#x2715;</button></div>
+<div id="tr"><button class="ib fsb" id="b-fs" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><button class="ib" id="b-set" aria-label="Settings">&#x2699;</button><button class="ib" id="b-reset" aria-label="Respawn">&#x21bb;</button><button class="ib" id="b-exit" aria-label="Leave">&#x2715;</button></div>
 <div id="ver"></div>
 <div id="msg"></div><div id="sub"></div>
 <div id="park">Parking<div class="bar"><i id="pk"></i></div></div>
@@ -86,7 +88,7 @@ canvas{display:block}
   <button id="b-setx" class="big">Done</button>
 </div></div>
 <div id="fade"></div>
-<div id="menu"><div class="card">
+<div id="menu"><button class="ib fsb" id="b-fs2" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><div class="card">
   <h1>King Of the Hill - Derby</h1>
   <div id="m-main" class="scr">
     <button id="b-play" class="big">Play</button>
@@ -119,7 +121,7 @@ canvas{display:block}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const VERSION='v0.03';
+const VERSION='v0.04';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
@@ -799,6 +801,13 @@ addEventListener('resize',placeJoy);
   const off=e=>{if(e.pointerId!==pid)return;pid=null;inp[key]=false;b.classList.remove('on')};
   b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off)}}
 addEventListener('contextmenu',e=>e.preventDefault());
+// full screen toggle (menu + in game); hidden where the browser can't do it (e.g. iPhone Safari)
+{const el=document.documentElement,req=el.requestFullscreen||el.webkitRequestFullscreen,fsEl=()=>document.fullscreenElement||document.webkitFullscreenElement,
+  exit=document.exitFullscreen||document.webkitExitFullscreen,btns=[...document.querySelectorAll('.fsb')];
+ if(!req)btns.forEach(b=>b.remove());
+ const sync=()=>btns.forEach(b=>{b.classList.toggle('on',!!fsEl());b.setAttribute('aria-label',fsEl()?'Exit full screen':'Full screen')});
+ btns.forEach(b=>b.addEventListener('click',()=>{try{if(fsEl())exit.call(document);else{const r=req.call(el,{navigationUI:'hide'});if(r&&r.catch)r.catch(()=>{})}}catch(e){}}));
+ document.addEventListener('fullscreenchange',()=>{sync();setTimeout(placeJoy,60)});document.addEventListener('webkitfullscreenchange',()=>{sync();setTimeout(placeJoy,60)});sync()}
 // PS5 / standard gamepad: left stick steer, R2 gas, L2 brake/reverse, Cross or Square handbrake, Triangle respawn
 let pad=null,padOn=false,padTri=false,padShake=0;
 function showTouch(on){if(!R||R.phase!=='play')return;for(const id of['joy','gas','rev','hb'])$(id).style.display=on?'block':'none';if(on)setTimeout(placeJoy,0)}

@@ -35,9 +35,9 @@ canvas{display:block}
 #logl h3{margin:12px 0 4px;font-size:16px;color:#ffd166}#logl ul{margin:0;padding-left:18px}
 #msg{position:fixed;left:0;right:0;top:26%;text-align:center;font-size:44px;font-weight:700;pointer-events:none}
 #sub{position:fixed;left:0;right:0;top:calc(26% + 58px);text-align:center;font-size:17px;pointer-events:none;padding:0 16px}
-#park{position:fixed;left:50%;top:18%;width:180px;margin-left:-90px;display:none;pointer-events:none;text-align:center;font-size:13px}
-#park .bar{height:10px}
-#pk{display:block;height:100%;width:0;background:#ffd166;border-radius:4px}
+#park{position:fixed;left:50%;top:15%;width:min(70vw,440px);transform:translateX(-50%);display:none;pointer-events:none;text-align:center;font-size:17px;font-weight:800}
+#park .bar{height:20px;border-radius:10px;border:2px solid rgba(255,255,255,.75);background:rgba(0,0,0,.45)}
+#pk{display:block;height:100%;width:0;background:#35c46a;border-radius:8px}
 #joy{position:fixed;left:0;bottom:0;width:50%;height:55%;display:none;touch-action:none}
 #jb{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(255,255,255,.55);background:rgba(10,15,20,.25);display:none;pointer-events:none}
 #jk{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:rgba(255,255,255,.75)}
@@ -55,7 +55,8 @@ canvas{display:block}
 .pb.on{background:rgba(255,255,255,.42)}
 #boost{right:26px;bottom:132px;width:64px;height:64px;font-size:12px;background:rgba(10,15,20,.4)}
 #boost.empty{opacity:.55}
-#bmeter{position:fixed;left:0;top:0;width:76px;height:9px;margin-left:-38px;border-radius:5px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.6);opacity:0;pointer-events:none;transition:opacity .25s;z-index:3}#bmeter i{display:block;height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#ff7a1a,#ffd23a)}
+#bmeter{position:fixed;left:0;top:0;width:100px;height:10px;margin:14px 0 0 -50px;border-radius:5px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.7);opacity:0;pointer-events:none;transition:opacity .25s;z-index:3}#bmeter i{display:block;height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#1f5bff,#4fa0ff)}
+#bmeter.on i{background:linear-gradient(90deg,#4fa0ff,#bfe2ff)}
 #gas{right:14px;bottom:30px;width:88px;height:88px;font-size:15px}
 #hb{right:110px;bottom:22px;width:62px;height:62px;font-size:10px;line-height:1.15}
 #rev{right:182px;bottom:18px;width:62px;height:62px;font-size:13px}
@@ -110,7 +111,7 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 <div id="vbox"><span id="vlab"></span><button id="b-log">Changelog</button></div>
 <div id="logp"><div class="card"><h1>Changelog</h1><div id="logl"></div><button id="b-logx" class="big">Close</button></div></div>
 <div id="msg"></div><div id="sub"></div>
-<div id="park">Parking<div class="bar"><i id="pk"></i></div></div>
+<div id="park"><span id="pkl">Parking</span><div class="bar"><i id="pk"></i></div></div>
 <div id="joy"><div id="jb"><div id="jk"></div></div><div id="jh">Steer</div></div>
 <button class="pb" id="rev">REV</button>
 <button class="pb" id="hb" aria-label="Handbrake">HAND<br>BRAKE</button>
@@ -173,8 +174,8 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const CHANGELOG=[["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
-const VERSION='v0.11';
+const CHANGELOG=[["v0.12",["Removed invisible debris that piled up on the track every round","Boost bar always shown under your car","Parking also pauses when another car has 2 tires on the ramps or trailer","Big parking progress bar: green when it's you, red when it's another player","Ramming another player on the trailer now actually pushes them"]],["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
+const VERSION='v0.12';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
@@ -755,6 +756,7 @@ function contactDamage(c){
    const kind=ow?ow.kind:'';let sev=J/c.m;if(kind==='gib')sev*=.3;else if(kind==='ground'||kind==='wall')sev*=.85;if(sev<.8)return;
    const ns=m.numSolverContacts();let px=c.x,py=c.y,pz=c.z;if(ns){px=py=pz=0;for(let i=0;i<ns;i++){const p=m.solverContactPoint(i);px+=p.x;py+=p.y;pz+=p.z}px/=ns;py/=ns;pz/=ns}
    const nn=m.normal(),sg=flip?-1:1,nx=nn.x*sg,ny=nn.y*sg,nz=nn.z*sg;
+   if(ow&&ow.c&&ow.c.net==='remote'&&J/c.m>.35){const t=ow.c;t.trackHold=.3;if(net)evQ.push(['ri',t.id,r2(nx*J),r2(ny*J),r2(nz*J),r2(px),r2(py),r2(pz)])}
    if(sev>2.5)sparkBurst(px,py,pz,c.vx,c.vz,Math.min(36,sev*3|0));
    if(kind==='wall'&&sev>1.5)puff(PUFF,px,.5,pz,0x3a3a3a,.35,.6,1.6,.6,0,1,0);
    if(c===me)shake=Math.max(shake,Math.min(1.2,sev*.06));
@@ -764,9 +766,10 @@ function contactDamage(c){
 const REV_TOP=6,PARK_T=5,HEAD=3,BOOST_A=7,BOOST_T=1,BOOST_RE=8,BOOST_MAX=42;
 function carPre(c,dt){
  if(!c.body)return;
- if(c.net==='remote'){if(c.snap)track(c.body,c.snap,Math.min(.3,(performance.now()-c.snap.t)/1000),8);
+  if(c.net==='remote'&&c.trackHold>0)c.trackHold-=dt;
+ if(c.net==='remote'){if(c.snap&&!(c.trackHold>0))track(c.body,c.snap,Math.min(.3,(performance.now()-c.snap.t)/1000),8);
   // another player's car is driven on their phone; here it still has to weigh down and grip whatever it sits on (the trailer)
-  if(physReady&&c.V&&Math.hypot(c.x-TRL.x,c.z-TRL.z)<12)wheelsStep(c.V,dt,0,.06,0,null,true);return}
+  if(physReady&&c.V&&Math.hypot(c.x-TRL.x,c.z-TRL.z)<12)wheelsStep(c.V,dt,0,.06,0,null,true);else if(c.V){c.V.trW=0;c.V.nc=0}return}
  const ctl=c.net==='husk'?NOCTL:c.ctl,live=!c.wrecked&&c.net!=='husk',P=c.S,vL=c.fwdRel;
  const sm=.6*P.steer/(1+Math.abs(vL)*.09/P.steer);c.delta+=clamp((live?-ctl.steer*sm:0)-c.delta,-3*P.steer*dt,3*P.steer*dt);
  let drive=0,brake=0;
@@ -802,7 +805,7 @@ function parkCheck(c,dt){
  const crowd=ok&&cars.some(o=>o!==c&&o.net!=='husk'&&o.sink===0&&aboard(o));c.parkBlocked=crowd;
  const p0=c.parkT;c.parkT=crowd?c.parkT:ok?c.parkT+dt:Math.max(0,c.parkT-dt*2);c.parkGain=c.parkT>p0;
  if(c.parkT>=PARK_T&&!c.claimed){c.claimed=true;claim(c)}}
-function aboard(o){const l=trLocal(o.x,o.z);return Math.abs(l[0])<DECK_HW+.4&&Math.abs(l[1])<DECK_HL+.3&&o.y>TRL.y+DH+.15}
+function aboard(o){if(o.V&&o.V.trW>=2)return true;const l=trLocal(o.x,o.z);return Math.abs(l[0])<DECK_HW+.4&&Math.abs(l[1])<DECK_HL+.3&&o.y>TRL.y+DH+.15}
 function botThink(c,dt){
  const ct=c.ctl;if(c.wrecked||simT<HEAD){ct.gas=ct.rev=false;ct.steer=0;ct.hold=simT<HEAD;return}ct.hold=false;
  if(c.unstuck>0){c.unstuck-=dt;ct.gas=false;ct.rev=true;ct.steer=c.unSteer;return}
@@ -1016,7 +1019,7 @@ const truckTime=()=>R&&R.phase==='play'?(hostNow()-R.t0)/1000:-5;
 function nameOf(id){if(id===myId)return myName;const p=players.find(q=>q.id===id);if(p)return p.name;const b=R&&R.bots.find(q=>q.id===id);return b?b.name:'Driver'}
 function newRoom(){return{phase:'lobby',n:0,t0:0,order:[myId],bots:[],scores:{},win:null}}
 function addBot(){if(!R||players.length+R.bots.length>=MAXP)return;const used=R.bots.map(b=>b.name),name=BOTN.find(n=>!used.includes(n))||'Bot';const b={id:'b'+rid(),name,cls:randCfg()};R.bots.push(b);R.order.push(b.id)}
-function clearWorld(){for(const c of cars.slice())removeCar(c);for(const g of gibs){scene.remove(g.o);g.o.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry.dispose()})}gibs.length=0;me=null}
+function clearWorld(){for(const c of cars.slice())removeCar(c);for(const g of gibs){dropBody(g);scene.remove(g.o);g.o.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry.dispose()})}gibs.length=0;me=null}
 function startRound(){
  clearWorld();simT=truckTime();if(simT<HEAD+1||!RIGN)truckReset(Math.max(0,simT),true);const late=simT>HEAD;
  me=spawnLocal(myId,myCls,late?spawnPoint():gridPoint(gridSlot(myId)),false,0);
@@ -1035,17 +1038,17 @@ function claim(c){if(isHost)handleClaim(c.id,R.n);else if(ch&&chReady)ch.send({t
 function applyRoom(nr){const prevN=R?R.n:-1,prevPhase=R?R.phase:'';R=nr;
  if(R.phase==='play'){if(prevPhase!=='play')enterGame();if(R.n!==prevN)startRound()}else if(prevPhase==='play'){exitGame();showRoom()}
  refreshRoom()}
-function rec(c){const q=c.q;return[c.id,c.n,c.life,c.cls,c.col,r2(c.x),r2(c.y),r2(c.z),r3(q.x),r3(q.y),r3(q.z),r3(q.w),r2(c.vx),r2(c.vy),r2(c.vz),r2(c.wx),r2(c.w),r2(c.wz),Math.round(c.hp),c.wrecked?1:0,r2(c.ctl.steer),c.boosting?1:0,c.ghost?1:0]}
+function rec(c){const q=c.q;return[c.id,c.n,c.life,c.cls,c.col,r2(c.x),r2(c.y),r2(c.z),r3(q.x),r3(q.y),r3(q.z),r3(q.w),r2(c.vx),r2(c.vy),r2(c.vz),r2(c.wx),r2(c.w),r2(c.wz),Math.round(c.hp),c.wrecked?1:0,r2(c.ctl.steer),c.boosting?1:0,c.ghost?1:0,r2(c.parkT),c.parkBlocked?1:0]}
 function onState(p){
  if(p.rig&&p.id===hostId&&!isHost)RIGN={v:p.rig,t:performance.now()};
  if(p.room&&p.id===hostId&&!isHost){offS.push(p.hn-Date.now());if(offS.length>30)offS.shift();clockOff=Math.max(...offS);applyRoom(p.room)}
  if(!R||R.phase!=='play')return;
- for(const r of p.cars||[]){const[id,n,life,cls,col,x,y,z,qx,qy,qz,qw,vx,vy,vz,wx,wy,wz,hp,fl,steer,bst,gh]=r;if(n<R.n||byId(id,'local')||!physReady)continue;
+ for(const r of p.cars||[]){const[id,n,life,cls,col,x,y,z,qx,qy,qz,qw,vx,vy,vz,wx,wy,wz,hp,fl,steer,bst,gh,pkt,pkb]=r;if(n<R.n||byId(id,'local')||!physReady)continue;
   const q={x:qx,y:qy,z:qz,w:qw};
   let c=byId(id,'remote');if(c&&c.life!==life){if(life<c.life)continue;huskify(c);c=null}
   if(!c){const f=rot(q,0,0,1);c=makeCar(id,cls,col,'remote',{x,y,z,q,a:Math.atan2(f[0],f[2])});c.life=life;c.n=n;mkTag(c,nameOf(id))}
-  c.snap={p:[x,y,z],q,v:[vx,vy,vz],w:[wx,wy,wz],t:performance.now()};c.hp=hp;c.wrecked=!!fl;c.steerVis=steer;c.boosting=!!bst;setGhost(c,!!gh);c.lastSeen=performance.now()}
- for(const e of p.ev||[]){const c=byId(e[1],'remote');if(!c)continue;
+  c.snap={p:[x,y,z],q,v:[vx,vy,vz],w:[wx,wy,wz],t:performance.now()};c.hp=hp;c.wrecked=!!fl;c.steerVis=steer;c.boosting=!!bst;setGhost(c,!!gh);c.parkT=pkt||0;c.parkBlocked=!!pkb;c.lastSeen=performance.now()}
+ for(const e of p.ev||[]){if(e[0]==='ri'){const t=byId(e[1],'local');if(t&&t.body){IMP.x=e[2]*.85;IMP.y=e[3]*.85;IMP.z=e[4]*.85;PT.x=e[5];PT.y=e[6];PT.z=e[7];t.body.applyImpulseAtPoint(IMP,PT,true)}continue}const c=byId(e[1],'remote');if(!c)continue;
   if(e[0]==='d'){dentLocal(c,e[2],e[3],e[4],e[5],e[6],e[7],e[8]);sfxCrash(c.x,c.y,c.z,e[8]/.05)}
   else if(e[0]==='u')unlatch(c,c.det.find(q=>q.key===e[2]));
   else if(e[0]==='g')detach(c,c.det.find(q=>q.key===e[2]),[e[3],e[4],e[5]])}}
@@ -1145,8 +1148,11 @@ function hud(dt){
  if(!R.win&&c&&c.respawnT>0)sub=(c.why==='Respawning'?'':c.why+' · ')+'Respawning in '+Math.ceil(c.respawnT);
  $('msg').textContent=msg;$('sub').textContent=sub;
  if(c){const b=$('boost'),pc=Math.round(c.boost*100);if(b._p!==pc){b._p=pc;b.style.background='conic-gradient(rgba(255,170,40,.75) '+pc+'%, rgba(10,15,20,.4) 0)';b.classList.toggle('empty',c.boost<.05)}}
- {const bm=$('bmeter');if(c&&c.boosting)c.bSeen=performance.now();const vis=c&&R&&R.phase==='play'&&performance.now()-(c.bSeen||-9e9)<1000;if(vis){_a.set(c.x,c.y+1.5,c.z).project(camera);bm.style.transform='translate('+((_a.x+1)/2*innerWidth)+'px,'+((1-_a.y)/2*innerHeight)+'px)';bm.firstChild.style.width=Math.round(c.boost*100)+'%'}bm.style.opacity=vis?1:0}
- const pk=c?c.parkT/PARK_T:0;if(c&&c.parkBlocked&&pk>0)$('sub').textContent='Another car is on the trailer: parking paused';$('park').style.display=pk>0&&!R.win?'block':'none';$('pk').style.width=Math.min(100,pk*100)+'%';
+ {const bm=$('bmeter');if(c&&c.boosting)c.bSeen=performance.now();const vis=c&&R&&R.phase==='play'&&c.sink===0;if(vis){_a.set(c.x-c.s*2.6,Math.max(0,c.y-c.hh),c.z-c.co*2.6).project(camera);bm.style.transform='translate('+((_a.x+1)/2*innerWidth)+'px,'+((1-_a.y)/2*innerHeight)+'px)';bm.firstChild.style.width=Math.round(c.boost*100)+'%';bm.classList.toggle('on',!!c.boosting)}bm.style.opacity=vis?1:0}
+ let lead=null;for(const o of cars)if(o.net!=='husk'&&o.parkT>0&&(!lead||o.parkT>lead.parkT))lead=o;
+ const pk=lead?lead.parkT/PARK_T:0,mine=lead===c;if(c&&c.parkBlocked&&c.parkT>0)$('sub').textContent='Another car is on the trailer: parking paused';
+ $('park').style.display=pk>0&&!R.win?'block':'none';$('pk').style.width=Math.min(100,pk*100)+'%';$('pk').style.background=mine?'#35c46a':'#e8412f';
+ $('pkl').textContent=lead?(mine?'You are parking':nameOf(lead.id)+' is parking')+(lead.parkBlocked?' (paused)':''):'';
  hudT-=dt;if(hudT>0)return;hudT=.15;
  if(c){$('spd').textContent=Math.round(Math.hypot(c.vx,c.vz)*2.237)+' mph';$('hp').style.width=clamp(c.hp/c.S.hp*100,0,100)+'%';$('hp').style.background=c.hp>c.S.hp*.5?'#5dcaa5':c.hp>c.S.hp*.25?'#ef9f27':'#e24b4a'}
  const ids=R.order.slice().sort((a,b)=>(R.scores[b]||0)-(R.scores[a]||0));

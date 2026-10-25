@@ -124,7 +124,7 @@ canvas{display:block}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const VERSION='v0.05';
+const VERSION='v0.06';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
@@ -646,7 +646,7 @@ function contactDamage(c){
    hit(c,px,py,pz,-nx,-ny,-nz,sev)})})}}
 
 // ---------- vehicle sim ----------
-const REV_TOP=6,PARK_T=2,HEAD=3,BOOST_A=14,BOOST_T=1,BOOST_RE=8,BOOST_MAX=42;
+const REV_TOP=6,PARK_T=2,HEAD=3,BOOST_A=7,BOOST_T=1,BOOST_RE=8,BOOST_MAX=42;
 function carPre(c,dt){
  if(!c.body)return;
  if(c.net==='remote'){if(c.snap)track(c.body,c.snap,Math.min(.3,(performance.now()-c.snap.t)/1000),8);return}

@@ -119,7 +119,7 @@ canvas{display:block}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const VERSION='v0.02';
+const VERSION='v0.03';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
@@ -643,8 +643,8 @@ function carPre(c,dt){
  let drive=0,brake=0;
  if(!live)brake=.25;
  else if(ctl.hold||(ctl.gas&&ctl.rev))brake=1;
- else if(ctl.gas){if(vL<-.5)brake=1;else drive=P.eng*Math.max(0,1-Math.max(0,vL)/P.top)}
- else if(ctl.rev){if(vL>.5)brake=1;else if(vL>-P.rev)drive=-P.eng*.45}
+ else if(ctl.gas){if(vL<-.5)brake=1;else drive=P.eng*(ctl.ga!=null?ctl.ga:1)*Math.max(0,1-Math.max(0,vL)/P.top)}
+ else if(ctl.rev){if(vL>.5)brake=ctl.ra!=null?Math.max(.15,ctl.ra):1;else if(vL>-P.rev)drive=-P.eng*.45*(ctl.ra!=null?ctl.ra:1)}
  else brake=.06;
  if(c.stunT>0){drive*=.4;c.stunT-=dt}
  if(c.landT>0)c.landT-=dt;
@@ -799,6 +799,19 @@ addEventListener('resize',placeJoy);
   const off=e=>{if(e.pointerId!==pid)return;pid=null;inp[key]=false;b.classList.remove('on')};
   b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off)}}
 addEventListener('contextmenu',e=>e.preventDefault());
+// PS5 / standard gamepad: left stick steer, R2 gas, L2 brake/reverse, Cross or Square handbrake, Triangle respawn
+let pad=null,padOn=false,padTri=false,padShake=0;
+function showTouch(on){if(!R||R.phase!=='play')return;for(const id of['joy','gas','rev','hb'])$(id).style.display=on?'block':'none';if(on)setTimeout(placeJoy,0)}
+function pollPad(){const gs=navigator.getGamepads?navigator.getGamepads():[];let g=null;for(const q of gs)if(q&&q.connected){g=q;break}
+ if(!g){if(padOn){padOn=false;pad=null;showTouch(true)}return}
+ const bt=i=>g.buttons[i]||{value:0,pressed:false},an=i=>{const b=bt(i);return b.value>0?b.value:b.pressed?1:0};
+ const ax=g.axes[0]||0,dz=.1,st=Math.abs(ax)<dz?0:Math.sign(ax)*Math.pow((Math.abs(ax)-dz)/(1-dz),1.3),r2=an(7),l2=an(6);
+ if(!padOn&&(st!==0||r2>.1||l2>.1||g.buttons.some(b=>b.pressed))){padOn=true;showTouch(false)}
+ if(!padOn)return;
+ pad={g,steer:clamp(st,-1,1),gas:r2>.06,ga:r2,rev:l2>.06,ra:l2,hb:bt(0).pressed||bt(2).pressed};
+ const tri=bt(3).pressed;if(tri&&!padTri&&me&&!me.respawnT&&R&&R.phase==='play'){me.respawnT=3;me.why='Respawning'}padTri=tri;
+ if(shake>padShake+.08){const a=g.vibrationActuator;if(a&&a.playEffect)try{a.playEffect('dual-rumble',{duration:140,strongMagnitude:Math.min(1,shake),weakMagnitude:Math.min(1,shake*.7)})}catch(e){}}padShake=shake}
+addEventListener('touchstart',()=>{if(padOn){padOn=false;showTouch(true)}},{passive:true});
 {const segs=[...document.querySelectorAll('#joym button')],sel=()=>{segs.forEach(b=>b.classList.toggle('sel',b.dataset.m===joyMode));$('joyh').textContent=joyMode==='fixed'?'Stick stays in the bottom-left corner.':'Stick appears wherever your left thumb touches.'};
  segs.forEach(b=>b.addEventListener('click',()=>{joyMode=b.dataset.m;store('pursuit_joy',joyMode);sel();if($('joy').style.display==='block')placeJoy()}));
  const open=()=>{sel();$('set').style.display='flex'};$('b-set').addEventListener('click',open);$('b-set2').addEventListener('click',open);$('b-setx').addEventListener('click',()=>$('set').style.display='none')}
@@ -862,11 +875,13 @@ function sbClient(){if(!window.supabase)return null;try{sb=sb||window.supabase.c
 function dirOpen(mode){
  if(dir){if(mode==='host'||!dirMode)dirMode=mode;if(dirReady){dirSync();renderFind()}return}
  if(!sbClient()){if(mode==='find')$('f-st').textContent='Online play could not load here. Try Play vs AI.';return}
- dirMode=mode;dirReady=false;dirLast='';dir=sb.channel('kohd-lobbies',{config:{presence:{key:myId}}});
+ dirMode=mode;dirReady=false;dirLast='';dir=sb.channel('kohd-lobbies',{config:{presence:{key:myId,enabled:true}}});
  dir.on('presence',{event:'sync'},renderFind);
  const d=dir;d.subscribe(s=>{if(d!==dir)return;if(s==='SUBSCRIBED'){dirReady=true;dirSync();renderFind()}else if((s==='CHANNEL_ERROR'||s==='TIMED_OUT')&&!dirReady&&dirMode==='find')$('f-st').textContent="Couldn't reach the lobby list. Check your connection."})}
 function dirClose(){if(dir&&sb){try{sb.removeChannel(dir)}catch(e){}}dir=null;dirReady=false;dirMode='';dirLast=''}
-function dirSync(){if(!dir||!dirReady||dirMode!=='host'||!net||!isHost||!R||!chReady)return;
+// Supabase only delivers presence to clients that take part in it, so browsers announce themselves too (filtered out of the list)
+function dirSync(){if(dir&&dirReady&&dirMode==='find'){if(dirLast!=='browse'){dirLast='browse';dir.track({p:PROTO,browse:1})}return}
+ if(!dir||!dirReady||dirMode!=='host'||!net||!isHost||!R||!chReady)return;
  const info={p:PROTO,code:roomCode,name:myName+"'s lobby",n:players.length+R.bots.length,max:MAXP,phase:R.phase,round:R.n,mode:'park'},k=JSON.stringify(info);
  if(k===dirLast)return;dirLast=k;dir.track(info)}
 function lobbies(){if(!dir)return[];const st=dir.presenceState(),L=[];for(const k in st){const m=st[k]&&st[k][0];if(m&&m.code&&m.p===PROTO)L.push(m)}
@@ -882,7 +897,7 @@ function connect(code){
  if(!physReady){$('m-err').textContent='Loading physics…';return}
  if(!sbClient()){$('m-err').textContent='Online play could not load here. Try Play vs AI.';return}
  $('m-err').textContent='Connecting…';roomCode=code;
- ch=sb.channel('kohd-'+code,{config:{broadcast:{self:false},presence:{key:myId}}});
+ ch=sb.channel('kohd-'+code,{config:{broadcast:{self:false},presence:{key:myId,enabled:true}}});
  ch.on('broadcast',{event:'s'},({payload})=>onState(payload));
  ch.on('broadcast',{event:'c'},({payload})=>{if(isHost)handleClaim(payload.id,payload.n)});
  ch.on('presence',{event:'sync'},onPresence);
@@ -897,7 +912,7 @@ function refreshRoom(){if($('m-room').style.display==='none')return;const ul=$('
  for(const p of players){const li=document.createElement('li');li.textContent=p.name+' · '+MODELS[parseCfg(p.cls).m].name+(p.id===hostId?' · host':'')+(p.id===myId?' (you)':'');ul.appendChild(li)}
  for(const b of(R?R.bots:[])){const li=document.createElement('li');li.textContent=b.name+' · '+MODELS[parseCfg(b.cls).m].name+' · bot';ul.appendChild(li)}
  $('rh').style.display=isHost?'flex':'none';$('r-wait').style.display=isHost?'none':'block'}
-function enterGame(){$('menu').style.display='none';setTimeout(placeJoy,0);for(const id of['hud','joy'])$(id).style.display='block';$('tr').style.display='flex';for(const id of['gas','rev','hb'])$(id).style.display='block'}
+function enterGame(){$('menu').style.display='none';setTimeout(placeJoy,0);for(const id of['hud','joy'])$(id).style.display='block';$('tr').style.display='flex';for(const id of['gas','rev','hb'])$(id).style.display='block';if(padOn)showTouch(false)}
 function exitGame(){for(const id of['hud','joy','tr','gas','rev','hb','park'])$(id).style.display='none';$('msg').textContent='';$('sub').textContent='';clearWorld()}
 function startPractice(){if(!physReady){$('m-err').textContent='Loading physics…';return}dirClose();net=false;isHost=true;hostId=myId;players=[{id:myId,name:myName,cls:myCls,joined:0}];R=newRoom();for(let i=0;i<3;i++)addBot();R.phase='play';R.n=1;R.t0=Date.now()+300;enterGame();startRound()}
 function hostStart(){if(!isHost||!R)return;R.phase='play';R.n++;R.t0=Date.now()+300;R.scores={};R.win=null;enterGame();startRound();dirSync()}
@@ -948,7 +963,8 @@ function loop(now){
  const rdt=Math.min(.05,(now-last)/1000);last=now;
  if(R&&R.phase==='play'&&physReady){
   hostTick();
-  if(me){me.ctl.steer=inp.steer;me.ctl.gas=inp.gas;me.ctl.rev=inp.rev;me.ctl.hb=inp.hb;me.ctl.hold=simT<HEAD}
+  pollPad();
+  if(me){const P=padOn&&pad?pad:inp;me.ctl.steer=P.steer;me.ctl.gas=P.gas;me.ctl.rev=P.rev;me.ctl.hb=P.hb;me.ctl.ga=P.ga;me.ctl.ra=P.ra;me.ctl.hold=simT<HEAD}
   for(const c of cars)if(c.bot&&c.net==='local')botThink(c,rdt);
   acc+=rdt;let n=0;while(acc>=FIXED&&n<8){step(FIXED);acc-=FIXED;n++}if(n>=8)acc=0;
   const tt=truckTime(),corr=tt-simT;if(tt<=0||Math.abs(corr)>.5)simT=tt;else simT+=corr*.1;

@@ -136,7 +136,7 @@ canvas{display:block}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const VERSION='v0.08';
+const VERSION='v0.09';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
@@ -191,16 +191,16 @@ function spline(P,closed,step){const n=P.length,raw=[],a=closed?0:1,b=closed?n:n
  const nx=new Float32Array(cnt),nz=new Float32Array(cnt);
  for(let i=0;i<cnt;i++){const a2=closed?(i-1+cnt)%cnt:Math.max(0,i-1),b2=closed?(i+1)%cnt:Math.min(cnt-1,i+1);const tx=x[b2]-x[a2],tz=z[b2]-z[a2],l=Math.hypot(tx,tz)||1;nx[i]=tz/l;nz[i]=-tx/l}
  return{x,z,nx,nz,n:cnt,L,ds:L/N,closed}}
-const MAIN_CTRL=[[-75,-30],[-50,-30],[-25,-30],[0,-30],[25,-30],[50,-30],[75,-30],[90,-26],[101,-15],[105,0],[101,15],[90,26],[75,30],[50,30],[25,30],[0,30],[-25,30],[-50,30],[-75,30],[-90,26],[-101,15],[-105,0],[-101,-15],[-90,-26]];
+const MAIN_CTRL=[[-131.25,-30],[-105.0,-30],[-78.75,-30],[-52.5,-30],[-26.25,-30],[0.0,-30],[26.25,-30],[52.5,-30],[78.75,-30],[105.0,-30],[131.25,-30],[146.25,-26],[157.25,-15],[161.25,0],[157.25,15],[146.25,26],[131.25,30],[105.0,30],[78.75,30],[52.5,30],[26.25,30],[0.0,30],[-26.25,30],[-52.5,30],[-78.75,30],[-105.0,30],[-131.25,30],[-146.25,26],[-157.25,15],[-161.25,0],[-157.25,-15],[-146.25,-26]];
 const MAIN=spline(MAIN_CTRL,true,.36),TN=MAIN.n,TL=MAIN.L,DS=MAIN.ds,TX=MAIN.x,TZ=MAIN.z,NX=MAIN.nx,NZ=MAIN.nz;
 function trackPos(s){s=((s%TL)+TL)%TL;const f=s/DS,i=Math.floor(f)%TN,k=f-Math.floor(f),j=(i+1)%TN;return[TX[i]+(TX[j]-TX[i])*k,TZ[i]+(TZ[j]-TZ[i])*k,i]}
 function trackHeading(s){const a=trackPos(s-2),b=trackPos(s+2);return Math.atan2(b[0]-a[0],b[1]-a[1])}
 function nearestIdx(x,z,h){let best=1e18,bi=h;for(let k=-40;k<=40;k++){const i=(h+k+TN)%TN,dx=x-TX[i],dz=z-TZ[i],d=dx*dx+dz*dz;if(d<best){best=d;bi=i}}return bi}
 function fullNearest(x,z){let best=1e18,bi=0;for(let i=0;i<TN;i++){const dx=x-TX[i],dz=z-TZ[i],d=dx*dx+dz*dz;if(d<best){best=d;bi=i}}return bi}
 const mainS=(x,z)=>fullNearest(x,z)*DS,mp=s=>{const p=trackPos(s);return[p[0],p[1]]};
-const sRC0=mainS(7.5,-30),sRC1=mainS(7.5,30),sLC0=mainS(-62.5,30),sLC1=mainS(-15,-30);
-const CUT_R=spline([mp(sRC0-8),mp(sRC0),mp(sRC0+5),[25,-27],[37.5,-18],[45,-5],[45,8],[37.5,20],[22.5,28],mp(sRC1-5),mp(sRC1),mp(sRC1+8)],false,.36);
-const CUT_L=spline([mp(sLC0-8),mp(sLC0),mp(sLC0+5),[-77.5,26],[-82.5,14],[-77.5,2],[-62.5,-8],[-45,-16],[-30,-24],mp(sLC1-5),mp(sLC1),mp(sLC1+8)],false,.36);
+const SX=1.75,sRC0=mainS(7.5*SX,-30),sRC1=mainS(7.5*SX,30),sLC0=mainS(-62.5*SX,30),sLC1=mainS(-15*SX,-30);
+const CUT_R=spline([mp(sRC0-8),mp(sRC0),mp(sRC0+5),[25*SX,-27],[37.5*SX,-18],[45*SX,-5],[45*SX,8],[37.5*SX,20],[22.5*SX,28],mp(sRC1-5),mp(sRC1),mp(sRC1+8)],false,.36);
+const CUT_L=spline([mp(sLC0-8),mp(sLC0),mp(sLC0+5),[-77.5*SX,26],[-82.5*SX,14],[-77.5*SX,2],[-62.5*SX,-8],[-45*SX,-16],[-30*SX,-24],mp(sLC1-5),mp(sLC1),mp(sLC1+8)],false,.36);
 const LANES=[Object.assign(MAIN,{hw:HW}),Object.assign(CUT_R,{hw:CUT_HW}),Object.assign(CUT_L,{hw:CUT_HW})];
 const SEGS=[{main:true,s0:sLC1,s1:sRC0,next:[1,4]},{main:true,s0:sRC0,s1:sRC1,next:[2]},{main:true,s0:sRC1,s1:sLC0,next:[3,5]},{main:true,s0:sLC0,s1:sLC1,next:[0]},{lane:CUT_R,next:[2]},{lane:CUT_L,next:[0]}];
 SEGS.forEach(g=>{g.len=g.main?((g.s1-g.s0)%TL+TL)%TL:g.lane.L});
@@ -210,10 +210,10 @@ function segPos(k,u){const g=SEGS[k];if(g.main){const s=g.s0+u,p=trackPos(s),i=p
  return[L.x[i]+(L.x[j]-L.x[i])*k2,L.z[i]+(L.z[j]-L.z[i])*k2,Math.atan2(L.x[b]-L.x[a],L.z[b]-L.z[a]),L.nx[i],L.nz[i]]}
 function routePos(k,u,prev,next){const g=SEGS[k];if(u<0&&prev>=0)return segPos(prev,Math.max(0,SEGS[prev].len+u));if(u>g.len&&next>=0)return segPos(next,Math.min(SEGS[next].len,u-g.len));return segPos(k,Math.min(Math.max(u,0),g.len))}
 function locateMain(s){s=((s%TL)+TL)%TL;for(let k=0;k<4;k++){const g=SEGS[k],u=((s-g.s0)%TL+TL)%TL;if(u<=g.len)return[k,u]}return[0,0]}
-const SDF={x0:-130,z0:-76,res:1,w:261,h:153};SDF.d=new Float32Array(SDF.w*SDF.h);
-{const B=4,BW=90,bk=[];LANES.forEach((L,li)=>{for(let i=0;i<L.n;i+=3){const k=(Math.floor(L.x[i]/B)+45)+(Math.floor(L.z[i]/B)+45)*BW;(bk[k]||(bk[k]=[])).push(li,i)}});
+const SDF={x0:-186,z0:-76,res:1,w:373,h:153};SDF.d=new Float32Array(SDF.w*SDF.h);
+{const B=4,BW=120,bk=[];LANES.forEach((L,li)=>{for(let i=0;i<L.n;i+=3){const k=(Math.floor(L.x[i]/B)+60)+(Math.floor(L.z[i]/B)+60)*BW;(bk[k]||(bk[k]=[])).push(li,i)}});
  const best=new Float64Array(LANES.length);
- for(let gz=0;gz<SDF.h;gz++)for(let gx=0;gx<SDF.w;gx++){const x=SDF.x0+gx*SDF.res,z=SDF.z0+gz*SDF.res,bx=Math.floor(x/B)+45,bz=Math.floor(z/B)+45;best.fill(1e9);
+ for(let gz=0;gz<SDF.h;gz++)for(let gx=0;gx<SDF.w;gx++){const x=SDF.x0+gx*SDF.res,z=SDF.z0+gz*SDF.res,bx=Math.floor(x/B)+60,bz=Math.floor(z/B)+60;best.fill(1e9);
   for(let dz=-4;dz<=4;dz++)for(let dx=-4;dx<=4;dx++){const a=bk[(bx+dx)+(bz+dz)*BW];if(!a)continue;for(let q=0;q<a.length;q+=2){const L=LANES[a[q]],i=a[q+1],ex=x-L.x[i],ez=z-L.z[i],d=ex*ex+ez*ez;if(d<best[a[q]])best[a[q]]=d}}
   let sd=-4;for(let l=0;l<LANES.length;l++)if(best[l]<1e9)sd=Math.max(sd,LANES[l].hw-Math.sqrt(best[l]));SDF.d[gz*SDF.w+gx]=Math.min(4,Math.max(-4,sd))}}
 function sdAt(x,z){const fx=(x-SDF.x0)/SDF.res,fz=(z-SDF.z0)/SDF.res;if(fx<0||fz<0||fx>=SDF.w-1||fz>=SDF.h-1)return-4;const ix=fx|0,iz=fz|0,tx=fx-ix,tz=fz-iz,W=SDF.w,d=SDF.d,i=iz*W+ix;return(d[i]*(1-tx)+d[i+1]*tx)*(1-tz)+(d[i+W]*(1-tx)+d[i+W+1]*tx)*tz}
@@ -344,7 +344,7 @@ function ornament(k,mat,par,z){const add=(geo,x,y,zz,rx,rz)=>{const m=new THREE.
 const RAPIER_URL='https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.14.0/rapier.es.js';
 let RAPIER=null,world=null,physReady=false,RAY=null;
 const GRAV=12,FIXED=1/120,IMP={x:0,y:0,z:0},PT={x:0,y:0,z:0};
-const G_GROUND=1,G_WALL=2,G_CAR=4,G_WB=8,G_RIG=16,G_RAMP=32,G_GIB=64,F_ALL=0xffff;
+const G_GROUND=1,G_WALL=2,G_CAR=4,G_WB=8,G_RIG=16,G_RAMP=32,G_GIB=64,G_GHOST=128,F_ALL=0xffff;
 const grp=(m,f)=>((m&0xffff)<<16)|(f&0xffff);
 const RAYF=grp(0xffff,G_GROUND|G_WALL|G_CAR|G_RIG|G_RAMP|G_GIB);
 const OWN=new Map();
@@ -384,7 +384,7 @@ function wheelsStep(V,dt,drive,brake,delta,onLand){
   w.contact=false;w.gk='';w.gb=null;w.N=0;if(!w.on)continue;
   const h=rot(q,w.x,w.y,w.z),Hx=t.x+h[0],Hy=t.y+h[1],Hz=t.z+h[2];
   RAY.origin.x=Hx;RAY.origin.y=Hy;RAY.origin.z=Hz;RAY.dir.x=dn[0];RAY.dir.y=dn[1];RAY.dir.z=dn[2];
-  const hit=world.castRayAndGetNormal(RAY,w.rest+w.R,true,undefined,RAYF,undefined,b);
+  const hit=world.castRayAndGetNormal(RAY,w.rest+w.R,true,undefined,V.rayf||RAYF,undefined,b);
   if(!hit){w.susp+=(w.rest-w.susp)*Math.min(1,dt*25);continue}
   const n=hit.normal,nu=-(n.x*dn[0]+n.y*dn[1]+n.z*dn[2]);
   if(nu<.4){w.susp+=(w.rest-w.susp)*Math.min(1,dt*25);continue}
@@ -442,6 +442,11 @@ const TK={seg:3,u:0,prev:2,next:0,k:0,v:0,d:0,dCmd:0,vT:TRUCK_V,dT:0,timer:0,mod
 function tkPose(o,seg,u,prev,next,d,dv,v){const p=routePos(seg,u,prev,next),ha=p[2]+Math.atan2(dv,Math.max(3,v));o.tx=p[0]+p[3]*d;o.tz=p[1]+p[4]*d;o.ta=ha;
  const fx=Math.sin(ha),fz=Math.cos(ha),hx=o.tx-fx*HITCH,hz=o.tz-fz*HITCH,q=routePos(seg,u-HITCH-TONGUE,prev,next);let dx=hx-(q[0]+q[3]*d),dz=hz-(q[1]+q[4]*d);const dl=Math.hypot(dx,dz)||1;dx/=dl;dz/=dl;o.cx=hx-dx*TONGUE;o.cz=hz-dz*TONGUE;o.ca=Math.atan2(dx,dz);return o}
 
+// ramp hinge travel relative to its resting angle: a little below (dips), up to about level with the deck
+const RAMP_LIM=[-.04,.24];
+// keep ramps attached: if one ever ends up away from its hinge (e.g. after the trailer snaps to a network correction) put it back
+function rampGuard(){for(const R0 of RAMPV){const q=TRL.body.rotation(),t=TRL.body.translation(),h=rot(q,R0.hinge[0],R0.hinge[1],R0.hinge[2]),p=R0.body.translation(),hx=t.x+h[0],hy=t.y+h[1],hz=t.z+h[2];
+ if((p.x-hx)**2+(p.y-hy)**2+(p.z-hz)**2>.25){const v=TRL.body.linvel();bodyPose(R0.body,hx,hy,hz,q,v.x,v.y,v.z)}}}
 function buildPhysics(){
  world=new RAPIER.World({x:0,y:-GRAV,z:0});world.timestep=FIXED;world.numSolverIterations=4;
  RAY=new RAPIER.Ray({x:0,y:0,z:0},{x:0,y:-1,z:0});
@@ -469,9 +474,9 @@ function buildPhysics(){
  TRL.V={body:lb,m:1100,kn:45,cn:2.8,mu:.95,vsat:1.4,wl:mkWheels([[1.32,-.3],[1.32,-1.3],[-1.32,-.3],[-1.32,-1.3]],.36,.22,45,.36)};
  const hj=world.createImpulseJoint(RAPIER.JointData.spherical({x:0,y:HITCH_Y,z:-HITCH},{x:0,y:TONGUE_Y,z:TONGUE}),tb,lb,true);hj.setContactsEnabled(false);
  // ramps: hinged plates resting on the ground
- for(const R0 of RAMPV){const h=R0.hinge,rb=world.createRigidBody(B.dynamic().setTranslation(h[0],h[1],h[2]-HITCH-TONGUE).setAdditionalMassProperties(70,{x:0,y:-RLEN/2*Math.sin(RANG),z:-RLEN/2*Math.cos(RANG)},{x:95,y:95,z:4},{x:0,y:0,z:0,w:1}).setCanSleep(false).setAngularDamping(1.5));
+ for(const R0 of RAMPV){const h=R0.hinge,rb=world.createRigidBody(B.dynamic().setTranslation(h[0],h[1],h[2]-HITCH-TONGUE).setAdditionalMassProperties(70,{x:0,y:-RLEN/2*Math.sin(RANG),z:-RLEN/2*Math.cos(RANG)},{x:95,y:95,z:4},{x:0,y:0,z:0,w:1}).setCanSleep(false).setAngularDamping(1.5).setCcdEnabled(true));
   R0.body=rb;R0.col=own(world.createCollider(cdesc(C.cuboid((RAMP_OUT-RAMP_IN)/2,.03,RLEN/2).setTranslation(0,-RLEN/2*Math.sin(RANG),-RLEN/2*Math.cos(RANG)).setRotation({x:Math.sin(-RANG/2),y:0,z:0,w:Math.cos(-RANG/2)}),G_RAMP,F_ALL&~G_RIG,.35,0),rb),{kind:'ramp',ramp:R0});
-  const j=world.createImpulseJoint(RAPIER.JointData.revolute({x:h[0],y:h[1],z:h[2]},{x:0,y:0,z:0},{x:1,y:0,z:0}),lb,rb,true);j.setContactsEnabled(false);R0.joint=j}
+  const jd=RAPIER.JointData.revolute({x:h[0],y:h[1],z:h[2]},{x:0,y:0,z:0},{x:1,y:0,z:0});const j=world.createImpulseJoint(jd,lb,rb,true);j.setLimits(RAMP_LIM[0],RAMP_LIM[1]);j.setContactsEnabled(false);R0.joint=j}
  physReady=true}
 
 function truckReset(t,moving){const l=locateMain(moving?S0+TRUCK_V*t:S0-28);TK.seg=l[0];TK.u=l[1];TK.prev=SEG_PREV[l[0]];TK.next=SEGS[l[0]].next.length===1?SEGS[l[0]].next[0]:-1;TK.k=0;
@@ -528,6 +533,7 @@ function rigPre(dt){
   const rel=wrapPi(TRL.a-TRK.a);if(Math.abs(rel)>1.2){const ex=rel-Math.sign(rel)*1.2,tq=(ex*20+(TRL.w-TRK.w)*4)*8000*dt;TRL.body.applyTorqueImpulse({x:0,y:-tq,z:0},true);TRK.body.applyTorqueImpulse({x:0,y:tq,z:0},true)}
  }else if(RIGN){const age=Math.min(.4,(performance.now()-RIGN.t)/1000);track(TRK.body,rigSnap(0),age,8);track(TRL.body,rigSnap(13),age,8);TK.steer=RIGN.v[26];TK.v=TRK.vx*TRK.s+TRK.vz*TRK.co;
   for(const V of[TRK.V,TRL.V])for(const w of V.wl){w.contact=true;w.vlo=V===TRK.V?TK.v:TRL.vx*TRL.s+TRL.vz*TRL.co}}
+ rampGuard();
  // ramps dragging over the dirt: tiny bumps at the tip, none while anything rests on the ramp
  const sp=Math.abs(TRL.vx*TRL.s+TRL.vz*TRL.co);
  for(const R0 of RAMPV){R0.od+=sp*dt;if(R0.od<R0.nb)continue;R0.od=0;R0.nb=rand(.45,1.3);if(R0.loaded||sp<1)continue;
@@ -589,10 +595,18 @@ function carBody(c,pos,remote){
  c.cols=[add(cdesc(C.convexHull(CHASSIS_HULL),G_CAR,F_ALL,.45,.12)),add(cdesc(C.cuboid(.76,.24,1.0).setTranslation(0,.34,-.35),G_CAR,F_ALL,.45,.12))];
  c.V={body:b,m:S.mass,kn:40,cn:2.6,mu:CAR.mu,vsat:CAR.vsat,nd:2,wl:mkWheels([[wx,wz,1,1],[-wx,wz,1,1],[wx,-wz,0,0],[-wx,-wz,0,0]],S.R,.3,40,yW)};
  for(const w of c.V.wl){w.ball=add(cdesc(C.ball(.26).setTranslation(Math.sign(w.x)*(Math.abs(w.x)-.06),yW+.05,w.z),G_WB,F_ALL&~G_GROUND,0,0));c.cols.push(w.ball)}}
+// just-respawned cars pass through other cars (and their debris) for 3 s; they still hit walls, the truck and the trailer
+const RAYF_GHOST=grp(0xffff,G_GROUND|G_WALL|G_RIG|G_RAMP);
+function setGhost(c,on){if(!c.body||c.ghost===on)return;c.ghost=on;const solid=F_ALL&~(G_CAR|G_WB|G_GIB|G_GHOST);
+ for(const cl of c.cols){const ball=c.V&&c.V.wl.some(w=>w.ball===cl);cl.setCollisionGroups(on?grp(G_GHOST,solid&~(ball?G_GROUND:0)):grp(ball?G_WB:G_CAR,ball?F_ALL&~G_GROUND:F_ALL))}
+ if(c.V)c.V.rayf=on?RAYF_GHOST:null;if(!on)c.g.visible=true}
+function ghostTick(c,dt){if(!(c.ghostT>0)){if(c.ghost&&c.net!=='remote')setGhost(c,false);return}c.ghostT-=dt;
+ if(c.ghostT<=0&&cars.some(o=>o!==c&&o.body&&!o.ghost&&Math.hypot(o.x-c.x,o.z-c.z)<4.8))c.ghostT=.1;
+ if(c.ghostT<=0)setGhost(c,false)}
 function removeCar(c){dropBody(c);scene.remove(c.g);c.g.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry.dispose()});if(c.tag){scene.remove(c.tag);c.tag.material.map.dispose();c.tag.material.dispose()}const i=cars.indexOf(c);if(i>=0)cars.splice(i,1);if(c===me)me=null}
 function mkTag(c,name){const cv=document.createElement('canvas');cv.width=256;cv.height=64;const x=cv.getContext('2d');x.font='bold 34px system-ui,sans-serif';x.textAlign='center';x.textBaseline='middle';x.lineWidth=6;x.strokeStyle='rgba(0,0,0,.7)';x.strokeText(name,128,32);x.fillStyle='#fff';x.fillText(name,128,32);
  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));sp.scale.set(3.2,.8,1);scene.add(sp);c.tag=sp}
-function huskify(c){const wasRemote=c.net==='remote';c.net='husk';c.id='husk'+rid();c.wrecked=true;c.sinkT=14;c.respawnT=0;c.parkT=0;if(c.tag){scene.remove(c.tag);c.tag=null}if(c===me)me=null;
+function huskify(c){c.ghostT=0;setGhost(c,false);const wasRemote=c.net==='remote';c.net='husk';c.id='husk'+rid();c.wrecked=true;c.sinkT=14;c.respawnT=0;c.parkT=0;if(c.tag){scene.remove(c.tag);c.tag=null}if(c===me)me=null;
  if(wasRemote&&c.body)c.body.setGravityScale(1,true)}
 const byId=(id,net)=>cars.find(c=>c.id===id&&(!net||c.net===net));
 
@@ -676,7 +690,8 @@ function carPre(c,dt){
  const sm=.6/(1+Math.abs(vL)*.09);c.delta+=clamp((live?-ctl.steer*sm:0)-c.delta,-3*dt,3*dt);
  let drive=0,brake=0;
  // holding boost also counts as full gas (one thumb on mobile)
- const bOn=live&&!ctl.hold&&!!ctl.boost&&c.boost>0,gas=ctl.gas||(bOn&&!ctl.rev),ga=bOn?1:(ctl.ga!=null?ctl.ga:1);
+ if(!ctl.boost)c.bLock=false;
+ const bOn=live&&!ctl.hold&&!!ctl.boost&&c.boost>0&&!c.bLock,gas=ctl.gas||(bOn&&!ctl.rev),ga=bOn?1:(ctl.ga!=null?ctl.ga:1);
  if(!live)brake=.25;
  else if(ctl.hold||(gas&&ctl.rev))brake=1;
  else if(gas){if(vL<-.5)brake=1;else drive=P.eng*ga*Math.max(0,1-Math.max(0,vL)/P.top)}
@@ -685,13 +700,13 @@ function carPre(c,dt){
  if(c.stunT>0){drive*=.4;c.stunT-=dt}
  if(c.landT>0)c.landT-=dt;
  // boost: a short thrust straight ahead (not through the tyres); 1 s of thrust when full, refills over 8 s
- c.boosting=bOn;
+ c.boosting=bOn;if(bOn&&c.boost-dt/BOOST_T<=0)c.bLock=true;
  if(c.boosting){c.boost=Math.max(0,c.boost-dt/BOOST_T);const f=rot(c.q,0,0,1),fl=Math.hypot(f[0],f[2])||1,sp=Math.hypot(c.vx,c.vz);if(sp<BOOST_MAX){IMP.x=f[0]/fl*c.m*BOOST_A*dt;IMP.y=0;IMP.z=f[2]/fl*c.m*BOOST_A*dt;c.body.applyImpulse(IMP,true)}}
  else c.boost=Math.min(1,c.boost+dt/BOOST_RE);
  c.V.hb=live&&!!ctl.hb;
  wheelsStep(c.V,dt,drive,brake,c.delta,cr=>{if(c.landT<=0&&cr>7){c.landT=.5;landing(c,cr)}})}
 function carPost(c,dt){
- if(!c.body)return;bodyRead(c);c.yc=c.y;
+ if(!c.body)return;bodyRead(c);c.yc=c.y;if(c.net!=='remote')ghostTick(c,dt);
  if(c.net==='remote')return;
  const V=c.V;c.trW=V.trW;c.onTr=V.nc>0&&V.trW===V.nc&&V.nc===c.wheelsOn;
  let rvx=c.vx,rvz=c.vz;if(c.trW>0){const g=velAt(TRL.body,c.x,c.y,c.z);rvx-=g[0];rvz-=g[2]}
@@ -753,7 +768,7 @@ function spawnPoint(){const T=TK.trail;for(let t=0;t<12;t++){let x,z,nx,nz,h;
  const p=trackPos(S0-40);return{x:p[0],z:p[1],a:trackHeading(S0-40)}}
 function colorFor(id){const i=R?R.order.indexOf(id):-1;return i>=0?i:(hash(id.length,id.charCodeAt(0),1)*8)|0}
 function spawnLocal(id,cls,pos,bot,life){const c=makeCar(id,cls,0,'local',pos);c.bot=!!bot;c.life=life||0;c.n=R.n;if(bot)mkTag(c,nameOf(id));return c}
-function respawn(c){const id=c.id,cls=c.cls,life=c.life+1,bot=c.bot,mine=c===me;huskify(c);const nc=spawnLocal(id,cls,spawnPoint(),bot,life);if(mine){me=nc;flash()}}
+function respawn(c){const id=c.id,cls=c.cls,life=c.life+1,bot=c.bot,mine=c===me;huskify(c);const nc=spawnLocal(id,cls,spawnPoint(),bot,life);nc.ghostT=3;setGhost(nc,true);if(mine){me=nc;flash()}}
 
 // ---------- visuals ----------
 function setPose(o,B,dy){o.position.set(B.x,B.y-(dy||0),B.z);if(B.q)o.quaternion.set(B.q.x,B.q.y,B.q.z,B.q.w)}
@@ -762,7 +777,7 @@ function updateCars(dt){
  for(const c of cars.slice()){
   if(c.net==='remote'&&now-c.lastSeen>4000){removeCar(c);continue}
   if(c.net==='husk'){c.sinkT-=dt;if(c.sinkT<0){if(c.body)dropBody(c);c.sink+=dt*.35;if(c.sink>2.2){removeCar(c);continue}}}
-  setPose(c.g,c,c.sink);
+  setPose(c.g,c,c.sink);if(c.ghost)c.g.visible=(now/125|0)%2===0;
   const fwd=c.vx*c.s+c.vz*c.co;
   for(const p of c.parts){if(!p.dirty)continue;const k=1-Math.exp(-dt*26),a=p.geo.attributes.position.array;let md=0;
    for(let i=0;i<a.length;i++){const d=p.tgt[i]-p.cur[i];p.cur[i]+=d*k;if(Math.abs(d)>md)md=Math.abs(d);a[i]=p.orig[i]+p.cur[i]}
@@ -809,7 +824,7 @@ let camA=0,camSnap=true,orbit=0;const camP=new THREE.Vector3(),camL=new THREE.Ve
 function updateCam(dt){
  const c=me;
  if(garageOn&&show){showA+=dt*.35;const r=camera.aspect<1?8.6:6.8,ph=$('garage').offsetHeight;if(ph!==garageVO){garageVO=ph;camera.setViewOffset(innerWidth,innerHeight+ph,0,ph,innerWidth,innerHeight);camera.updateProjectionMatrix()}camera.position.set(SHOW_P.x+Math.cos(showA)*r,2.6,SHOW_P.z+Math.sin(showA)*r);camera.lookAt(SHOW_P.x,.55,SHOW_P.z+0);sun.position.set(SHOW_P.x+20,40,SHOW_P.z+15);sun.target.position.set(SHOW_P.x,0,SHOW_P.z);return}
- if(!c||!R||R.phase!=='play'){orbit+=dt*.08;camera.position.set(Math.cos(orbit)*115,72,Math.sin(orbit)*115);camera.lookAt(0,0,0);sun.position.set(40,90,30);sun.target.position.set(0,0,0);return}
+ if(!c||!R||R.phase!=='play'){orbit+=dt*.08;camera.position.set(Math.cos(orbit)*175,95,Math.sin(orbit)*120);camera.lookAt(0,0,0);sun.position.set(40,90,30);sun.target.position.set(0,0,0);return}
  const sp=Math.hypot(c.vx,c.vz);
  if(camSnap){camA=c.a}else camA+=wrapPi(c.a-camA)*(1-Math.exp(-dt*(c.wrecked?1:3.2)));
  const pan=R.win?1:clamp(simT/2,0,1);
@@ -919,7 +934,7 @@ function startRound(){
  me=spawnLocal(myId,myCls,late?spawnPoint():gridPoint(gridSlot(myId)),false,0);
  if(isHost)for(const b of R.bots)spawnLocal(b.id,b.cls,late?spawnPoint():gridPoint(gridSlot(b.id)),true,0);
  flash();dirSync()}
-function ensureBots(){if(!isHost||!R||R.phase!=='play')return;for(const b of R.bots){if(byId(b.id,'local'))continue;const old=byId(b.id,'remote');const life=old?old.life+1:0;if(old)huskify(old);spawnLocal(b.id,b.cls,spawnPoint(),true,life)}}
+function ensureBots(){if(!isHost||!R||R.phase!=='play')return;for(const b of R.bots){if(byId(b.id,'local'))continue;const old=byId(b.id,'remote');const life=old?old.life+1:0;if(old)huskify(old);const nc=spawnLocal(b.id,b.cls,spawnPoint(),true,life);nc.ghostT=3;setGhost(nc,true)}}
 const TW={ax:0,az:0,t:0};
 // truck or trailer on its side/roof, or the truck not getting anywhere, for 10 s in total -> round void, next round
 function truckWatch(dt){if(!isHost||!R||R.phase!=='play'||R.win||simT<HEAD){TW.t=0;TW.ax=TRK.x;TW.az=TRK.z;return}
@@ -932,16 +947,16 @@ function claim(c){if(isHost)handleClaim(c.id,R.n);else if(ch&&chReady)ch.send({t
 function applyRoom(nr){const prevN=R?R.n:-1,prevPhase=R?R.phase:'';R=nr;
  if(R.phase==='play'){if(prevPhase!=='play')enterGame();if(R.n!==prevN)startRound()}else if(prevPhase==='play'){exitGame();showRoom()}
  refreshRoom()}
-function rec(c){const q=c.q;return[c.id,c.n,c.life,c.cls,c.col,r2(c.x),r2(c.y),r2(c.z),r3(q.x),r3(q.y),r3(q.z),r3(q.w),r2(c.vx),r2(c.vy),r2(c.vz),r2(c.wx),r2(c.w),r2(c.wz),Math.round(c.hp),c.wrecked?1:0,r2(c.ctl.steer),c.boosting?1:0]}
+function rec(c){const q=c.q;return[c.id,c.n,c.life,c.cls,c.col,r2(c.x),r2(c.y),r2(c.z),r3(q.x),r3(q.y),r3(q.z),r3(q.w),r2(c.vx),r2(c.vy),r2(c.vz),r2(c.wx),r2(c.w),r2(c.wz),Math.round(c.hp),c.wrecked?1:0,r2(c.ctl.steer),c.boosting?1:0,c.ghost?1:0]}
 function onState(p){
  if(p.rig&&p.id===hostId&&!isHost)RIGN={v:p.rig,t:performance.now()};
  if(p.room&&p.id===hostId&&!isHost){offS.push(p.hn-Date.now());if(offS.length>30)offS.shift();clockOff=Math.max(...offS);applyRoom(p.room)}
  if(!R||R.phase!=='play')return;
- for(const r of p.cars||[]){const[id,n,life,cls,col,x,y,z,qx,qy,qz,qw,vx,vy,vz,wx,wy,wz,hp,fl,steer,bst]=r;if(n<R.n||byId(id,'local')||!physReady)continue;
+ for(const r of p.cars||[]){const[id,n,life,cls,col,x,y,z,qx,qy,qz,qw,vx,vy,vz,wx,wy,wz,hp,fl,steer,bst,gh]=r;if(n<R.n||byId(id,'local')||!physReady)continue;
   const q={x:qx,y:qy,z:qz,w:qw};
   let c=byId(id,'remote');if(c&&c.life!==life){if(life<c.life)continue;huskify(c);c=null}
   if(!c){const f=rot(q,0,0,1);c=makeCar(id,cls,col,'remote',{x,y,z,q,a:Math.atan2(f[0],f[2])});c.life=life;c.n=n;mkTag(c,nameOf(id))}
-  c.snap={p:[x,y,z],q,v:[vx,vy,vz],w:[wx,wy,wz],t:performance.now()};c.hp=hp;c.wrecked=!!fl;c.steerVis=steer;c.boosting=!!bst;c.lastSeen=performance.now()}
+  c.snap={p:[x,y,z],q,v:[vx,vy,vz],w:[wx,wy,wz],t:performance.now()};c.hp=hp;c.wrecked=!!fl;c.steerVis=steer;c.boosting=!!bst;setGhost(c,!!gh);c.lastSeen=performance.now()}
  for(const e of p.ev||[]){const c=byId(e[1],'remote');if(!c)continue;
   if(e[0]==='d'){dentLocal(c,e[2],e[3],e[4],e[5],e[6],e[7],e[8]);sfxCrash(c.x,c.y,c.z,e[8]/.05)}
   else if(e[0]==='u')unlatch(c,c.det.find(q=>q.key===e[2]));

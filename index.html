@@ -25,7 +25,14 @@ canvas{display:block}
 .ib svg{display:block;margin:auto}.ib.on{background:rgba(255,255,255,.35)}
 #tr{position:fixed;top:10px;right:10px;display:none;gap:8px}
 .ib{width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.5);background:rgba(10,15,20,.45);color:#fff;font-size:20px;padding:0;line-height:1;touch-action:manipulation}
-#ver{position:fixed;right:12px;top:58px;font-size:11px;opacity:.8;pointer-events:none}
+#ver{position:fixed;right:12px;top:58px;font-size:11px;opacity:.8;pointer-events:none;display:none}
+#vbox{position:fixed;left:12px;bottom:12px;display:flex;align-items:center;gap:8px;z-index:6;background:rgba(10,15,20,.6);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:5px 6px 5px 12px}
+#vlab{font-size:15px;font-weight:800;color:#ffd166;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#b-log{height:34px;border-radius:9px;border:1px solid #ffd27a;background:linear-gradient(180deg,#ffb52e,#ef6a1b);color:#1d1004;font-weight:700;font-size:14px;padding:0 12px}
+#logp{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(8,12,18,.6);padding:16px;z-index:8}
+#logp .card{max-width:440px;max-height:86vh;display:flex;flex-direction:column}
+#logl{overflow-y:auto;font-size:14px;line-height:1.45;margin-bottom:6px;min-height:0}#logp .card>*{flex-shrink:0}#logp #logl{flex-shrink:1}
+#logl h3{margin:12px 0 4px;font-size:16px;color:#ffd166}#logl ul{margin:0;padding-left:18px}
 #msg{position:fixed;left:0;right:0;top:26%;text-align:center;font-size:44px;font-weight:700;pointer-events:none}
 #sub{position:fixed;left:0;right:0;top:calc(26% + 58px);text-align:center;font-size:17px;pointer-events:none;padding:0 16px}
 #park{position:fixed;left:50%;top:18%;width:180px;margin-left:-90px;display:none;pointer-events:none;text-align:center;font-size:13px}
@@ -100,6 +107,8 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 <div id="hud"><div id="spd">0 mph</div><div class="bar"><i id="hp"></i></div><div id="sc"></div></div>
 <div id="tr"><button class="ib fsb" id="b-fs" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><button class="ib" id="b-set" aria-label="Settings">&#x2699;</button><button class="ib" id="b-reset" aria-label="Respawn">&#x21bb;</button><button class="ib" id="b-exit" aria-label="Leave">&#x2715;</button></div>
 <div id="ver"></div>
+<div id="vbox"><span id="vlab"></span><button id="b-log">Changelog</button></div>
+<div id="logp"><div class="card"><h1>Changelog</h1><div id="logl"></div><button id="b-logx" class="big">Close</button></div></div>
 <div id="msg"></div><div id="sub"></div>
 <div id="park">Parking<div class="bar"><i id="pk"></i></div></div>
 <div id="joy"><div id="jb"><div id="jk"></div></div><div id="jh">Steer</div></div>
@@ -164,11 +173,14 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
+const CHANGELOG=[["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
 const VERSION='v0.11';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
-$('ver').textContent=VERSION;
+$('ver').textContent=VERSION;$('vlab').textContent=VERSION;
+$('logl').innerHTML=CHANGELOG.map(([v,items])=>'<h3>'+v+'</h3><ul>'+items.map(t=>'<li>'+t+'</li>').join('')+'</ul>').join('');
+$('b-log').addEventListener('click',()=>{$('logp').style.display='flex'});$('b-logx').addEventListener('click',()=>{$('logp').style.display='none'});
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const wrapPi=a=>{a=(a+Math.PI)%(2*Math.PI);if(a<0)a+=2*Math.PI;return a-Math.PI};
 const nearestMul=(v,m)=>Math.round(v/m)*m;
@@ -351,9 +363,11 @@ function buildVehicle(S,color,chrome,vis){
   dl=S.doors===4?[[(mid+.02+d1)/2,d1-mid-.02],[(d0+mid-.02)/2,mid-.02-d0]]:(()=>{const L=Math.min(1.3,d1-d0),c=clamp(C.z+C.l*.1,d0+L/2,d1-L/2);return[[c,L]]})();
  let di=0;
  for(const sx of[1,-1])for(const[dz,dL]of dl){
-  const hinge=new THREE.Group();hinge.position.set(sx*(W2/2+.03),bodyY+.02,dz+dL/2);g.add(hinge);
-  const door=box(.06,S.H*.84,dL,[1,2,4],boxM,hinge,0,0,-dL/2);deform(door);
-  box(.03,.04,.16,[1,1,1],trimM,door,sx*.04,S.H*.2,-dL/2+.28);
+  // doors are thin skins sitting on the body side, full body height, following the side's inward taper
+  const hinge=new THREE.Group();hinge.position.set(sx*(W2/2+.006),bodyY,dz+dL/2);g.add(hinge);
+  const door=box(.035,S.H-.05,dL,[1,4,4],boxM,hinge,0,0,-dL/2);
+  shapeGeo(door.geometry,v=>{const ty=clamp((v.y+S.H/2)/S.H,0,1);v.x-=sx*W2/2*.09*ty*ty});deform(door);
+  box(.03,.035,.16,[1,1,1],trimM,door,sx*(.025-W2/2*.09*.42),S.H*.15,-dL/2+.28);
   mk('d'+di,door,[door],[sx*W2/2,bodyY,dz],dL/2+.1,32,'door',{hinge,side:sx,ang:0,angV:0,loose:false,gr:.04});di++}
  const fb=box(S.W-.04,.24,.22,[4,1,1],trimM,g,0,base+S.clr+.1,S.L/2-.11);deform(fb);
  if(vis&&vis.fr===1){for(const sx of[1,-1])box(.07,.5,.07,[1,1,1],trimM,fb,sx*.42,.2,.2);box(1.0,.07,.07,[1,1,1],trimM,fb,0,.45,.2);box(.07,.07,.24,[1,1,1],trimM,fb,.42,.45,.1);box(.07,.07,.24,[1,1,1],trimM,fb,-.42,.45,.1);box(1.3,.06,.06,[1,1,1],trimM,fb,0,.05,.22)}mk('fb',fb,[fb],[0,base+S.clr,S.L/2-.1],1,26,'panel',{gr:.1});
@@ -1092,8 +1106,8 @@ function refreshRoom(){if($('m-room').style.display==='none')return;const ul=$('
  for(const p of players){const li=document.createElement('li');li.textContent=p.name+' · '+MODELS[parseCfg(p.cls).m].name+(p.id===hostId?' · host':'')+(p.id===myId?' (you)':'');ul.appendChild(li)}
  for(const b of(R?R.bots:[])){const li=document.createElement('li');li.textContent=b.name+' · '+MODELS[parseCfg(b.cls).m].name+' · bot';ul.appendChild(li)}
  $('rh').style.display=isHost?'flex':'none';$('r-wait').style.display=isHost?'none':'block'}
-function enterGame(){endIntro();$('menu').style.display='none';setTimeout(placeJoy,0);for(const id of['hud','joy'])$(id).style.display='block';$('tr').style.display='flex';for(const id of['gas','rev','hb'])$(id).style.display='block';if(padOn)showTouch(false)}
-function exitGame(){for(const id of['hud','joy','tr','gas','rev','hb','boost','park'])$(id).style.display='none';$('msg').textContent='';$('sub').textContent='';clearWorld()}
+function enterGame(){endIntro();$('vbox').style.display='none';$('menu').style.display='none';setTimeout(placeJoy,0);for(const id of['hud','joy'])$(id).style.display='block';$('tr').style.display='flex';for(const id of['gas','rev','hb'])$(id).style.display='block';if(padOn)showTouch(false)}
+function exitGame(){$('vbox').style.display='flex';for(const id of['hud','joy','tr','gas','rev','hb','boost','park'])$(id).style.display='none';$('msg').textContent='';$('sub').textContent='';clearWorld()}
 function startPractice(){if(!physReady){$('m-err').textContent='Loading physics…';return}dirClose();net=false;isHost=true;hostId=myId;players=[{id:myId,name:myName,cls:myCls,joined:0}];R=newRoom();for(let i=0;i<3;i++)addBot();R.phase='play';R.n=1;R.t0=Date.now()+300;enterGame();startRound()}
 function hostStart(){if(!isHost||!R)return;R.phase='play';R.n++;R.t0=Date.now()+300;R.scores={};R.win=null;enterGame();startRound();dirSync()}
 {$('nm').value=myName;$('nm').addEventListener('input',()=>{myName=$('nm').value.trim().slice(0,12)||'Driver';store('pursuit_name',myName)});
@@ -1116,8 +1130,8 @@ function garageUI(){const cfg=parseCfg(myCls),hx=n=>'#'+n.toString(16).padStart(
  const sw=(id,cols,key)=>{const el=$(id);el.innerHTML='';cols.forEach((c,i)=>{const b=document.createElement('button');b.style.background=hx(c);if(cfg[key]===i)b.classList.add('sel');b.setAttribute('aria-label','color '+i);b.onclick=()=>setCfg(key,i);el.appendChild(b)})};
  seg('g-m',MODELS.map(m=>m.name),'m');$('g-m').classList.add('gseg6');{const H=MODELS[cfg.m].h,rows=[['Accel',(1400*7*H.acc/H.mass)/9],['Top speed',(H.top-24)/7],['Steering',(H.steer/H.vs/H.yaw)/1.7],['Grip',(H.mu-.95)/.36],['Weight',H.mass/2200]];$('g-st').innerHTML=rows.map(r=>'<span>'+r[0]+'</span><i style="width:'+Math.round(clamp(r[1],.08,1)*100)+'%"></i>').join('');$('g-note').textContent=MODELS[cfg.m].note+(H.rwd?'':' · FWD')}sw('g-p',PAINTS,'p');seg('g-s',STRIPES,'s');sw('g-sc',PAINTS,'sc');$('g-sc').style.display=cfg.s?'flex':'none';seg('g-r',RIMS,'r');sw('g-rc',RIMCOLS,'rc');seg('g-w',SPOILERS,'w');sw('g-ac',ACCENTS,'ac');seg('g-ho',ORNAMENTS,'ho');seg('g-rf',ROOFS,'rf');seg('g-fr',FRONTS,'fr');seg('g-wt',TINTS,'wt')}
 function setCfg(k,v){const c=parseCfg(myCls);c[k]=v;myCls=cfgStr(c);store('pursuit_car',myCls);garageUI();buildShow();if(ch&&chReady)ch.track({id:myId,name:myName,cls:myCls,joined:myJoined})}
-function openGarage(){endIntro();garageOn=true;$('menu').style.display='none';$('garage').style.display='block';garageUI();buildShow()}
-function closeGarage(){garageOn=false;garageVO=-1;camera.clearViewOffset();camera.updateProjectionMatrix();$('garage').style.display='none';$('menu').style.display='flex';if(show){scene.remove(show.g);show=null}}
+function openGarage(){endIntro();$('vbox').style.display='none';garageOn=true;$('menu').style.display='none';$('garage').style.display='block';garageUI();buildShow()}
+function closeGarage(){$('vbox').style.display='flex';garageOn=false;garageVO=-1;camera.clearViewOffset();camera.updateProjectionMatrix();$('garage').style.display='none';$('menu').style.display='flex';if(show){scene.remove(show.g);show=null}}
 $('b-garage').addEventListener('click',openGarage);$('g-done').addEventListener('click',closeGarage);
 
 // ---------- hud ----------

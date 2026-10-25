@@ -66,7 +66,7 @@ canvas{display:block}
 #hb{right:110px;bottom:22px;width:62px;height:62px;font-size:10px;line-height:1.15}
 #rev{right:182px;bottom:18px;width:62px;height:62px;font-size:13px}
 #fade{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none}
-#menu{position:fixed;inset:0;display:grid;grid-template-rows:minmax(0,1fr) auto minmax(0,.55fr);justify-items:center;align-items:center;overflow-y:auto;padding:12px 16px;background:radial-gradient(circle at 92% -8%,rgba(255,232,160,.32),rgba(255,232,160,0) 34%),radial-gradient(circle at 4% -12%,rgba(255,232,160,.22),rgba(255,232,160,0) 32%),linear-gradient(180deg,rgba(36,24,52,.62),rgba(30,20,12,.28) 45%,rgba(10,6,4,.55))}
+#menu{position:fixed;inset:0;display:grid;grid-template-rows:minmax(0,1fr) auto minmax(0,.55fr);justify-items:center;align-items:center;overflow-y:auto;padding:12px 16px;}
 #menu>.card{grid-row:2;position:relative;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='180'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.035 .08' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .2 0 0 0 0 .06 0 0 0 1.6 -.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23r)'/%3E%3C/svg%3E"),#2c2724;background-size:cover;border:3px solid #141110;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 12px 30px rgba(0,0,0,.55);padding:18px 20px}
 #menu>.card::before{content:'';position:absolute;inset:6px;pointer-events:none;background:radial-gradient(circle,#8b8b8b 2.5px,transparent 3.5px) 0 0/100% 100% no-repeat;background:radial-gradient(circle at 0 0,#8b8b8b 3px,transparent 4px),radial-gradient(circle at 100% 0,#8b8b8b 3px,transparent 4px),radial-gradient(circle at 0 100%,#8b8b8b 3px,transparent 4px),radial-gradient(circle at 100% 100%,#8b8b8b 3px,transparent 4px)}
 #menu.main>.card{background:none;border:0;box-shadow:none;padding:6px 4px}#menu.main>.card::before{display:none}
@@ -78,7 +78,7 @@ canvas{display:block}
 #logo.shown .plate,#logo.shown .chain{opacity:1;transform:none}
 #logo.shown{animation:swing 6s ease-in-out infinite}
 @keyframes pdrop{0%{opacity:0;transform:translateY(-120%)}30%{opacity:1}100%{opacity:1;transform:none}}
-#menu.jolt{animation:jolt .55s linear}
+#menu.jolt>#logo,#menu.jolt>.card,#menu.jolt>#mvol{animation:jolt .55s linear}
 @keyframes jolt{0%{transform:translate(0,0)}10%{transform:translate(-9px,6px) rotate(-.6deg)}20%{transform:translate(8px,-5px) rotate(.5deg)}32%{transform:translate(-6px,-4px)}44%{transform:translate(5px,4px) rotate(.3deg)}58%{transform:translate(-3px,2px)}72%{transform:translate(2px,-1px)}100%{transform:none}}
 @keyframes swing{0%,100%{transform:rotate(0deg);animation-timing-function:ease-out}25%{transform:rotate(1.3deg);animation-timing-function:ease-in-out}75%{transform:rotate(-1.3deg);animation-timing-function:ease-in}}
 #logo .lrow{display:flex;white-space:nowrap}
@@ -106,7 +106,7 @@ canvas{display:block}
 #menu .hint{color:#e8dccb;text-shadow:0 1px 3px #000;opacity:.85}
 #m-main .hint{margin-top:16px}
 @media (orientation:landscape) and (max-height:560px){#menu{grid-template-columns:1fr auto;grid-template-rows:1fr;column-gap:20px;padding:10px 24px}#logo{grid-row:1;grid-column:1;align-self:start;margin-top:48px}#menu>.card{grid-row:1;grid-column:2;max-height:calc(100vh - 66px);margin-top:46px;overflow-y:auto;width:300px}#menu.main>.card{overflow:visible;align-self:center}#logo .small{font-size:clamp(16px,3.8vw,40px)}#logo .big{font-size:clamp(38px,10.5vw,112px)}#menu .mb{height:52px;font-size:26px;margin-top:10px}#menu .mb.prim{height:74px;font-size:40px}#menu #b-find{font-size:28px;height:60px}#m-play .mb{margin-top:8px;height:46px;font-size:24px}#m-play label{margin-top:0}#m-main .hint{display:none}}
-#menu{-webkit-backdrop-filter:brightness(.55) saturate(.8) sepia(.35) contrast(1.12);backdrop-filter:brightness(.55) saturate(.8) sepia(.35) contrast(1.12)}
+#mdim{position:fixed;inset:-40px;z-index:-1;pointer-events:none;background:radial-gradient(circle at 92% -8%,rgba(255,232,160,.32),rgba(255,232,160,0) 34%),radial-gradient(circle at 4% -12%,rgba(255,232,160,.22),rgba(255,232,160,0) 32%),linear-gradient(180deg,rgba(36,24,52,.62),rgba(30,20,12,.28) 45%,rgba(10,6,4,.55));-webkit-backdrop-filter:brightness(.55) saturate(.8) sepia(.35) contrast(1.12);backdrop-filter:brightness(.55) saturate(.8) sepia(.35) contrast(1.12)}
 #logo{padding:.22em .5em .3em}
 #m-main .mb.prim{height:100px;font-size:56px}
 #m-main .mb:not(.prim){width:86%!important;margin-left:7%!important;height:64px;font-size:36px}
@@ -135,13 +135,61 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 #fl li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.12)}
 #fl .ln{flex:1;min-width:0}#fl .ln b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#fl .ln i{font-style:normal;font-size:12px;opacity:.7}
 #fl .pc{font-size:14px;opacity:.85;min-width:34px;text-align:right}#fl button{height:36px}
+
+/* pegboard panels */
+.card{color:#2a1c10;background-color:#a8794a!important;background-image:radial-gradient(circle,#3b2814 3px,transparent 3.6px)!important;background-size:22px 22px!important;border:8px solid #5a3e24!important;border-radius:4px!important;box-shadow:inset 0 0 0 2px #7a5631,0 14px 30px rgba(0,0,0,.6)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+#menu>.card::before{display:none}
+.card h1,#menu .code{display:table;margin:-2px auto 14px;background:#efe3b8;transform:rotate(-2deg);padding:5px 22px 6px;font:700 28px/1.1 Oswald,'DejaVu Sans Condensed','Arial Narrow',sans-serif;color:#1a1a1a;letter-spacing:.06em;text-transform:uppercase;text-align:center;box-shadow:0 3px 6px rgba(0,0,0,.35)}
+#menu .code b{color:#1a1a1a;font:inherit!important;letter-spacing:inherit!important}#menu .code div{opacity:.7!important;font:600 12px Inter,system-ui,sans-serif!important;text-transform:none;letter-spacing:0}
+.sheet{background:#efe9d8;border-radius:3px;padding:10px 14px 14px;box-shadow:0 4px 8px rgba(0,0,0,.4);color:#2a1c10}
+.card label{opacity:1!important;font:800 11px Inter,system-ui,sans-serif!important;letter-spacing:.18em;text-transform:uppercase;color:#3a2a1c}
+.sheet label:first-child{margin-top:2px!important}
+.card input:not([type=range]){background:#fffaf0!important;border:2px solid #3a2a1c!important;color:#1a1a1a!important;border-radius:4px!important;font-weight:700}
+.card .hint,.card .err{color:#5a4632;opacity:1}.card .err{color:#b8231a;font-weight:700}.card .err:empty{display:none}
+.card .seg button,#rh button,#fl button,.gtop button{background:linear-gradient(#3a3a3a,#1e1e1e)!important;color:#ccc!important;border:2px solid #0d0d0d!important;border-radius:5px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 2px 0 #0d0d0d;font-weight:800!important;letter-spacing:.04em}
+.card .seg button.sel{background:linear-gradient(#ff8a2a,#c9530f)!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 0 #7a2e06}
+.card .big.red,.gtop #g-done{height:56px;border-radius:30px!important;background:radial-gradient(circle at 40% 30%,#ff6a50,#b8231a 60%,#6d120c)!important;border:5px solid #2a2a2a!important;box-shadow:0 5px 0 #111,0 8px 12px rgba(0,0,0,.5)!important;color:#fff!important;font:900 22px Inter,system-ui,sans-serif!important;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 2px 0 #6d120c;margin-top:16px}
+.card .big.red:active,.gtop #g-done:active{transform:translateY(3px);box-shadow:0 2px 0 #111!important}
+.gtop{margin-bottom:8px}.gtop b{background:#efe3b8;color:#1a1a1a;transform:rotate(-2deg);padding:3px 14px;font:700 20px Oswald,'DejaVu Sans Condensed',sans-serif;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 3px 6px rgba(0,0,0,.35)}
+.gtop #g-done{height:40px;margin:0;font-size:15px!important;border-width:3px!important;padding:0 18px}
+.sw button{border-color:rgba(0,0,0,.35)!important}.sw button.sel{border:3px solid #1a1a1a!important;box-shadow:0 0 0 2px #ff8a2a}
+#joym{position:relative}
+#joym button{background:none!important;border:0!important;box-shadow:none!important;color:#9a8f7a!important;font:800 13px Inter,system-ui,sans-serif!important;letter-spacing:.06em;text-transform:uppercase}
+#joym button:first-child{text-align:left;padding-left:8px!important}#joym button:last-child{text-align:right;padding-right:8px!important}
+#joym button.sel{background:none!important;color:#3a2a1c!important}
+#joym::before{content:'';position:absolute;left:50%;top:50%;width:70px;height:34px;margin:-17px 0 0 -35px;border-radius:6px;background:#2a2a2a;box-shadow:inset 0 2px 4px #000;pointer-events:none}
+#joym::after{content:'';position:absolute;left:50%;top:50%;width:30px;height:26px;margin:-13px 0 0 -31px;border-radius:4px;background:linear-gradient(#ff8a2a,#c9530f);box-shadow:0 2px 0 #7a2e06;pointer-events:none;transition:transform .18s ease}
+#joym:has(button[data-m=float].sel)::after{transform:translateX(32px)}
+.card input.vs{-webkit-appearance:none;appearance:none;height:40px;background:repeating-linear-gradient(90deg,#3a2a1c 0 2px,transparent 2px 10%) 0 31px/100% 7px no-repeat;accent-color:auto}
+.card input.vs::-webkit-slider-runnable-track{height:10px;border-radius:5px;background:#3a2a1c}
+.card input.vs::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:34px;margin-top:-12px;border-radius:4px;border:2px solid #000;background:linear-gradient(#ff8a2a,#ff8a2a) center/16px 3px no-repeat,linear-gradient(#444,#1a1a1a)}
+.card input.vs::-moz-range-track{height:10px;border-radius:5px;background:#3a2a1c}
+.card input.vs::-moz-range-thumb{width:22px;height:30px;border-radius:4px;border:2px solid #000;background:linear-gradient(#ff8a2a,#ff8a2a) center/16px 3px no-repeat,linear-gradient(#444,#1a1a1a)}
+#fl li{border-bottom:1px dashed rgba(58,42,28,.35)!important}#fl .ln i{color:#5a4632}
+#rl{color:#2a1c10}
+#rh{margin-top:6px}
+#logp .card{max-height:88vh}#logp #logs{flex:1 1 auto;min-height:0;overflow-y:auto}#logl h3{margin:8px 0 2px;font:700 18px Oswald,'DejaVu Sans Condensed',sans-serif;color:#b8231a}#logl ul{margin:0;padding-left:18px}
+#set,#logp{background:rgba(10,6,4,.55)!important}
+#menu .back{margin-top:14px}
+
+.bk{color:transparent!important;text-shadow:none!important;-webkit-text-fill-color:transparent}
+#menu .mb.bk::before,#menu .mb.bk::after{display:none}
+#menu .mb.bk{border-color:transparent!important;background-color:transparent!important;background-origin:border-box!important;background-clip:border-box!important;background-repeat:no-repeat!important;box-shadow:0 5px 9px rgba(0,0,0,.5)!important}
+#logo span.bk{position:relative}#logo span.bk::after{content:'';position:absolute;left:calc(var(--bp) * -1);top:calc(var(--bp) * -1);right:calc(var(--bp) * -1);bottom:calc(var(--bp) * -1);background:var(--bk) 0 0/100% 100% no-repeat;pointer-events:none}
+#logo .big span:nth-child(2).bk{background:none}
+#vbox{background:linear-gradient(#f4f1ea,#f4f1ea)!important}#vlab.bk,#b-log.bk{display:inline-block}#vlab{padding:6px 2px}
+
+#menu.main>.card{background:none!important;border:0!important;box-shadow:none!important}
+#set .card{max-height:calc(100vh - 24px);overflow-y:auto}
+#rh button{white-space:nowrap;font-size:13px!important}
+@media (orientation:landscape) and (max-height:560px){#set .card{padding:10px 16px}#set .card h1{margin-bottom:8px;font-size:22px}#set .card label{margin:6px 0 2px!important}#set .card .big.red{height:46px;margin-top:10px}#joyh{display:none}#set input.vs{height:32px;background-position:0 25px}}
 </style></head>
 <body>
 <div id="hud"><div id="spd">0 mph</div><div class="bar"><i id="hp"></i></div><div id="sc"></div></div>
 <div id="tr"><button class="ib fsb" id="b-fs" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><button class="ib" id="b-set" aria-label="Settings">&#x2699;</button><button class="ib" id="b-reset" aria-label="Respawn">&#x21bb;</button><button class="ib" id="b-exit" aria-label="Leave">&#x2715;</button></div>
 <div id="ver"></div>
-<div id="vbox"><span id="vlab"></span><button id="b-log">Changelog</button></div>
-<div id="logp"><div class="card"><h1>Changelog</h1><div id="logl"></div><button id="b-logx" class="big">Close</button></div></div>
+<div id="vbox"><span id="vlab"></span><button id="b-log">CHANGELOG</button></div>
+<div id="logp"><div class="card"><h1>Changelog</h1><div class="sheet" id="logs"><div id="logl"></div></div><button id="b-logx" class="big red">Close</button></div></div>
 <div id="msg"></div><div id="sub"></div>
 <div id="park"><span id="pkl">Parking</span><div class="bar"><i id="pk"></i></div></div>
 <div id="joy"><div id="jb"><div id="jk"></div></div><div id="jh">Steer</div></div>
@@ -154,7 +202,7 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 <div id="bmeter"><i></i></div>
 <div id="garage"><div class="card gcard">
   <div class="gtop"><b id="g-name">Garage</b><button id="g-done">Done</button></div>
-  <label>Model</label><div class="seg" id="g-m"></div><div id="g-st"></div>
+  <div class="sheet"><label>Model</label><div class="seg" id="g-m"></div><div id="g-st"></div>
   <label>Paint</label><div class="sw" id="g-p"></div>
   <label>Stripes</label><div class="seg" id="g-s"></div><div class="sw" id="g-sc"></div>
   <label>Rims</label><div class="seg" id="g-r"></div><div class="sw" id="g-rc"></div>
@@ -164,19 +212,19 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
   <label>Roof</label><div class="seg" id="g-rf"></div>
   <label>Front</label><div class="seg" id="g-fr"></div>
   <label>Windows</label><div class="seg" id="g-wt"></div>
-  <p class="hint"><span id="g-note"></span></p>
+  <p class="hint"><span id="g-note"></span></p></div>
 </div></div>
 <div id="set"><div class="card">
   <h1>Settings</h1>
-  <label>Joystick</label><div class="seg" id="joym"><button data-m="fixed">Fixed</button><button data-m="float">Floating</button></div>
+  <div class="sheet"><label>Joystick</label><div class="seg" id="joym"><button data-m="fixed">Fixed</button><button data-m="float">Floating</button></div>
   <p class="hint" id="joyh"></p>
   <label>Master volume</label><input type="range" class="vs" data-k="m" min="0" max="1" step="0.01">
   <label>Engines</label><input type="range" class="vs" data-k="e" min="0" max="1" step="0.01">
-  <label>Effects (crashes, boost, beeps)</label><input type="range" class="vs" data-k="f" min="0" max="1" step="0.01">
-  <button id="b-setx" class="big">Done</button>
+  <label>Effects (crashes, boost, beeps)</label><input type="range" class="vs" data-k="f" min="0" max="1" step="0.01"></div>
+  <button id="b-setx" class="big red">Done</button>
 </div></div>
 <div id="fade"></div>
-<div id="menu" class="main"><div id="logo" aria-label="King Of the Hill - Derby"><div class="chain l"></div><div class="chain r"></div><div class="plate"></div><div class="lrow small"><span style="--i:0">K</span><span style="--i:1">I</span><span style="--i:2">N</span><span style="--i:3">G</span><span style="--i:4">&nbsp;</span><span style="--i:5">O</span><span style="--i:6">F</span><span style="--i:7">&nbsp;</span><span style="--i:8">T</span><span style="--i:9">H</span><span style="--i:10">E</span><span style="--i:11">&nbsp;</span><span style="--i:12">H</span><span style="--i:13">I</span><span style="--i:14">L</span><span style="--i:15">L</span></div><div class="lrow big"><span style="--i:16">D</span><span style="--i:17">E</span><span style="--i:18">R</span><span style="--i:19">B</span><span style="--i:20">Y</span></div></div><div id="mvol" title="Volume"><svg width="18" height="18" viewBox="0 0 20 20" fill="#fff"><path d="M3 7h3l5-4v14l-5-4H3z"/><path d="M14 6.5a5 5 0 0 1 0 7M16.5 4a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><input type="range" class="vs" data-k="m" min="0" max="1" step="0.01" aria-label="Volume"></div><button class="ib fsb" id="b-fs2" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><div class="card">
+<div id="menu" class="main"><div id="mdim"></div><div id="logo" aria-label="King Of the Hill - Derby"><div class="chain l"></div><div class="chain r"></div><div class="plate"></div><div class="lrow small"><span style="--i:0">K</span><span style="--i:1">I</span><span style="--i:2">N</span><span style="--i:3">G</span><span style="--i:4">&nbsp;</span><span style="--i:5">O</span><span style="--i:6">F</span><span style="--i:7">&nbsp;</span><span style="--i:8">T</span><span style="--i:9">H</span><span style="--i:10">E</span><span style="--i:11">&nbsp;</span><span style="--i:12">H</span><span style="--i:13">I</span><span style="--i:14">L</span><span style="--i:15">L</span></div><div class="lrow big"><span style="--i:16">D</span><span style="--i:17">E</span><span style="--i:18">R</span><span style="--i:19">B</span><span style="--i:20">Y</span></div></div><div id="mvol" title="Volume"><svg width="18" height="18" viewBox="0 0 20 20" fill="#fff"><path d="M3 7h3l5-4v14l-5-4H3z"/><path d="M14 6.5a5 5 0 0 1 0 7M16.5 4a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><input type="range" class="vs" data-k="m" min="0" max="1" step="0.01" aria-label="Volume"></div><button class="ib fsb" id="b-fs2" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><div class="card">
   <div id="m-main" class="scr">
     <button id="b-play" class="big mb prim" data-top="INDIANA"><svg viewBox="0 0 20 20"><path d="M6 3.5l11 6.5-11 6.5z" fill="currentColor"/></svg>Play</button>
     <button id="b-garage" class="big mb yel" data-top="DEALER"><svg viewBox="0 0 20 20"><path d="M2 9l8-5 8 5v8h-3v-6H5v6H2z" fill="currentColor"/></svg>Garage</button>
@@ -184,23 +232,23 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
     <p class="hint">First to park on the moving trailer wins the round.</p>
   </div>
   <div id="m-play" class="scr" style="display:none">
-    <label>Name</label><input id="nm" maxlength="12">
+    <h1>Play</h1><div class="sheet"><label>Name</label><input id="nm" maxlength="12"></div>
     <button id="b-find" class="big mb prim" data-top="INDIANA">Find Match</button>
     <button id="b-host" class="big mb yel" data-top="HOST">Host Match</button>
     <button id="b-prac" class="big mb gry" data-top="PRACTICE">Play vs AI</button>
     <button id="b-back1" class="big back">Back</button>
   </div>
   <div id="m-find" class="scr" style="display:none">
-    <div class="code"><b>Find Match</b></div>
-    <ul id="fl"></ul>
-    <p class="hint" id="f-st">Looking for lobbies…</p>
+    <h1>Find Match</h1>
+    <div class="sheet"><ul id="fl"></ul>
+    <p class="hint" id="f-st">Looking for lobbies…</p></div>
     <button id="b-back2" class="big back">Back</button>
   </div>
   <div id="m-room" class="scr" style="display:none">
     <div class="code" id="r-title"></div>
-    <ul id="rl"></ul>
-    <div id="rh"><button id="b-bot">Add bot</button><button id="b-unbot">Remove bot</button><button id="b-start" class="big">Start</button></div>
-    <p class="hint" id="r-wait">Waiting for the host to start</p>
+    <div class="sheet"><ul id="rl"></ul>
+    <div id="rh"><button id="b-bot">Add bot</button><button id="b-unbot">Remove bot</button></div>
+    <p class="hint" id="r-wait">Waiting for the host to start</p></div><button id="b-start" class="big red">Start</button>
     <button id="b-leave" class="big back">Leave</button>
   </div>
   <p class="err" id="m-err"></p>
@@ -208,12 +256,42 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const CHANGELOG=[["v0.16",["Main menu matched to the junkyard design: darker dusk scene, bigger title sign and plates","Title sign starts swinging smoothly instead of jumping"]],["v0.15",["New junkyard main menu: rusted steel title sign on chains, license-plate buttons, dusk floodlights","Title sign drops in and the screen shakes on the intro crash","Version and changelog moved to a bumper sticker"]],["v0.14",["Item crates on the track. Drive through one to get a random item, tap the item button to use it (controller: Square): Nitro, Tow Hook, Chrome, Spikes, Hover, Paint Bomb, Spring Jump, Ghost","REAR button to look behind (controller: L1); hand brake is Cross only on controller now","Truck reads bends properly and takes the shortcut curves and oval turns much slower"]],["v0.13",["Truck drives smoother: gentler steering, lane changes and brake checks, so cars on the trailer slide much less","Truck slows down earlier for corners and comes out of them slower","Tires hold the deck better before sliding","Parking progress bar moved to the top of the screen"]],["v0.12",["Removed invisible debris that piled up on the track every round","Boost bar always shown under your car","Parking also pauses when another car has 2 tires on the ramps or trailer","Big parking progress bar: green when it's you, red when it's another player","Ramming another player on the trailer now actually pushes them"]],["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
-const VERSION='v0.16';
+const CHANGELOG=[["v0.17",["Pegboard style for Play, Find Match, lobby, Settings, Garage and Changelog panels","Portrait menus stack top to bottom","Screen shake no longer shows the undimmed scene at the edges","Menu art no longer gets recolored by phone dark modes (Samsung Internet)","Cars already holding an item drive straight through crates"]],["v0.16",["Main menu matched to the junkyard design: darker dusk scene, bigger title sign and plates","Title sign starts swinging smoothly instead of jumping"]],["v0.15",["New junkyard main menu: rusted steel title sign on chains, license-plate buttons, dusk floodlights","Title sign drops in and the screen shakes on the intro crash","Version and changelog moved to a bumper sticker"]],["v0.14",["Item crates on the track. Drive through one to get a random item, tap the item button to use it (controller: Square): Nitro, Tow Hook, Chrome, Spikes, Hover, Paint Bomb, Spring Jump, Ghost","REAR button to look behind (controller: L1); hand brake is Cross only on controller now","Truck reads bends properly and takes the shortcut curves and oval turns much slower"]],["v0.13",["Truck drives smoother: gentler steering, lane changes and brake checks, so cars on the trailer slide much less","Truck slows down earlier for corners and comes out of them slower","Tires hold the deck better before sliding","Parking progress bar moved to the top of the screen"]],["v0.12",["Removed invisible debris that piled up on the track every round","Boost bar always shown under your car","Parking also pauses when another car has 2 tires on the ramps or trailer","Big parking progress bar: green when it's you, red when it's another player","Ramming another player on the trailer now actually pushes them"]],["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
+const VERSION='v0.17';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
 $('ver').textContent=VERSION;$('vlab').textContent=VERSION;
+
+// ---------- baked art: draw light surfaces + their text into images so forced dark modes (Samsung Internet) can't recolor them ----------
+const BK=new WeakMap();let bakeT=0;
+function bakeSoon(){clearTimeout(bakeT);bakeT=setTimeout(bakeAll,30)}
+function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath()}
+function cv(w,h){const d=Math.min(3,devicePixelRatio||1),c=document.createElement('canvas');c.width=Math.ceil(w*d);c.height=Math.ceil(h*d);const x=c.getContext('2d');x.scale(d,d);return[c,x]}
+function sp(x,v){try{x.letterSpacing=v}catch(e){}}
+const PLT={prim:['#f2efe6','#1d2b5c','#1d2b5c','#b8231a','#c9c4b8'],yel:['#f3c93a','#141414','#141414','#141414','#b8901c'],gry:['#e7e9ee','#444','#2b2b2b','#2b5aa8','#b9bcc3']};
+function bakePlate(el){const w=el.offsetWidth,h=el.offsetHeight;if(!w||!h)return;const k=el.classList.contains('prim')?'prim':el.classList.contains('yel')?'yel':'gry',C=PLT[k],txt=el.textContent.trim().toUpperCase(),top=el.dataset.top||'',cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),key=[w,h,txt,fs,cs.fontFamily,document.fonts&&document.fonts.status].join('|');if(BK.get(el)===key)return;BK.set(el,key);
+ const[c,x]=cv(w,h);rr(x,1.5,1.5,w-3,h-3,8);x.fillStyle=C[0];x.fill();x.lineWidth=3;x.strokeStyle=C[1];x.stroke();rr(x,5.5,5.5,w-11,h-11,5);x.lineWidth=2;x.stroke();
+ if(k==='gry'){const g=x.createLinearGradient(w*.55,0,w*.85,h);g.addColorStop(0,'rgba(120,60,20,0)');g.addColorStop(.4,'rgba(120,60,20,.3)');g.addColorStop(1,'rgba(120,60,20,0)');x.fillStyle=g;rr(x,6,6,w-12,h-12,5);x.fill()}
+ x.fillStyle=k==='yel'?'#555':'#777';for(const hx of[13,w-13]){x.beginPath();x.arc(hx,h/2,3.5,0,7);x.fill()}
+ if(k==='prim'){x.fillStyle='#e9b52d';x.fillRect(18,10,28,14)}
+ x.textAlign='center';x.textBaseline='alphabetic';
+ if(top){x.font='800 '+Math.max(8,Math.round(h*.11))+'px Inter,system-ui,sans-serif';sp(x,'.35em');x.fillStyle=C[3];x.fillText(top,w/2,7+h*.11)}
+ if(k==='prim'){x.font='700 '+Math.max(7,Math.round(h*.09))+'px Inter,system-ui,sans-serif';sp(x,'.3em');x.fillStyle=C[2];x.fillText('CROSSROADS OF AMERICA',w/2,h-8)}
+ x.font='700 '+fs+'px '+cs.fontFamily;sp(x,'.08em');let f=k==='prim'?Math.min(fs,h*.5):fs;x.font='700 '+f+'px '+cs.fontFamily;const by=h/2+f*.34+(top?h*.04:0)-(k==='prim'?h*.04:0);while(x.measureText(txt).width>w-46&&f>10){f-=1;x.font='700 '+f+'px '+cs.fontFamily}
+ x.fillStyle=C[4];x.fillText(txt,w/2,by+2);x.fillStyle=C[2];x.fillText(txt,w/2,by);
+ el.style.backgroundImage='url('+c.toDataURL()+')';el.style.backgroundSize='100% 100%';el.classList.add('bk')}
+function bakeLetter(el){const t=el.textContent;if(!t.trim()||t===' ')return;const w=el.offsetWidth,h=el.offsetHeight;if(!w||!h)return;const big=!!el.closest('.big'),cs=getComputedStyle(el),fs=parseFloat(cs.fontSize),key=[w,h,fs,cs.fontFamily,document.fonts&&document.fonts.status].join('|');if(BK.get(el)===key)return;BK.set(el,key);
+ const pad=Math.ceil(fs*.25),W=w+pad*2,H=h+pad*2,[c,x]=cv(W,H);x.font='900 '+fs+'px '+cs.fontFamily;x.textBaseline='alphabetic';x.textAlign='left';const bx=pad,by=pad+h*.5+fs*.36;
+ const L=big?[[8,'#2e2b27'],[6,'#4d4943'],[4,'#6f6a62'],[2,'#9a958a']]:[[3,'#3a3630'],[2,'#6f6a62'],[1,'#9a958a']];
+ x.save();x.shadowColor='rgba(0,0,0,.65)';x.shadowBlur=big?10:6;x.shadowOffsetY=big?12:5;x.fillStyle='#2e2b27';x.fillText(t,bx,by+L[0][0]);x.restore();
+ for(const[o,col]of L){x.fillStyle=col;x.fillText(t,bx,by+o)}x.fillStyle='#e2ddd2';x.fillText(t,bx,by);
+ el.style.setProperty('--bk','url('+c.toDataURL()+')');el.style.setProperty('--bp',pad+'px');el.classList.add('bk')}
+function bakeText(el,col,font,bg){const w=el.offsetWidth,h=el.offsetHeight;if(!w||!h)return;font=font.replace('Inter,system-ui,sans-serif',getComputedStyle(el).fontFamily);const t=el.textContent.trim(),key=[w,h,t,document.fonts&&document.fonts.status].join('|');if(BK.get(el)===key)return;BK.set(el,key);
+ const[c,x]=cv(w,h);if(bg){x.fillStyle=bg;x.fillRect(0,0,w,h)}x.font=font;x.fillStyle=col;x.textAlign='center';x.textBaseline='middle';sp(x,'0px');x.fillText(t,w/2,h/2+1);el.style.backgroundImage='url('+c.toDataURL()+')';el.style.backgroundSize='100% 100%';el.classList.add('bk')}
+function bakeAll(){for(const b of document.querySelectorAll('#menu .mb'))bakePlate(b);for(const e of document.querySelectorAll('#logo span'))bakeLetter(e);
+ bakeText($('vlab'),'#1d1d1d','900 14px Inter,system-ui,sans-serif','#f4f1ea');bakeText($('b-log'),'#b8231a','900 14px Inter,system-ui,sans-serif','#f4f1ea')}
+addEventListener('resize',bakeSoon);if(document.fonts){document.fonts.ready.then(bakeSoon);document.fonts.addEventListener&&document.fonts.addEventListener('loadingdone',bakeSoon)}bakeSoon();
 $('logl').innerHTML=CHANGELOG.map(([v,items])=>'<h3>'+v+'</h3><ul>'+items.map(t=>'<li>'+t+'</li>').join('')+'</ul>').join('');
 $('b-log').addEventListener('click',()=>{$('logp').style.display='flex'});$('b-logx').addEventListener('click',()=>{$('logp').style.display='none'});
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
@@ -909,7 +987,7 @@ function giveItem(c){c.item=ITEMS[(Math.random()*ITEMS.length)|0];c.itemHold=0}
 function cratesStep(dt){const t=performance.now()/1000;
  for(const k of CRATES){if(k.off>0){k.off-=dt;k.m.visible=false;continue}k.m.visible=true;k.m.position.set(k.x,.9+Math.sin(t*2+k.ph)*.15,k.z);k.m.rotation.set(.4,t*1.4+k.ph,.3);
   if(!R||R.phase!=='play')continue;
-  for(const c of cars){if(c.net==='husk'||!c.body||c.sink>0)continue;if((c.x-k.x)**2+(c.z-k.z)**2<6.2&&c.y<3){k.off=10;if(c.net==='local'&&!c.item){giveItem(c);if(c===me)sfxTone(880,.12,.15,'square',1320)}puff(PUFF,k.x,1,k.z,0xffd23a,.6,.6,2.4,.5,0,1,0);break}}}}
+  for(const c of cars){if(c.net==='husk'||!c.body||c.sink>0)continue;if(c.net==='local'?c.item:(c.fxBits&8))continue;if((c.x-k.x)**2+(c.z-k.z)**2<6.2&&c.y<3){k.off=10;if(c.net==='local'){giveItem(c);if(c===me)sfxTone(880,.12,.15,'square',1320)}puff(PUFF,k.x,1,k.z,0xffd23a,.6,.6,2.4,.5,0,1,0);break}}}}
 function useItem(c){const it=c.item;if(!it||!c.body||c.wrecked)return;c.item=null;const f=rot(c.q,0,0,1),fl=Math.hypot(f[0],f[2])||1,fx=f[0]/fl,fz=f[2]/fl;
  if(c===me)sfxTone(520,.15,.15,'square',780);
  if(it==='nitro')c.nitroT=2;
@@ -1151,7 +1229,7 @@ function claim(c){if(isHost)handleClaim(c.id,R.n);else if(ch&&chReady)ch.send({t
 function applyRoom(nr){const prevN=R?R.n:-1,prevPhase=R?R.phase:'';R=nr;
  if(R.phase==='play'){if(prevPhase!=='play')enterGame();if(R.n!==prevN)startRound()}else if(prevPhase==='play'){exitGame();showRoom()}
  refreshRoom()}
-function rec(c){const q=c.q;return[c.id,c.n,c.life,c.cls,c.col,r2(c.x),r2(c.y),r2(c.z),r3(q.x),r3(q.y),r3(q.z),r3(q.w),r2(c.vx),r2(c.vy),r2(c.vz),r2(c.wx),r2(c.w),r2(c.wz),Math.round(c.hp),c.wrecked?1:0,r2(c.ctl.steer),c.boosting?1:0,c.ghost?1:0,r2(c.parkT),c.parkBlocked?1:0,(c.chromeT>0?1:0)|(c.hoverT>0?2:0)|(c.popT>0?4:0)]}
+function rec(c){const q=c.q;return[c.id,c.n,c.life,c.cls,c.col,r2(c.x),r2(c.y),r2(c.z),r3(q.x),r3(q.y),r3(q.z),r3(q.w),r2(c.vx),r2(c.vy),r2(c.vz),r2(c.wx),r2(c.w),r2(c.wz),Math.round(c.hp),c.wrecked?1:0,r2(c.ctl.steer),c.boosting?1:0,c.ghost?1:0,r2(c.parkT),c.parkBlocked?1:0,(c.chromeT>0?1:0)|(c.hoverT>0?2:0)|(c.popT>0?4:0)|(c.item?8:0)]}
 function onState(p){
  if(p.rig&&p.id===hostId&&!isHost)RIGN={v:p.rig,t:performance.now()};
  if(p.room&&p.id===hostId&&!isHost){offS.push(p.hn-Date.now());if(offS.length>30)offS.shift();clockOff=Math.max(...offS);applyRoom(p.room)}
@@ -1218,14 +1296,14 @@ function connect(code){
  let ok=false;const to=setTimeout(()=>{if(!ok){leave();$('m-err').textContent="Couldn't reach the lobby. Check your connection or try Play vs AI."}},9000);
  net=true;isHost=false;R=null;hostId=null;
  ch.subscribe(s=>{if(s==='SUBSCRIBED'){ok=true;chReady=true;clearTimeout(to);$('m-err').textContent='';myJoined=Date.now();ch.track({id:myId,name:myName,cls:myCls,joined:myJoined});showRoom()}else if((s==='CHANNEL_ERROR'||s==='TIMED_OUT')&&!ok){clearTimeout(to);leave();$('m-err').textContent="Couldn't reach the lobby. Try Play vs AI."}})}
-function screen(id){for(const e of document.querySelectorAll('#menu .scr'))e.style.display=e.id===id?'block':'none';$('menu').classList.toggle('main',id==='m-main');$('menu').style.display='flex';if(id!=='m-play')$('m-err').textContent='';if(id==='m-find'){$('fl').innerHTML='';$('f-st').textContent='Looking for lobbies…';dirOpen('find');renderFind()}}
+function screen(id){for(const e of document.querySelectorAll('#menu .scr'))e.style.display=e.id===id?'block':'none';$('menu').classList.toggle('main',id==='m-main');$('menu').style.display='';bakeSoon();if(id!=='m-play')$('m-err').textContent='';if(id==='m-find'){$('fl').innerHTML='';$('f-st').textContent='Looking for lobbies…';dirOpen('find');renderFind()}}
 function leave(){chReady=false;RIGN=null;truckReset(0,false);dirClose();if(ch&&sb){try{sb.removeChannel(ch)}catch(e){}}ch=null;net=false;isHost=true;R=null;players=[];evQ=[];clearWorld();exitGame();screen('m-play')}
 function showRoom(){screen('m-room');refreshRoom()}
 function refreshRoom(){if($('m-room').style.display==='none')return;const ul=$('rl');ul.innerHTML='';
  const h=players.find(p=>p.id===hostId);$('r-title').innerHTML='';const tb=document.createElement('b');tb.textContent=(h?h.name:'')+"'s lobby";const tn=document.createElement('div');tn.style.cssText='font-size:13px;opacity:.75;margin-top:2px';tn.textContent=(players.length+(R?R.bots.length:0))+'/'+MAXP+' players';$('r-title').append(tb,tn);
  for(const p of players){const li=document.createElement('li');li.textContent=p.name+' · '+MODELS[parseCfg(p.cls).m].name+(p.id===hostId?' · host':'')+(p.id===myId?' (you)':'');ul.appendChild(li)}
  for(const b of(R?R.bots:[])){const li=document.createElement('li');li.textContent=b.name+' · '+MODELS[parseCfg(b.cls).m].name+' · bot';ul.appendChild(li)}
- $('rh').style.display=isHost?'flex':'none';$('r-wait').style.display=isHost?'none':'block'}
+ $('rh').style.display=isHost?'flex':'none';$('b-start').style.display=isHost?'block':'none';$('r-wait').style.display=isHost?'none':'block'}
 function enterGame(){endIntro();$('vbox').style.display='none';$('menu').style.display='none';setTimeout(placeJoy,0);for(const id of['hud','joy'])$(id).style.display='block';$('tr').style.display='flex';for(const id of['gas','rev','hb','rear'])$(id).style.display='block';if(padOn)showTouch(false)}
 function exitGame(){$('vbox').style.display='flex';for(const id of['hud','joy','tr','gas','rev','hb','boost','park','item','rear'])$(id).style.display='none';$('msg').textContent='';$('sub').textContent='';clearWorld()}
 function startPractice(){if(!physReady){$('m-err').textContent='Loading physics…';return}dirClose();net=false;isHost=true;hostId=myId;players=[{id:myId,name:myName,cls:myCls,joined:0}];R=newRoom();for(let i=0;i<3;i++)addBot();R.phase='play';R.n=1;R.t0=Date.now()+300;enterGame();startRound()}
@@ -1251,7 +1329,7 @@ function garageUI(){const cfg=parseCfg(myCls),hx=n=>'#'+n.toString(16).padStart(
  seg('g-m',MODELS.map(m=>m.name),'m');$('g-m').classList.add('gseg6');{const H=MODELS[cfg.m].h,rows=[['Accel',(1400*7*H.acc/H.mass)/9],['Top speed',(H.top-24)/7],['Steering',(H.steer/H.vs/H.yaw)/1.7],['Grip',(H.mu-.95)/.36],['Weight',H.mass/2200]];$('g-st').innerHTML=rows.map(r=>'<span>'+r[0]+'</span><i style="width:'+Math.round(clamp(r[1],.08,1)*100)+'%"></i>').join('');$('g-note').textContent=MODELS[cfg.m].note+(H.rwd?'':' · FWD')}sw('g-p',PAINTS,'p');seg('g-s',STRIPES,'s');sw('g-sc',PAINTS,'sc');$('g-sc').style.display=cfg.s?'flex':'none';seg('g-r',RIMS,'r');sw('g-rc',RIMCOLS,'rc');seg('g-w',SPOILERS,'w');sw('g-ac',ACCENTS,'ac');seg('g-ho',ORNAMENTS,'ho');seg('g-rf',ROOFS,'rf');seg('g-fr',FRONTS,'fr');seg('g-wt',TINTS,'wt')}
 function setCfg(k,v){const c=parseCfg(myCls);c[k]=v;myCls=cfgStr(c);store('pursuit_car',myCls);garageUI();buildShow();if(ch&&chReady)ch.track({id:myId,name:myName,cls:myCls,joined:myJoined})}
 function openGarage(){endIntro();$('vbox').style.display='none';garageOn=true;$('menu').style.display='none';$('garage').style.display='block';garageUI();buildShow()}
-function closeGarage(){$('vbox').style.display='flex';garageOn=false;garageVO=-1;camera.clearViewOffset();camera.updateProjectionMatrix();$('garage').style.display='none';$('menu').style.display='flex';if(show){scene.remove(show.g);show=null}}
+function closeGarage(){$('vbox').style.display='flex';garageOn=false;garageVO=-1;camera.clearViewOffset();camera.updateProjectionMatrix();$('garage').style.display='none';$('menu').style.display='';bakeSoon();if(show){scene.remove(show.g);show=null}}
 $('b-garage').addEventListener('click',openGarage);$('g-done').addEventListener('click',closeGarage);
 
 // ---------- hud ----------

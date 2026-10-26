@@ -60,6 +60,12 @@ canvas{display:block}
 #bmeter{position:fixed;left:0;top:0;width:100px;height:10px;margin:14px 0 0 -50px;border-radius:5px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.7);opacity:0;pointer-events:none;transition:opacity .25s;z-index:3}#bmeter i{display:block;height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#1f5bff,#4fa0ff)}
 #bmeter.on i{background:linear-gradient(90deg,#4fa0ff,#bfe2ff)}
 #item{right:24px;bottom:132px;width:74px;height:74px;font-size:11px;font-weight:800;border-width:3px}
+#item.aimup{transform:translateY(-14px);box-shadow:0 -10px 0 -4px currentColor}#item.aimback{transform:translateY(14px);box-shadow:0 10px 0 -4px currentColor}
+#specbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:none;align-items:center;gap:8px;background:rgba(10,15,20,.7);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:6px 8px;z-index:3}
+#specbar button{height:44px;min-width:44px;border-radius:9px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.08);color:#fff;font-size:16px;font-weight:800}#specbar div{min-width:130px;text-align:center}#specbar small{display:block;font-size:10px;letter-spacing:.2em;opacity:.7}#specbar b{font-size:16px}#specbar #spj{background:#ef6a1b;border-color:#ffd27a;padding:0 14px}
+#b-spec.on{background:#ef6a1b}
+#item .nf{display:block;width:70%;height:6px;margin:4px auto 0;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;font-style:normal}#item .nf i{display:block;height:100%;width:100%;background:currentColor}
+#land{right:108px;bottom:146px;width:60px;height:60px;font-size:11px;font-weight:800;border-width:3px;border-color:#4ff0d0;color:#4ff0d0;display:none}
 #rear{right:116px;bottom:100px;width:50px;height:50px;font-size:10px}
 #paintov{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:2}#paintov i{position:absolute;border-radius:50%;filter:blur(2px);opacity:.92}
 #gas{right:14px;bottom:30px;width:88px;height:88px;font-size:15px}
@@ -188,17 +194,17 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 </style></head>
 <body>
 <div id="hud"><div id="spd">0 mph</div><div class="bar"><i id="hp"></i></div><div id="sc"></div></div>
-<div id="tr"><button class="ib fsb" id="b-fs" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><button class="ib" id="b-set" aria-label="Settings">&#x2699;</button><button class="ib" id="b-reset" aria-label="Respawn">&#x21bb;</button><button class="ib" id="b-exit" aria-label="Leave">&#x2715;</button></div>
+<div id="tr"><button class="ib fsb" id="b-fs" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><button class="ib" id="b-set" aria-label="Settings">&#x2699;</button><button class="ib" id="b-spec" aria-label="Spectate"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" id="b-reset" aria-label="Respawn">&#x21bb;</button><button class="ib" id="b-exit" aria-label="Leave">&#x2715;</button></div>
 <div id="ver"></div>
 <div id="vbox"><span id="vlab"></span><button id="b-log">CHANGELOG</button></div>
 <div id="logp"><div class="card"><h1>Changelog</h1><div class="sheet" id="logs"><div id="logl"></div></div><button id="b-logx" class="big red">Close</button></div></div>
-<div id="msg"></div><div id="sub"></div>
+<div id="specbar"><button id="spl" aria-label="Previous">&#9664;</button><div><small>SPECTATING</small><b id="specn"></b></div><button id="spr" aria-label="Next">&#9654;</button><button id="spj">Play</button></div><div id="msg"></div><div id="sub"></div>
 <div id="park"><span id="pkl">Parking</span><div class="bar"><i id="pk"></i></div></div>
 <div id="joy"><div id="jb"><div id="jk"></div></div><div id="jh">Steer</div></div>
 <button class="pb" id="rev">REV</button>
 <button class="pb" id="hb" aria-label="Handbrake">HAND<br>BRAKE</button>
 <button class="pb" id="gas">GAS</button>
-<button class="pb" id="item"></button><button class="pb" id="rear" aria-label="Look behind">REAR</button>
+<button class="pb" id="item"></button><button class="pb" id="land" aria-label="Land">LAND<br><b id="hovt"></b></button><button class="pb" id="rear" aria-label="Look behind">REAR</button>
 <div id="paintov"></div>
 <button class="pb" id="boost" aria-label="Boost">BOOST</button>
 <div id="bmeter"><i></i></div>
@@ -251,6 +257,7 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
     <div class="sheet"><ul id="rl"></ul>
     <div id="rh"><button id="b-bot">Add bot</button><button id="b-unbot">Remove bot</button></div>
     <p class="hint" id="r-wait">Waiting for the host to start</p></div><button id="b-start" class="big red">Start</button>
+    <button id="b-spec2" class="big">Spectate</button>
     <button id="b-leave" class="big back">Leave</button>
   </div>
   <p class="err" id="m-err"></p>
@@ -258,8 +265,8 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const CHANGELOG=[["v0.22",["Paint Bomb replaced by the Wrecking Ball: fires a heavy iron ball at medium speed that bounces with real physics, knocks cars around and wrecks them"]],["v0.21",["Ghost item: your car turns see-through, breaks any tow chain on you, and no item can hit you (respawn protection still blinks)","Tow hook flies as a hook trailing a real chain, and the tow line is a chain","Controller players see their current item on screen"]],["v0.20",["Accessories rebuilt to fit each car: wings and lip spoilers follow the trunk or roof, roof racks and light bars sit on the roofline, bull bars follow the front bumper, ornaments sit on the hood","Racing stripes stay on the top surfaces","Exhaust tips on every new car; boost flames come out of them","Wider shortcut lanes and the truck carries more speed into them"]],["v0.19",["New car models (Quaternius): Coupe, Sedan, Hatch, Wagon and Muscle, with breakable hoods, trunks, doors, bumpers, mirrors and wheels","Garage camera: drag to rotate, pinch or mouse wheel to zoom (no more auto-spin)","Hover: gas now accelerates properly, the item button shows LAND with time left, tap it to come down early","Truck carries more speed into the shortcut corners"]],["v0.18",["New item crate layout: 18 crates","License plates centered","Title sign shrinks above the pegboard on portrait sub-menus","Fixed a crash when the browser blocks game controller access"]],["v0.17",["Pegboard style for Play, Find Match, lobby, Settings, Garage and Changelog panels","Portrait menus stack top to bottom","Screen shake no longer shows the undimmed scene at the edges","Menu art no longer gets recolored by phone dark modes (Samsung Internet)","Cars already holding an item drive straight through crates"]],["v0.16",["Main menu matched to the junkyard design: darker dusk scene, bigger title sign and plates","Title sign starts swinging smoothly instead of jumping"]],["v0.15",["New junkyard main menu: rusted steel title sign on chains, license-plate buttons, dusk floodlights","Title sign drops in and the screen shakes on the intro crash","Version and changelog moved to a bumper sticker"]],["v0.14",["Item crates on the track. Drive through one to get a random item, tap the item button to use it (controller: Square): Nitro, Tow Hook, Chrome, Spikes, Hover, Paint Bomb, Spring Jump, Ghost","REAR button to look behind (controller: L1); hand brake is Cross only on controller now","Truck reads bends properly and takes the shortcut curves and oval turns much slower"]],["v0.13",["Truck drives smoother: gentler steering, lane changes and brake checks, so cars on the trailer slide much less","Truck slows down earlier for corners and comes out of them slower","Tires hold the deck better before sliding","Parking progress bar moved to the top of the screen"]],["v0.12",["Removed invisible debris that piled up on the track every round","Boost bar always shown under your car","Parking also pauses when another car has 2 tires on the ramps or trailer","Big parking progress bar: green when it's you, red when it's another player","Ramming another player on the trailer now actually pushes them"]],["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
-const VERSION='v0.22';
+const CHANGELOG=[["v0.23",["New item: Fake Crate. Drops a decoy item crate behind you that blows up whoever drives into it","Tow Hook can hook the truck or trailer: it reels you in without hurting the rig","Tow chain is now a soft chain that draws cars together when the hook lands beyond its length, and every player sees the hook and chain","Respawning releases your tow chain from whoever you hooked","Wrecking Ball: hold the item button and drag up to lob it, drag down to look back and fire it behind you (controller: hold Square and push the left stick); it flies further and only does impact damage","Nitro: hold the item button to burn it; let go to save the rest","Chrome makes your car immune to damage","Pick up items while hovering; LAND is its own button","Spring: no damage from the landing","Spectator mode: the eye button in game, or Spectate in the lobby; arrows switch who you watch","Ramps have side rails, so hitting a ramp from the side shoves the trailer","Stronger reverse","Cars losing panels show a dark inside instead of see-through holes"]],["v0.22",["Paint Bomb replaced by the Wrecking Ball: fires a heavy iron ball at medium speed that bounces with real physics, knocks cars around and wrecks them"]],["v0.21",["Ghost item: your car turns see-through, breaks any tow chain on you, and no item can hit you (respawn protection still blinks)","Tow hook flies as a hook trailing a real chain, and the tow line is a chain","Controller players see their current item on screen"]],["v0.20",["Accessories rebuilt to fit each car: wings and lip spoilers follow the trunk or roof, roof racks and light bars sit on the roofline, bull bars follow the front bumper, ornaments sit on the hood","Racing stripes stay on the top surfaces","Exhaust tips on every new car; boost flames come out of them","Wider shortcut lanes and the truck carries more speed into them"]],["v0.19",["New car models (Quaternius): Coupe, Sedan, Hatch, Wagon and Muscle, with breakable hoods, trunks, doors, bumpers, mirrors and wheels","Garage camera: drag to rotate, pinch or mouse wheel to zoom (no more auto-spin)","Hover: gas now accelerates properly, the item button shows LAND with time left, tap it to come down early","Truck carries more speed into the shortcut corners"]],["v0.18",["New item crate layout: 18 crates","License plates centered","Title sign shrinks above the pegboard on portrait sub-menus","Fixed a crash when the browser blocks game controller access"]],["v0.17",["Pegboard style for Play, Find Match, lobby, Settings, Garage and Changelog panels","Portrait menus stack top to bottom","Screen shake no longer shows the undimmed scene at the edges","Menu art no longer gets recolored by phone dark modes (Samsung Internet)","Cars already holding an item drive straight through crates"]],["v0.16",["Main menu matched to the junkyard design: darker dusk scene, bigger title sign and plates","Title sign starts swinging smoothly instead of jumping"]],["v0.15",["New junkyard main menu: rusted steel title sign on chains, license-plate buttons, dusk floodlights","Title sign drops in and the screen shakes on the intro crash","Version and changelog moved to a bumper sticker"]],["v0.14",["Item crates on the track. Drive through one to get a random item, tap the item button to use it (controller: Square): Nitro, Tow Hook, Chrome, Spikes, Hover, Paint Bomb, Spring Jump, Ghost","REAR button to look behind (controller: L1); hand brake is Cross only on controller now","Truck reads bends properly and takes the shortcut curves and oval turns much slower"]],["v0.13",["Truck drives smoother: gentler steering, lane changes and brake checks, so cars on the trailer slide much less","Truck slows down earlier for corners and comes out of them slower","Tires hold the deck better before sliding","Parking progress bar moved to the top of the screen"]],["v0.12",["Removed invisible debris that piled up on the track every round","Boost bar always shown under your car","Parking also pauses when another car has 2 tires on the ramps or trailer","Big parking progress bar: green when it's you, red when it's another player","Ramming another player on the trailer now actually pushes them"]],["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
+const VERSION='v0.23';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
@@ -421,7 +428,7 @@ const MODELS=[
  {name:'Wagon',cab:{w:1.68,h:.6,l:2.85,z:-.45,rf:.36,rr:.05},doors:4,trunk:false,h:{vs:1.5,yaw:1.05,mass:1450,acc:1.05,top:28,steer:1.08,mu:1.17},note:'All-rounder'},
  {name:'Muscle',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:1.7,yaw:1.05,mass:1500,acc:1.38,top:29,steer:.92,mu:1.08,rwd:true},note:'Fastest acceleration, RWD'},
  {name:'Pickup',cab:{w:1.62,h:.6,l:1.45,z:.42,rf:.32,rr:.04},doors:2,trunk:false,bed:true,h:{vs:1.95,yaw:1.35,mass:2100,acc:1.25,top:26,steer:.88,mu:1.12,rwd:true},note:'Heaviest, hard to push around, RWD'}];
-const CAR={L:4.4,W:1.88,H:.55,clr:.22,R:.37,mass:1400,eng:1400*7,top:27.3,rev:6,mu:1.15,vsat:1.6,hcg:.5,hp:100,hh:.66};
+const CAR={L:4.4,W:1.88,H:.55,clr:.22,R:.37,mass:1400,eng:1400*7,top:27.3,rev:9,mu:1.15,vsat:1.6,hcg:.5,hp:100,hh:.66};
 const STRIPES=['None','Racing','Side'],RIMS=['Spoke','Steel','Dish'],SPOILERS=['None','Lip','Wing'];
 const ACCENTS=[0x2e2e2e,0xdfe3e8,0xd8b04a,0xd6302a,0xf4f4f4,0x2f86ff,0x35c46a,0xff7a1a],ORNAMENTS=['None','Longhorns','Eagle','Skull','Flames'],ROOFS=['None','Rack','Lights'],FRONTS=['Stock','Bull bar'],TINTS=['Dark','Light','Blue'],TINT_C=[0x1b2632,0x6a7a88,0x1f3f6a];
 function parseCfg(t){const a=String(t||'').split('.').map(Number),v=(i,n)=>Number.isFinite(a[i])?((a[i]%n)+n)%n:0;return{m:v(0,MODELS.length),p:v(1,PAINTS.length),s:v(2,3),sc:v(3,PAINTS.length),r:v(4,3),rc:v(5,RIMCOLS.length),w:v(6,3),ac:v(7,ACCENTS.length),ho:v(8,ORNAMENTS.length),rf:v(9,ROOFS.length),fr:v(10,FRONTS.length),wt:v(11,TINTS.length)}}
@@ -456,6 +463,7 @@ function cmGeo(M,part,ox,oy,oz,A){const V=cmDecode(M),pd=M.p[part],pos=[],uv=[],
   groups.push([st,n-st,k])}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
  for(const[a,c,k]of groups)g.addGroup(a,c,CM_ORDER.indexOf(k));g.computeVertexNormals();return g}
+const INNER_M=new THREE.MeshStandardMaterial({color:0x17181a,roughness:.95,metalness:0,side:THREE.DoubleSide});
 function buildModelVehicle(S,color,vis,M){
  const g=new THREE.Group();g.rotation.order='YXZ';const hh=S.hh,base=-hh,A=M.a,DS2=THREE.DoubleSide;
  const chromeBody=vis.p===CHROME_P,bodyM=chromeBody?mStd(color,{metalness:1,roughness:.12,side:DS2}):mStd(color,{metalness:.25,roughness:.38,side:DS2});
@@ -470,6 +478,11 @@ function buildModelVehicle(S,color,vis,M){
  const mesh=(part,par,ox,oy,oz)=>{const m=new THREE.Mesh(cmGeo(M,part,ox,oy,oz,A),mats);m.position.set(ox,oy,oz);m.castShadow=true;m.receiveShadow=true;par.add(m);return m};
  const C=k=>M.m[k];
  deform(mesh('shell',g,0,0,0));deform(mesh('cab',g,0,0,0));
+ {/* dark inner hull: a shrunken copy of the body, so a missing panel shows the car's insides instead of seeing straight through it */
+  const keys=['shell','cab','hood','trunk','tail'].concat(Object.keys(M.h)).filter(k=>M.p[k]),pos=[],V=cmDecode(M),cy=(A.y0+A.roof[0])/2;
+  for(const k of keys)for(const mk in M.p[k]){const I=cmIdx(M.p[k][mk]);for(let i=0;i<I.length;i++){const j=I[i]*3;pos.push(V[j]/1000*.9,cy+(V[j+1]/1000-cy)*.88,V[j+2]/1000*.94)}}
+  const ig=new THREE.BufferGeometry();ig.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));ig.computeVertexNormals();
+  const inner=new THREE.Mesh(ig,INNER_M);g.add(inner)}
  let hood=null;
  for(const k of['hood','trunk','tail','fb','rb']){if(!M.p[k])continue;const c=C(k),m=deform(mesh(k,g,c[0],c[1],c[2]));if(k==='hood')hood=m;
   mk(k,m,[m],[c[0],c[1],c[2]],Math.max(.5,c[3]*.75),{hood:40,trunk:34,tail:30,fb:26,rb:26}[k],'panel',{gr:k==='fb'||k==='rb'?.1:.05})}
@@ -719,6 +732,7 @@ const trailerG=new THREE.Group();scene.add(trailerG);const RAMPV=[];const traile
  add(new THREE.BoxGeometry(.2,.16,.3),steel,0,TONGUE_Y,TONGUE);
  for(const sx of[1,-1]){const g=new THREE.Group();scene.add(g);const pv=new THREE.Group();pv.rotation.x=-RANG;g.add(pv);
   const r=new THREE.Mesh(new THREE.BoxGeometry(RAMP_OUT-RAMP_IN,.06,RLEN),plate);r.position.z=-RLEN/2;r.castShadow=true;r.receiveShadow=true;pv.add(r);
+  const rail=new THREE.Mesh(new THREE.BoxGeometry(.07,.32,RLEN),mStd(0x3a3d42,{metalness:.6,roughness:.5}));rail.position.set(sx*((RAMP_OUT-RAMP_IN)/2-.03),.16,-RLEN/2);rail.castShadow=true;pv.add(rail);
   RAMPV.push({g,sx,body:null,col:null,od:0,nb:1,loaded:false,dustT:0,hinge:[sx*(RAMP_IN+RAMP_OUT)/2,DH-.02,-DECK_HL]})}}
 
 const TRK={x:0,y:TRK_Y,z:0,a:0,vx:0,vz:0,w:0,s:0,co:1,body:null,V:null},TRL={x:0,y:0,z:0,a:0,vx:0,vz:0,w:0,s:0,co:1,body:null,V:null};
@@ -762,6 +776,8 @@ function buildPhysics(){
  // ramps: hinged plates resting on the ground
  for(const R0 of RAMPV){const h=R0.hinge,rb=world.createRigidBody(B.dynamic().setTranslation(h[0],h[1],h[2]-HITCH-TONGUE).setAdditionalMassProperties(70,{x:0,y:-RLEN/2*Math.sin(RANG),z:-RLEN/2*Math.cos(RANG)},{x:95,y:95,z:4},{x:0,y:0,z:0,w:1}).setCanSleep(false).setAngularDamping(1.5).setCcdEnabled(true));
   R0.body=rb;R0.col=own(world.createCollider(cdesc(C.cuboid((RAMP_OUT-RAMP_IN)/2,.03,RLEN/2).setTranslation(0,-RLEN/2*Math.sin(RANG),-RLEN/2*Math.cos(RANG)).setRotation({x:Math.sin(-RANG/2),y:0,z:0,w:Math.cos(-RANG/2)}),G_RAMP,F_ALL&~G_RIG,.35,0),rb),{kind:'ramp',ramp:R0});
+  {/* outer side rail: a car hitting the ramp from the side shoves the ramp (and through its hinge the trailer) instead of driving up it */const q={x:Math.sin(-RANG/2),y:0,z:0,w:Math.cos(-RANG/2)},hw=(RAMP_OUT-RAMP_IN)/2,o=rot(q,R0.sx*(hw-.03),.16,0);
+   own(world.createCollider(cdesc(C.cuboid(.035,.16,RLEN/2).setTranslation(o[0],-RLEN/2*Math.sin(RANG)+o[1],-RLEN/2*Math.cos(RANG)+o[2]).setRotation(q),G_RAMP,F_ALL&~G_RIG,.35,0),rb),{kind:'rail',ramp:R0})}
   const jd=RAPIER.JointData.revolute({x:h[0],y:h[1],z:h[2]},{x:0,y:0,z:0},{x:1,y:0,z:0});const j=world.createImpulseJoint(jd,lb,rb,true);j.setLimits(RAMP_LIM[0],RAMP_LIM[1]);j.setContactsEnabled(false);R0.joint=j}
  physReady=true}
 
@@ -897,7 +913,7 @@ function ghostTick(c,dt){if(!(c.ghostT>0)){if(c.ghost&&c.net!=='remote')setGhost
 function removeCar(c){dropBody(c);scene.remove(c.g);c.g.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry.dispose()});if(c.tag){scene.remove(c.tag);c.tag.material.map.dispose();c.tag.material.dispose()}const i=cars.indexOf(c);if(i>=0)cars.splice(i,1);if(c===me)me=null}
 function mkTag(c,name){const cv=document.createElement('canvas');cv.width=256;cv.height=64;const x=cv.getContext('2d');x.font='bold 34px system-ui,sans-serif';x.textAlign='center';x.textBaseline='middle';x.lineWidth=6;x.strokeStyle='rgba(0,0,0,.7)';x.strokeText(name,128,32);x.fillStyle='#fff';x.fillText(name,128,32);
  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));sp.scale.set(3.2,.8,1);scene.add(sp);c.tag=sp}
-function huskify(c){c.ghostT=0;setGhost(c,false);const wasRemote=c.net==='remote';c.net='husk';c.id='husk'+rid();c.wrecked=true;c.sinkT=14;c.respawnT=0;c.parkT=0;if(c.tag){scene.remove(c.tag);c.tag=null}if(c===me)me=null;
+function huskify(c){if(freeTow(c)&&net&&c.net==='local')evQ.push(['untow',c.id]);for(let i=TTOWS.length-1;i>=0;i--)if(TTOWS[i].c===c){scene.remove(TTOWS[i].ch);TTOWS.splice(i,1)}c.ghostT=0;setGhost(c,false);const wasRemote=c.net==='remote';c.net='husk';c.id='husk'+rid();c.wrecked=true;c.sinkT=14;c.respawnT=0;c.parkT=0;if(c.tag){scene.remove(c.tag);c.tag=null}if(c===me)me=null;
  if(wasRemote&&c.body)c.body.setGravityScale(1,true)}
 const byId=(id,net)=>cars.find(c=>c.id===id&&(!net||c.net===net));
 
@@ -949,6 +965,7 @@ function damageParts(c,lx,ly,lz,wdx,wdz,sev){
 // (px,py,pz) world contact point, (dx,dy,dz) world direction pointing into the car
 function hit(c,px,py,pz,dx,dy,dz,sev){
  if(c.net==='remote'||sev<1.3||!c.body)return;
+ if(c.chromeT>0){sfxCrash(px,py,pz,sev*.5);if(sev>3)sparkBurst(px,py,pz,c.vx,c.vz,Math.min(20,sev*2|0));return}
  const l=irot(c.q,px-c.x,py-c.y,pz-c.z),ld=irot(c.q,dx,dy,dz),amt=Math.min(.75,sev*.05);
  if(c.net==='local')c.hp-=sev*1.6;
  sfxCrash(px,py,pz,sev);dentLocal(c,l[0],l[1],l[2],ld[0],ld[1],ld[2],amt);pushEv(c,['d',c.id,r2(l[0]),r2(l[1]),r2(l[2]),r2(ld[0]),r2(ld[1]),r2(ld[2]),r2(amt)]);
@@ -957,17 +974,17 @@ function hit(c,px,py,pz,dx,dy,dz,sev){
  if(c.net==='local'&&!c.wrecked&&c.hp<=0)totalled(c)}
 function totalled(c){c.wrecked=true;c.hp=0;c.respawnT=5;c.why='Totalled';
  for(const p of c.det)if((p.key==='hood'||p.key==='trunk'||p.type==='door')&&!p.off&&Math.random()<.35){const v=[c.vx+rand(-2,2),rand(4,7),c.vz+rand(-2,2)];detach(c,p,v);pushEv(c,['g',c.id,p.key,r2(v[0]),r2(v[1]),r2(v[2])])}}
-function landing(c,iv){sfxCrash(c.x,c.y,c.z,iv*.8);const amt=Math.min(.6,(iv-5)*.06);
+function landing(c,iv){if(c.springT>0||c.chromeT>0){sfxCrash(c.x,c.y,c.z,iv*.3);return}sfxCrash(c.x,c.y,c.z,iv*.8);const amt=Math.min(.6,(iv-5)*.06);
  dentLocal(c,0,-c.hh+.25,0,0,1,0,amt);pushEv(c,['d',c.id,0,r2(-c.hh+.25),0,0,1,0,r2(amt)]);
  sparkBurst(c.x,Math.max(.1,c.y-c.hh+.1),c.z,c.vx,c.vz,Math.min(20,iv*2|0));if(c.net==='local'){c.hp-=iv*.9;if(!c.wrecked&&c.hp<=0)totalled(c)}if(c===me)shake=Math.max(shake,Math.min(1,iv*.06))}
 // contact impulses from the solver -> dents, part damage, sparks
 function contactDamage(c){
  for(const cl of c.cols){world.contactPairsWith(cl,o=>{const ow=ownOf(o);if(ow&&ow.c===c)return;
   world.contactPair(cl,o,(m,flip)=>{let J=0;const k=m.numContacts();for(let i=0;i<k;i++)J+=m.contactImpulse(i);if(!(J>0))return;
-   const kind=ow?ow.kind:'';let sev=J/c.m;if(kind==='gib')sev*=.3;else if(kind==='ground'||kind==='wall')sev*=.85;if(sev<.8)return;
+   const kind=ow?ow.kind:'';let sev=J/c.m;if(kind==='gib')sev*=.3;else if(kind==='wball')sev*=.7;else if(kind==='ground'||kind==='wall')sev*=.85;if(c.springT>0&&(kind==='ground'||!ow))return;if(sev<.8)return;
    const ns=m.numSolverContacts();let px=c.x,py=c.y,pz=c.z;if(ns){px=py=pz=0;for(let i=0;i<ns;i++){const p=m.solverContactPoint(i);px+=p.x;py+=p.y;pz+=p.z}px/=ns;py/=ns;pz/=ns}
    const nn=m.normal(),sg=flip?-1:1,nx=nn.x*sg,ny=nn.y*sg,nz=nn.z*sg;
-   if(ow&&ow.c&&ow.c.net==='remote'&&J/c.m>.35){const t=ow.c;t.trackHold=.3;if(net)evQ.push(['ri',t.id,r2(nx*J),r2(ny*J),r2(nz*J),r2(px),r2(py),r2(pz)])}
+   if(kind==='wball'&&c.ghostItem)return;if(ow&&ow.c&&ow.c.net==='remote'&&J/c.m>.35){const t=ow.c;t.trackHold=.3;if(net)evQ.push(['ri',t.id,r2(nx*J),r2(ny*J),r2(nz*J),r2(px),r2(py),r2(pz)])}
    if(sev>2.5)sparkBurst(px,py,pz,c.vx,c.vz,Math.min(36,sev*3|0));
    if(kind==='wall'&&sev>1.5)puff(PUFF,px,.5,pz,0x3a3a3a,.35,.6,1.6,.6,0,1,0);
    if(c===me)shake=Math.max(shake,Math.min(1.2,sev*.06));
@@ -990,7 +1007,7 @@ function carPre(c,dt){
  if(!live)brake=.25;
  else if(ctl.hold||(gas&&ctl.rev))brake=1;
  else if(gas){if(vL<-.5)brake=1;else drive=P.eng*ga*Math.max(0,1-Math.max(0,vL)/P.top)}
- else if(ctl.rev){if(vL>.5)brake=ctl.ra!=null?Math.max(.15,ctl.ra):1;else if(vL>-P.rev)drive=-P.eng*.45*(ctl.ra!=null?ctl.ra:1)}
+ else if(ctl.rev){if(vL>.5)brake=ctl.ra!=null?Math.max(.15,ctl.ra):1;else if(vL>-P.rev)drive=-P.eng*.75*(ctl.ra!=null?ctl.ra:1)}
  else brake=c.V.rampW>0?.45:.06;
  if(c.stunT>0){drive*=.4;c.stunT-=dt}
  if(c.landT>0)c.landT-=dt;
@@ -1072,46 +1089,53 @@ function spawnLocal(id,cls,pos,bot,life){const c=makeCar(id,cls,0,'local',pos);c
 function respawn(c){const id=c.id,cls=c.cls,life=c.life+1,bot=c.bot,mine=c===me;huskify(c);const nc=spawnLocal(id,cls,spawnPoint(),bot,life);nc.ghostT=3;setGhost(nc,true);if(mine){me=nc;flash()}}
 
 // ---------- item pickups ----------
-const ITEMS=['nitro','tow','chrome','spikes','hover','wreck','spring','ghost'];
-const ITEM_NAME={nitro:'NITRO',tow:'TOW HOOK',chrome:'CHROME',spikes:'SPIKES',hover:'HOVER',wreck:'WRECKING BALL',spring:'SPRING',ghost:'GHOST'};
-const ITEM_COL={nitro:'#4fa0ff',tow:'#c9c9c9',chrome:'#e8eaee',spikes:'#ff5a2a',hover:'#4ff0d0',wreck:'#ff9a3a',spring:'#b8ff3a',ghost:'#b9a8ff'};
+const ITEMS=['nitro','tow','chrome','spikes','hover','wreck','spring','ghost','fake'];
+const ITEM_NAME={nitro:'NITRO',tow:'TOW HOOK',chrome:'CHROME',spikes:'SPIKES',hover:'HOVER',wreck:'WRECKING BALL',fake:'FAKE CRATE',spring:'SPRING',ghost:'GHOST'};
+const ITEM_COL={nitro:'#4fa0ff',tow:'#c9c9c9',chrome:'#e8eaee',spikes:'#ff5a2a',hover:'#4ff0d0',wreck:'#ff9a3a',fake:'#ffd23a',spring:'#b8ff3a',ghost:'#b9a8ff'};
 const CHROME_MAT=mStd(0xeef1f5,{metalness:1,roughness:.04,flatShading:false});
-const CRATES=[],SPIKES=[],ROPES=[],PROJ=[],WBALLS=[];
+const CRATES=[],SPIKES=[],ROPES=[],PROJ=[],WBALLS=[],FAKES=[],TTOWS=[];
+// fake crate: looks like an item crate, blows up whoever drives into it
+let CRATE_GEO=null,CRATE_MAT=null;
+function addFake(id,x,z,owner){if(FAKES.some(f=>f.id===id))return;const m=new THREE.Mesh(CRATE_GEO,CRATE_MAT);m.castShadow=true;scene.add(m);FAKES.push({id,x,z,owner,t:0,m,ph:Math.random()*6})}
+function fakeBoom(f,c){puff(FIRE,f.x,1,f.z,0xff8a1a,1,1.2,.6,1.2,0,3,0);for(let k=0;k<10;k++)puff(PUFF,f.x+rand(-1,1),.6,f.z+rand(-1,1),0x2c2c2a,.7,.8,5,rand(1,2),rand(-2,2),rand(1,3),rand(-2,2));sparkBurst(f.x,1,f.z,0,0,24);sfxCrash(f.x,1,f.z,30);
+ if(c&&c.body&&c.net==='local'){hit(c,c.x,c.y-.3,c.z,0,1,0,22);IMP.x=rand(-1,1)*c.m;IMP.y=c.m*7.5;IMP.z=rand(-1,1)*c.m;c.body.applyImpulse(IMP,true);c.body.applyTorqueImpulse({x:rand(-1,1)*c.m*2.5,y:rand(-1,1)*c.m,z:rand(-1,1)*c.m*2.5},true)}}
+function fakesStep(dt){const t=performance.now()/1000;
+ for(let i=FAKES.length-1;i>=0;i--){const f=FAKES[i];f.t+=dt;f.m.position.set(f.x,.9+Math.sin(t*2+f.ph)*.15,f.z);f.m.rotation.set(.4,t*1.4+f.ph,.3);
+  let boom=null;if(R&&R.phase==='play')for(const c of cars){if(c.net!=='local'||!c.body||c.sink>0||c.ghostItem)continue;if(c.id===f.owner&&f.t<1.5)continue;if((c.x-f.x)**2+(c.z-f.z)**2<6.2&&c.y<3){boom=c;break}}
+  if(boom||f.t>40){if(boom){fakeBoom(f,boom);if(net)evQ.push(['fkx',f.id])}scene.remove(f.m);FAKES.splice(i,1)}}}
 // wrecking ball: a 0.75 m, 2.5 t iron ball with real physics; every client simulates it and it wrecks the cars it hits
 const WB_R=.75,WB_GEO=THREE.IcosahedronGeometry?new THREE.IcosahedronGeometry(WB_R,1):new THREE.BoxGeometry(1.5,1.5,1.5),WB_M=mStd(0x3a3d42,{metalness:.75,roughness:.45});
 function spawnWreck(owner,P,v){if(!physReady)return;const g=new THREE.Group(),m=new THREE.Mesh(WB_GEO,WB_M);m.castShadow=true;g.add(m);
  const ring=new THREE.Mesh(new THREE.TorusGeometry(.2,.06,5,10),WB_M);ring.position.y=WB_R+.12;g.add(ring);for(const a of[0,Math.PI/2]){const band=new THREE.Mesh(new THREE.TorusGeometry(WB_R+.01,.04,4,18),mStd(0x1f2125,{metalness:.6,roughness:.6}));band.rotation.y=a;g.add(band)}
  g.position.set(P[0],P[1],P[2]);scene.add(g);
  const b=world.createRigidBody(RAPIER.RigidBodyDesc.dynamic().setTranslation(P[0],P[1],P[2]).setLinvel(v[0],v[1],v[2]).setCcdEnabled(true).setLinearDamping(.05).setAngularDamping(.2));
- own(world.createCollider(RAPIER.ColliderDesc.ball(WB_R).setMass(2500).setFriction(.6).setRestitution(.25).setCollisionGroups(grp(G_GIB,F_ALL)),b),{kind:'gib'});
+ own(world.createCollider(RAPIER.ColliderDesc.ball(WB_R).setMass(2500).setFriction(.6).setRestitution(.25).setCollisionGroups(grp(G_GIB,F_ALL)),b),{kind:'wball'});
  WBALLS.push({owner,g,body:b,t:0,cd:new Map()})}
 function wreckStep(dt){const now=performance.now();
  for(let i=WBALLS.length-1;i>=0;i--){const w=WBALLS[i];w.t+=dt;const t=w.body.translation(),q=w.body.rotation(),v=w.body.linvel();w.g.position.set(t.x,t.y,t.z);w.g.quaternion.set(q.x,q.y,q.z,q.w);
-  for(const c of cars){if(!c.body||c.net!=='local'||c.ghostItem||c.sink>0)continue;const l=irot(c.q,t.x-c.x,t.y-c.y,t.z-c.z),ex=Math.max(0,Math.abs(l[0])-c.hw),ez=Math.max(0,Math.abs(l[2])-c.hl),ey=Math.max(0,Math.abs(l[1])-.8);
-   if(Math.hypot(ex,ey,ez)>WB_R+.08)continue;if((w.cd.get(c)||0)>now)continue;
-   const dx=c.x-t.x,dz=c.z-t.z,dl=Math.hypot(dx,dz)||1,rv=(v.x-c.vx)*dx/dl+(v.z-c.vz)*dz/dl;if(rv<2.5)continue;
-   w.cd.set(c,now+350);const px=t.x+dx/dl*WB_R,pz=t.z+dz/dl*WB_R;hit(c,px,t.y,pz,dx/dl,0,dz/dl,Math.min(40,rv*3.2));
-   IMP.x=dx/dl*rv*c.m*.35;IMP.y=rv*c.m*.08;IMP.z=dz/dl*rv*c.m*.35;PT.x=px;PT.y=t.y;PT.z=pz;c.body.applyImpulseAtPoint(IMP,PT,true);sparkBurst(px,t.y,pz,v.x*.3,v.z*.3,14)}
+  if(w.lastV!==undefined&&Math.abs(Math.hypot(v.x,v.y,v.z)-w.lastV)>3)sfxCrash(t.x,t.y,t.z,Math.abs(Math.hypot(v.x,v.y,v.z)-w.lastV)*2);w.lastV=Math.hypot(v.x,v.y,v.z);
   if(w.t>7||t.y<-15){dropBody(w);scene.remove(w.g);WBALLS.splice(i,1)}}}
 {const geo=new THREE.BoxGeometry(1.1,1.1,1.1),mat=new THREE.MeshStandardMaterial({color:0xffb52e,emissive:0x7a3a00,roughness:.4,metalness:.2}),pts=[];
  pts.push(...[[-75.2,-34.9],[0.8,-21.7],[96.8,-35],[97.3,-24],[86.7,30],[-1.4,31.1],[-96.1,21.9],[-155.9,14.6],[61.5,-14.9],[48.9,21.1],[-121,-9.2],[-23.4,-36.1],[-75.5,-25.2],[123.6,-30.3],[-95.8,36.1],[-134.9,30.5],[152.4,9.4],[-151.5,-12.4]]);
- for(const p of pts){const m=new THREE.Mesh(geo,mat);m.castShadow=true;scene.add(m);CRATES.push({x:p[0],z:p[1],m,off:0,ph:Math.random()*6})}}
-function giveItem(c){c.item=ITEMS[(Math.random()*ITEMS.length)|0];c.itemHold=0}
+ CRATE_GEO=geo;CRATE_MAT=mat;for(const p of pts){const m=new THREE.Mesh(geo,mat);m.castShadow=true;scene.add(m);CRATES.push({x:p[0],z:p[1],m,off:0,ph:Math.random()*6})}}
+function giveItem(c){c.item=ITEMS[(Math.random()*ITEMS.length)|0];c.itemHold=0;c.nitroFuel=NITRO_T;c.nitroHeld=false}
+const NITRO_T=2;
 function cratesStep(dt){const t=performance.now()/1000;
  for(const k of CRATES){if(k.off>0){k.off-=dt;k.m.visible=false;continue}k.m.visible=true;k.m.position.set(k.x,.9+Math.sin(t*2+k.ph)*.15,k.z);k.m.rotation.set(.4,t*1.4+k.ph,.3);
   if(!R||R.phase!=='play')continue;
   for(const c of cars){if(c.net==='husk'||!c.body||c.sink>0)continue;if(c.net==='local'?c.item:(c.fxBits&8))continue;if((c.x-k.x)**2+(c.z-k.z)**2<6.2&&c.y<3){k.off=10;if(c.net==='local'){giveItem(c);if(c===me)sfxTone(880,.12,.15,'square',1320)}puff(PUFF,k.x,1,k.z,0xffd23a,.6,.6,2.4,.5,0,1,0);break}}}}
-function itemPress(c){if(c.hoverT>0){c.hoverT=0;return}useItem(c)}
-function useItem(c){const it=c.item;if(!it||!c.body||c.wrecked)return;c.item=null;const f=rot(c.q,0,0,1),fl=Math.hypot(f[0],f[2])||1,fx=f[0]/fl,fz=f[2]/fl;
+function itemPress(c){if(c.item){useItem(c);return}if(c.hoverT>0)c.hoverT=0}
+function useItem(c,aim){const it=c.item;if(!it||!c.body||c.wrecked)return;c.item=null;const f=rot(c.q,0,0,1),fl=Math.hypot(f[0],f[2])||1,fx=f[0]/fl,fz=f[2]/fl;
  if(c===me)sfxTone(520,.15,.15,'square',780);
- if(it==='nitro')c.nitroT=2;
+ if(it==='nitro')c.nitroT=NITRO_T;
  else if(it==='ghost'){c.ghostT=3;setGhost(c,true);c.ghostItem=true;if(freeTow(c)&&net)evQ.push(['untow',c.id])}
  else if(it==='chrome'){c.chromeT=5;setMassF(c,5)}
  else if(it==='hover')c.hoverT=6;
- else if(it==='spring'){IMP.x=fx*c.m*8;IMP.y=c.m*7.5;IMP.z=fz*c.m*8;c.body.applyImpulse(IMP,true);sparkBurst(c.x,c.y-c.hh,c.z,0,0,10)}
+ else if(it==='spring'){c.springT=5;IMP.x=fx*c.m*8;IMP.y=c.m*7.5;IMP.z=fz*c.m*8;c.body.applyImpulse(IMP,true);sparkBurst(c.x,c.y-c.hh,c.z,0,0,10)}
  else if(it==='spikes'){const x=c.x-fx*(c.hl+1.3),z=c.z-fz*(c.hl+1.3);addSpikes(x,z,c.a,c.id);if(net)evQ.push(['spk',r2(x),r2(z),r2(c.a),c.id])}
- else if(it==='wreck'){const o=rot(c.q,0,.55,c.hl+1.1),v=[c.vx+fx*19,c.vy+3.5,c.vz+fz*19],P=[c.x+o[0],c.y+o[1],c.z+o[2]];spawnWreck(c.id,P,v);if(net)evQ.push(['wb',c.id,r2(P[0]),r2(P[1]),r2(P[2]),r2(v[0]),r2(v[1]),r2(v[2])]);sfxBurst(.7,300,80,.35)}
- else if(it==='tow'){const v=[c.vx+fx*42,c.vy+1.5,c.vz+fz*42],o=rot(c.q,0,.1,c.hl+.4);PROJ.push({type:it,owner:c,x:c.x+o[0],y:c.y+o[1],z:c.z+o[2],v,t:0,m:projMesh(it),ch:it==='tow'?mkChain():null})}}
+ else if(it==='fake'){const o=rot(c.q,0,0,-c.hl-1.6),id=rid();addFake(id,c.x+o[0],c.z+o[2],c.id);if(net)evQ.push(['fk',id,r2(c.x+o[0]),r2(c.z+o[2]),c.id])}
+ else if(it==='wreck'){const back=aim==='back',up=aim==='up',sg=back?-1:1,o=rot(c.q,0,.55,sg*(c.hl+1.1)),sp=up?15:25,v=[c.vx+fx*sp*sg,Math.max(0,c.vy)+(up?11:3.5),c.vz+fz*sp*sg],P=[c.x+o[0],c.y+o[1],c.z+o[2]];spawnWreck(c.id,P,v);if(net)evQ.push(['wb',c.id,r2(P[0]),r2(P[1]),r2(P[2]),r2(v[0]),r2(v[1]),r2(v[2])]);sfxBurst(.7,300,80,.35)}
+ else if(it==='tow'){const v=[c.vx+fx*42,c.vy+1.5,c.vz+fz*42],o=rot(c.q,0,.1,c.hl+.4);PROJ.push({type:it,owner:c,x:c.x+o[0],y:c.y+o[1],z:c.z+o[2],v,t:0,m:projMesh(it),ch:it==='tow'?mkChain():null});if(it==='tow'&&net)evQ.push(['tp',c.id,r2(c.x+o[0]),r2(c.y+o[1]),r2(c.z+o[2]),r2(v[0]),r2(v[1]),r2(v[2])])}}
 const CHAIN_GEO=new THREE.TorusGeometry(.065,.02,5,8),CHAIN_M=mStd(0x8f949b,{metalness:.85,roughness:.35}),_cd=new THREE.Object3D();
 function mkChain(){const m=new THREE.InstancedMesh(CHAIN_GEO,CHAIN_M,72);m.frustumCulled=false;m.count=0;m.castShadow=true;scene.add(m);return m}
 function setChain(m,ax,ay,az,bx,by,bz,sag){if(!m.setMatrixAt)return;const dx=bx-ax,dy=by-ay,dz=bz-az,L=Math.hypot(dx,dy,dz),n=Math.min(72,Math.max(2,Math.ceil(L/.13)));m.count=n;
@@ -1131,27 +1155,41 @@ function setChromeLook(c,on){if(!!c.chromeLook===on)return;c.chromeLook=on;c.g.t
 function addSpikes(x,z,a,owner){const g=new THREE.Group();g.position.set(x,.03,z);g.rotation.y=a;const bar=new THREE.Mesh(new THREE.BoxGeometry(4.2,.05,.45),mStd(0x2a2a2a,{roughness:.8}));g.add(bar);
  const sm=mStd(0xd0d4da,{metalness:.9,roughness:.25});for(let i=0;i<14;i++){const s=new THREE.Mesh(new THREE.ConeGeometry(.05,.18,4),sm);s.position.set(-2+i*4/13,.1,(i%2?.1:-.1));g.add(s)}scene.add(g);SPIKES.push({x,z,a,owner,t:0,g})}
 function onSpikes(px,pz){for(const s of SPIKES){const dx=px-s.x,dz=pz-s.z,c=Math.cos(s.a),sn=Math.sin(s.a),lx=dx*c-dz*sn,lz=dx*sn+dz*c;if(Math.abs(lx)<2.1&&Math.abs(lz)<.35)return s}return null}
-function attachRope(a,b,len,anA,anB,dur){if(!a.body||!b.body)return;const j=world.createImpulseJoint(RAPIER.JointData.rope(len,{x:anA[0],y:anA[1],z:anA[2]},{x:anB[0],y:anB[1],z:anB[2]}),a.body,b.body,true);j.setContactsEnabled(true);
- ROPES.push({a,b,j,t:dur,anA,anB,len,ch:mkChain()})}
-function dropRope(r){try{world.removeImpulseJoint(r.j,true)}catch(e){}if(r.ch)scene.remove(r.ch)}
+// tow chain: a soft, reeling constraint (no rigid joint), so a hook landed beyond the chain's length draws the cars together instead of snapping
+const TOW_LEN=10;
+function attachRope(a,b,len,anA,anB,dur){if(!a||!b)return;if(ROPES.some(r=>r.a===a&&r.b===b))return;ROPES.push({a,b,t:dur,anA,anB,len:Math.max(len,5),ch:mkChain()})}
+function dropRope(r){if(r.ch)scene.remove(r.ch)}
 function freeTow(c){let n=0;for(let i=ROPES.length-1;i>=0;i--){const r=ROPES[i];if(r.a===c||r.b===c){dropRope(r);ROPES.splice(i,1);n++}}return n}
 function itemsStep(dt){
- wreckStep(dt);
+ wreckStep(dt);fakesStep(dt);ttowStep(dt);
  for(let i=PROJ.length-1;i>=0;i--){const p=PROJ[i];p.t+=dt;p.v[1]-=GRAV*.25*dt;p.x+=p.v[0]*dt;p.y+=p.v[1]*dt;p.z+=p.v[2]*dt;let hit=null;
-  for(const c of cars){if(c===p.owner||!c.body||c.net==='husk'||c.ghost)continue;const l=irot(c.q,p.x-c.x,p.y-c.y,p.z-c.z);if(Math.abs(l[0])<c.hw+.3&&Math.abs(l[2])<c.hl+.3&&Math.abs(l[1])<1.2){hit=c;break}}
+  if(!p.vis)for(const c of cars){if(c===p.owner||!c.body||c.net==='husk'||c.ghost)continue;const l=irot(c.q,p.x-c.x,p.y-c.y,p.z-c.z);if(Math.abs(l[0])<c.hw+.3&&Math.abs(l[2])<c.hl+.3&&Math.abs(l[1])<1.2){hit=c;break}}
+  if(!hit&&p.type==='tow'&&physReady&&!p.vis){for(const[B,hl,hw,k] of[[TRK,HAULER.L/2+.2,HAULER.W/2+.2,0],[TRL,DECK_HL+.4,DECK_HW+.2,1]]){if(!B.q)continue;const l=irot(B.q,p.x-B.x,p.y-B.y,p.z-B.z);if(Math.abs(l[0])<hw&&Math.abs(l[2])<hl&&l[1]>-1.2&&l[1]<2){const o=p.owner;TTOWS.push({c:o,rig:B,an:l,t:8,ch:mkChain()});if(net)evQ.push(['tt',o.id,k,r2(l[0]),r2(l[1]),r2(l[2])]);sfxClank(p.x,p.y,p.z);scene.remove(p.m);if(p.ch)scene.remove(p.ch);PROJ.splice(i,1);p.done=true;break}}if(p.done)continue}
   if(hit){if(p.type==='paint'){if(hit.net==='remote'){if(net)evQ.push(['paint',hit.id])}else if(hit===me)splat();puff(PUFF,p.x,p.y,p.z,0xff4fd0,.9,.6,2.6,.8,0,.5,0)}
-   else{const o=p.owner,d=Math.hypot(hit.x-o.x,hit.z-o.z),len=clamp(d,5,14),la=[0,-.1,o.hl+.1],lb=irot(hit.q,p.x-hit.x,p.y-hit.y,p.z-hit.z);
-    attachRope(o,hit,len,la,lb,6);if(hit.net==='remote'&&net)evQ.push(['tow',hit.id,o.id,r2(len),r2(lb[0]),r2(lb[1]),r2(lb[2])]);sfxClank(p.x,p.y,p.z)}}
+   else{const o=p.owner,d=Math.hypot(hit.x-o.x,hit.z-o.z),la=[0,-.1,o.hl+.1],lb=irot(hit.q,p.x-hit.x,p.y-hit.y,p.z-hit.z);
+    attachRope(o,hit,Math.max(d,5),la,lb,6);if(net)evQ.push(['tow',hit.id,o.id,r2(Math.max(d,5)),r2(lb[0]),r2(lb[1]),r2(lb[2])]);sfxClank(p.x,p.y,p.z)}}
   p.m.position.set(p.x,p.y,p.z);if(p.type==='tow'){p.m.lookAt(p.x+p.v[0],p.y+p.v[1],p.z+p.v[2]);const o=p.owner;if(p.ch&&o&&o.q){const a=rot(o.q,0,-.1,o.hl+.1);setChain(p.ch,o.x+a[0],o.y+a[1],o.z+a[2],p.x,p.y,p.z,.15*Math.min(1,p.t*3))}}
   if(hit||p.t>.85||p.y<0||!cars.includes(p.owner)){scene.remove(p.m);if(p.ch)scene.remove(p.ch);PROJ.splice(i,1)}}
- for(let i=ROPES.length-1;i>=0;i--){const r=ROPES[i];r.t-=dt;if(r.t<=0||!r.a.body||!r.b.body||!cars.includes(r.a)||!cars.includes(r.b)){dropRope(r);ROPES.splice(i,1);continue}
-  if(r.ch){const pa=rot(r.a.q,...r.anA),pb=rot(r.b.q,...r.anB),ax=r.a.x+pa[0],ay=r.a.y+pa[1],az=r.a.z+pa[2],bx=r.b.x+pb[0],by=r.b.y+pb[1],bz=r.b.z+pb[2],d=Math.hypot(bx-ax,by-ay,bz-az);setChain(r.ch,ax,ay,az,bx,by,bz,.04+.5*Math.max(0,1-d/(r.len||d)))}}
+ for(let i=ROPES.length-1;i>=0;i--){const r=ROPES[i];r.t-=dt;if(r.t<=0||!cars.includes(r.a)||!cars.includes(r.b)||r.a.net==='husk'||r.b.net==='husk'){dropRope(r);ROPES.splice(i,1);continue}
+  r.len=Math.max(TOW_LEN,r.len-4*dt);
+  const pa=rot(r.a.q,...r.anA),pb=rot(r.b.q,...r.anB),ax=r.a.x+pa[0],ay=r.a.y+pa[1],az=r.a.z+pa[2],bx=r.b.x+pb[0],by=r.b.y+pb[1],bz=r.b.z+pb[2],dx=bx-ax,dy=by-ay,dz=bz-az,d=Math.hypot(dx,dy,dz)||1;
+  if(r.ch)setChain(r.ch,ax,ay,az,bx,by,bz,.04+.5*Math.max(0,1-d/r.len));
+  const st=d-r.len;if(st>0){const ux=dx/d,uy=dy/d,uz=dz/d,va=r.a.body?velAt(r.a.body,ax,ay,az):[r.a.vx,r.a.vy,r.a.vz],vb=r.b.body?velAt(r.b.body,bx,by,bz):[r.b.vx,r.b.vy,r.b.vz],
+    vr=(vb[0]-va[0])*ux+(vb[1]-va[1])*uy+(vb[2]-va[2])*uz,mu=r.a.m*r.b.m/(r.a.m+r.b.m),J=Math.min(mu*14,Math.max(0,mu*(st*6+vr*2.5)))*dt;
+   for(const[c,sg,px,py,pz]of[[r.a,1,ax,ay,az],[r.b,-1,bx,by,bz]]){if(c.net!=='local'||!c.body)continue;IMP.x=ux*J*sg;IMP.y=Math.max(-.2,uy)*J*sg*.5;IMP.z=uz*J*sg;PT.x=px;PT.y=py;PT.z=pz;c.body.applyImpulseAtPoint(IMP,PT,true)}}}
  for(let i=SPIKES.length-1;i>=0;i--){const s=SPIKES[i];s.t+=dt;if(s.t>12){scene.remove(s.g);SPIKES.splice(i,1)}}}
 // per local car, every physics step: effect timers and tyre damage from spikes
+function ttowStep(dt){for(let i=TTOWS.length-1;i>=0;i--){const T=TTOWS[i],c=T.c,B=T.rig;T.t-=dt;
+  if(T.t<=0||!cars.includes(c)||!c.body||c.net==='husk'||!B.q){scene.remove(T.ch);TTOWS.splice(i,1);continue}
+  const a=rot(c.q,0,-.1,c.hl+.1),ax=c.x+a[0],ay=c.y+a[1],az=c.z+a[2],w=rot(B.q,T.an[0],T.an[1],T.an[2]),bx=B.x+w[0],by=B.y+w[1],bz=B.z+w[2],dx=bx-ax,dz=bz-az,d=Math.hypot(dx,dz)||1;
+  setChain(T.ch,ax,ay,az,bx,by,bz,.06);
+  if(c.net==='local'){if(d<4.5){T.t=Math.min(T.t,.4);continue}const vr=(c.vx*dx+c.vz*dz)/d,bv=velAt(B.body,bx,by,bz),bvr=(bv[0]*dx+bv[2]*dz)/d,want=bvr+Math.min(16,d*.9),acc=clamp((want-vr)*3,-4,24);IMP.x=dx/d*acc*c.m*dt;IMP.y=0;IMP.z=dz/d*acc*c.m*dt;c.body.applyImpulseAtPoint(IMP,{x:ax,y:c.y,z:az},true)}}}
 function itemCar(c,dt){
+ if(c.springT>0)c.springT-=dt;
  if(c.chromeT>0){c.chromeT-=dt;if(c.chromeT<=0)setMassF(c,1)}
  if(c.popT>0){c.popT-=dt;if(c.V)c.V.grip=c.popT>0?.3:1}
  if(c.V&&!(c.popT>0)&&!(c.hoverT>0)&&!c.ghostItem)for(const w of c.V.wl){if(!w.contact||!w.on)continue;const p=rot(c.q,w.x,w.y-w.susp-w.R,w.z),s=onSpikes(c.x+p[0],c.z+p[2]);if(s&&(s.owner!==c.id||s.t>1.5)){c.popT=3;c.V.grip=.3;sparkBurst(c.x+p[0],.2,c.z+p[2],c.vx,c.vz,16);sfxBurst(.6*sndDist(c.x,c.y,c.z),4000,800,.4,'bandpass',2);break}}
+ if(c.nitroHeld&&c.item==='nitro'){c.nitroFuel=(c.nitroFuel==null?NITRO_T:c.nitroFuel)-dt;c.nitroT=Math.max(c.nitroT||0,dt*1.5);if(c.nitroFuel<=0){c.item=null;c.nitroHeld=false}}
  if(c.nitroT>0){c.nitroT-=dt;c.boosting=true;const f=rot(c.q,0,0,1),fl=Math.hypot(f[0],f[2])||1;if(Math.hypot(c.vx,c.vz)<BOOST_MAX+4){IMP.x=f[0]/fl*c.m*BOOST_A*1.6*dt;IMP.y=0;IMP.z=f[2]/fl*c.m*BOOST_A*1.6*dt;c.body.applyImpulse(IMP,true)}}}
 // hovercraft: wheels turned flat, the car floats ~1 m over whatever is below (ground, ramps, deck), steers by yaw, slides like a hovercraft
 function hoverStep(c,dt,ctl,live){const b=c.body,t=b.translation(),q=b.rotation(),lv=b.linvel(),av=b.angvel(),m=c.m;
@@ -1168,9 +1206,9 @@ function splat(){const e=$('paintov');e.innerHTML='';for(let i=0;i<7;i++){const 
  e.style.transition='none';e.style.opacity=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{e.style.transition='opacity 3s ease-in';e.style.opacity=0}));sfxBurst(.5,900,200,.4)}
 function botItem(c,dt){if(!c.item)return;c.itemHold=(c.itemHold||0)+dt;const it=c.item,dTr=Math.hypot(c.x-TRL.x,c.z-TRL.z);let use=c.itemHold>8;
  const ahead=cars.some(o=>{if(o===c||!o.body||o.net==='husk')return false;const l=irot(c.q,o.x-c.x,0,o.z-c.z);return l[2]>4&&l[2]<28&&Math.abs(l[0])<3}),behind=cars.some(o=>{if(o===c||!o.body||o.net==='husk')return false;const l=irot(c.q,o.x-c.x,0,o.z-c.z);return l[2]<-4&&l[2]>-18&&Math.abs(l[0])<3});
- if((it==='tow'||it==='wreck')&&ahead)use=true;if(it==='spikes'&&behind)use=true;if((it==='nitro'||it==='spring')&&dTr>30&&c.itemHold>1.5)use=true;if((it==='chrome'||it==='ghost'||it==='hover')&&dTr<14)use=true;
+ if((it==='tow'||it==='wreck')&&ahead)use=true;if((it==='spikes'||it==='fake')&&behind)use=true;if((it==='nitro'||it==='spring')&&dTr>30&&c.itemHold>1.5)use=true;if((it==='chrome'||it==='ghost'||it==='hover')&&dTr<14)use=true;
  if(use&&c.itemHold>.8)useItem(c)}
-function itemsClear(){for(const w of WBALLS){dropBody(w);scene.remove(w.g)}WBALLS.length=0;for(const r of ROPES)dropRope(r);ROPES.length=0;for(const s of SPIKES)scene.remove(s.g);SPIKES.length=0;for(const p of PROJ)scene.remove(p.m);PROJ.length=0;for(const k of CRATES)k.off=0}
+function itemsClear(){for(const f of FAKES)scene.remove(f.m);FAKES.length=0;for(const t of TTOWS)scene.remove(t.ch);TTOWS.length=0;for(const w of WBALLS){dropBody(w);scene.remove(w.g)}WBALLS.length=0;for(const r of ROPES)dropRope(r);ROPES.length=0;for(const s of SPIKES)scene.remove(s.g);SPIKES.length=0;for(const p of PROJ)scene.remove(p.m);PROJ.length=0;for(const k of CRATES)k.off=0}
 
 // ---------- visuals ----------
 function setPose(o,B,dy){o.position.set(B.x,B.y-(dy||0),B.z);if(B.q)o.quaternion.set(B.q.x,B.q.y,B.q.z,B.q.w)}
@@ -1225,19 +1263,19 @@ function updateTruckVis(dt){
 // ---------- camera ----------
 let camA=0,camSnap=true,orbit=0,lastRear=false;const camP=new THREE.Vector3(),camL=new THREE.Vector3();
 function updateCam(dt){
- const c=me;
+ const c=spec&&R&&R.phase==='play'?specTarget():me;
  if(garageOn&&show){const r=(camera.aspect<1?8.6:6.8)*GCAM.z,ph=$('garage').offsetHeight;if(ph!==garageVO){garageVO=ph;camera.setViewOffset(innerWidth,innerHeight+ph,0,ph,innerWidth,innerHeight);camera.updateProjectionMatrix()}const cp=Math.cos(GCAM.p);camera.position.set(SHOW_P.x+Math.cos(GCAM.a)*r*cp,.55+Math.sin(GCAM.p)*r,SHOW_P.z+Math.sin(GCAM.a)*r*cp);camera.lookAt(SHOW_P.x,.55,SHOW_P.z+0);sun.position.set(SHOW_P.x+20,40,SHOW_P.z+15);sun.target.position.set(SHOW_P.x,0,SHOW_P.z);return}
  if(INTRO.on&&!R){introCam(dt);return}
  if(!c||!R||R.phase!=='play'){orbit+=dt*.08;camera.position.set(Math.cos(orbit)*175,95,Math.sin(orbit)*120);camera.lookAt(0,0,0);sun.position.set(40,90,30);sun.target.position.set(0,0,0);return}
- const sp=Math.hypot(c.vx,c.vz);
+ const sp=Math.hypot(c.vx,c.vz),cyc=c.yc!=null?c.yc:c.y,big=c===TRK?6:0;
  if(camSnap){camA=c.a}else camA+=wrapPi(c.a-camA)*(1-Math.exp(-dt*(c.wrecked?1:3.2)));
  const pan=R.win?1:clamp(simT/2,0,1);
- if(pan<1){const e=pan*pan*(3-2*pan),tc=camPose(TRK.x,1,TRK.z,TRK.a,12),pc=camPose(c.x,c.yc,c.z,c.a,0),L=(a,b)=>a+(b-a)*e;
+ if(pan<1){const e=pan*pan*(3-2*pan),tc=camPose(TRK.x,1,TRK.z,TRK.a,12),pc=camPose(c.x,cyc,c.z,c.a,0),L=(a,b)=>a+(b-a)*e;
   camA=c.a;camP.set(L(tc[0],pc[0]),L(tc[1],pc[1]),L(tc[2],pc[2]));camL.set(L(tc[3],pc[3]),L(tc[4],pc[4]),L(tc[5],pc[5]));camSnap=false;
   camera.position.copy(camP);camera.lookAt(camL);const sx=L(TRK.x,c.x),sz=L(TRK.z,c.z);sun.position.set(sx+30,70,sz+20);sun.target.position.set(sx,0,sz);return}
- const rear=inp.rear||(padOn&&pad&&pad.rear);if(rear!==lastRear){lastRear=rear;camSnap=true}const ca=camA+(rear?Math.PI:0),fx=Math.sin(ca),fz=Math.cos(ca),back=(rear?7:9.5)+sp*.12,up=(rear?5:9)+sp*.09,ahead=4+sp*.25,k=camSnap?1:1-Math.exp(-dt*7);camSnap=false;
- camP.x+=(c.x-fx*back-camP.x)*k;camP.y+=(c.yc+up-camP.y)*k;camP.z+=(c.z-fz*back-camP.z)*k;
- camL.x+=(c.x+fx*ahead-camL.x)*k;camL.y+=(c.yc*.6-camL.y)*k;camL.z+=(c.z+fz*ahead-camL.z)*k;
+ const rear=inp.rear||(padOn&&pad&&pad.rear);if(rear!==lastRear){lastRear=rear;camSnap=true}const ca=camA+(rear?Math.PI:0),fx=Math.sin(ca),fz=Math.cos(ca),back=(rear?7:9.5)+sp*.12+big,up=(rear?5:9)+sp*.09+big*.5,ahead=4+sp*.25,k=camSnap?1:1-Math.exp(-dt*7);camSnap=false;
+ camP.x+=(c.x-fx*back-camP.x)*k;camP.y+=(cyc+up-camP.y)*k;camP.z+=(c.z-fz*back-camP.z)*k;
+ camL.x+=(c.x+fx*ahead-camL.x)*k;camL.y+=(cyc*.6-camL.y)*k;camL.z+=(c.z+fz*ahead-camL.z)*k;
  shake*=Math.exp(-dt*5);camera.position.set(camP.x+rand(-1,1)*shake,camP.y+rand(-1,1)*shake*.6,camP.z+rand(-1,1)*shake);camera.lookAt(camL);
  sun.position.set(c.x+30,70,c.z+20);sun.target.position.set(c.x,0,c.z)}
 function camPose(x,y,z,a,sp){const fx=Math.sin(a),fz=Math.cos(a),back=9.5+sp*.12,up=9+sp*.09,ahead=4+sp*.25;return[x-fx*back,y+up,z-fz*back,x+fx*ahead,y*.6,z+fz*ahead]}
@@ -1291,7 +1329,12 @@ addEventListener('resize',placeJoy);
  const up=e=>{if(e.pointerId!==jid)return;jid=null;inp.steer=0;jk.style.transform='translate(0,0)';if(joyMode!=='fixed')jb.style.display='none'};
  zone.addEventListener('pointerup',up);zone.addEventListener('pointercancel',up);
  {const g=$('gas');let last=0,pid=null;g.addEventListener('pointerdown',e=>{if(performance.now()-last<320)inp.boost=true;pid=e.pointerId});const up=e=>{if(e.pointerId!==pid)return;inp.boost=false;last=performance.now()};g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up)}
- $('item').addEventListener('pointerdown',e=>{e.preventDefault();if(me)itemPress(me)});
+ // wrecking ball: hold the item button, drag up to lob it, drag down to look back and fire it behind you; release fires
+var AIM={on:false,src:null,dir:null,y0:0,id:null};
+function aimEnd(){AIM.on=false;AIM.src=null;AIM.dir=null;inp.rear=false;$('item').classList.remove('aimup','aimback')}
+$('item').addEventListener('pointerdown',e=>{e.preventDefault();if(!me)return;if(me.item==='nitro'){me.nitroHeld=true;try{$('item').setPointerCapture(e.pointerId)}catch(_){}return}if(me.item==='wreck'){AIM.on=true;AIM.src='touch';AIM.dir=null;AIM.y0=e.clientY;AIM.id=e.pointerId;try{$('item').setPointerCapture(e.pointerId)}catch(_){}}else itemPress(me)});
+$('item').addEventListener('pointermove',e=>{if(!AIM.on||AIM.src!=='touch'||e.pointerId!==AIM.id)return;const dy=e.clientY-AIM.y0;AIM.dir=dy<-35?'up':dy>35?'back':null;inp.rear=AIM.dir==='back';$('item').classList.toggle('aimup',AIM.dir==='up');$('item').classList.toggle('aimback',AIM.dir==='back')});
+for(const ev of['pointerup','pointercancel'])$('item').addEventListener(ev,e=>{if(me)me.nitroHeld=false;if(!AIM.on||AIM.src!=='touch'||e.pointerId!==AIM.id)return;const d=AIM.dir;aimEnd();if(me&&ev==='pointerup')useItem(me,d)});$('land').addEventListener('pointerdown',e=>{e.preventDefault();if(me)me.hoverT=0});
  for(const[id,key]of[['gas','gas'],['rev','rev'],['hb','hb'],['rear','rear']]){const b=$(id);let pid=null;
   b.addEventListener('pointerdown',e=>{pid=e.pointerId;b.setPointerCapture(pid);inp[key]=true;b.classList.add('on')});
   const off=e=>{if(e.pointerId!==pid)return;pid=null;inp[key]=false;b.classList.remove('on')};
@@ -1314,7 +1357,10 @@ let padOff=false;function pollPad(){let gs=[];if(!padOff&&navigator.getGamepads)
  if(!padOn&&(st!==0||r2>.1||l2>.1||g.buttons.some(b=>b.pressed))){padOn=true;showTouch(false)}
  if(!padOn)return;
  pad={g,steer:clamp(st,-1,1),gas:r2>.06,ga:r2,rev:l2>.06,ra:l2,hb:bt(0).pressed,boost:bt(5).pressed||bt(1).pressed,rear:bt(4).pressed};
- {const sq=bt(2).pressed;if(sq&&!padSq&&me)itemPress(me);padSq=sq}
+ {const sq=bt(2).pressed,ay=g.axes[1]||0;
+  if(me&&me.item==='nitro')me.nitroHeld=sq;else if(sq&&!padSq&&me){if(me.item==='wreck')AIM.on=true;else itemPress(me)}
+  if(AIM.on&&AIM.src!=='touch'){AIM.src='pad';AIM.dir=ay<-.55?'up':ay>.55?'back':null;if(AIM.dir==='back')pad.rear=true;if(!sq){const d=AIM.dir;aimEnd();if(me)useItem(me,d)}}
+  padSq=sq}
  const tri=bt(3).pressed;if(tri&&!padTri&&me&&!me.respawnT&&R&&R.phase==='play'){me.respawnT=3;me.why='Respawning'}padTri=tri;
  if(shake>padShake+.08){const a=g.vibrationActuator;if(a&&a.playEffect)try{a.playEffect('dual-rumble',{duration:140,strongMagnitude:Math.min(1,shake),weakMagnitude:Math.min(1,shake*.7)})}catch(e){}}padShake=shake}
 addEventListener('touchstart',()=>{if(padOn){padOn=false;showTouch(true)}},{passive:true});
@@ -1326,6 +1372,23 @@ addEventListener('touchstart',()=>{if(padOn){padOn=false;showTouch(true)}},{pass
  all.forEach(i=>i.addEventListener('input',()=>{VOL[i.dataset.k]=+i.value;store('pursuit_vol',JSON.stringify(VOL));sndInit();
   if(SND.out){SND.out.gain.value=VOL.m;SND.loopG.gain.value=VOL.e;SND.fxG.gain.value=VOL.f}sync();if(i.dataset.k==='f')sfxTone(660,.12,.15,'square')}))}
 $('b-reset').addEventListener('click',()=>{if(me&&!me.respawnT){me.respawnT=3;me.why='Respawning'}});
+// ---------- spectator mode ----------
+function refreshOrder(){if(!R)return;for(const p of players)if(!p.spec&&!R.order.includes(p.id))R.order.push(p.id);R.order=R.order.filter(id=>players.some(p=>p.id===id&&!p.spec)||R.bots.some(b=>b.id===id));if(net&&typeof dirSync==='function')dirSync()}
+let spec=false,specIdx=0;
+function specList(){return[TRK].concat(cars.filter(c=>c.body&&c.net!=='husk'&&c.sink===0&&!c.intro))}
+function specTarget(){const L=specList();specIdx=((specIdx%L.length)+L.length)%L.length;return L[specIdx]}
+function specName(t){return t===TRK?'The truck':nameOf(t.id)}
+function specUI(){const inGame=R&&R.phase==='play'&&$('menu').style.display==='none';$('specbar').style.display=spec&&inGame?'flex':'none';
+ for(const id of['joy','gas','rev','hb','rear','boost','bmeter'])if(spec&&inGame)$(id).style.display='none';if(!spec&&inGame&&!padOn)for(const id of['joy','gas','rev','hb','rear'])$(id).style.display='block';
+ $('b-spec').classList.toggle('on',spec);$('b-spec2').textContent=spec?'Join as a player':'Spectate';if(spec&&inGame)$('specn').textContent=specName(specTarget())}
+function setSpec(on){if(on===spec)return;spec=on;camSnap=true;
+ if(R&&R.phase==='play'){if(on&&me){const c=me;freeTow(c);removeCar(c);puff(PUFF,c.x,c.y,c.z,0xcfd6dd,.6,.8,3,1,0,1,0);me=null}
+  else if(!on&&!me){me=spawnLocal(myId,myCls,spawnPoint(),false,0);me.ghostT=3;setGhost(me,true);flash()}}
+ const p=players.find(q=>q.id===myId);if(p)p.spec=on;if(ch&&chReady)ch.track({id:myId,name:myName,cls:myCls,joined:myJoined,spec});
+ if(isHost&&R)refreshOrder();specUI();if(typeof refreshRoom==='function')refreshRoom()}
+$('b-spec').addEventListener('click',()=>setSpec(!spec));$('b-spec2').addEventListener('click',()=>setSpec(!spec));
+$('spl').addEventListener('click',()=>{specIdx--;camSnap=true;specUI()});$('spr').addEventListener('click',()=>{specIdx++;camSnap=true;specUI()});
+$('spj').addEventListener('click',()=>setSpec(false));
 $('b-exit').addEventListener('click',()=>leave());
 
 // ---------- rooms / net ----------
@@ -1341,7 +1404,7 @@ function addBot(){if(!R||players.length+R.bots.length>=MAXP)return;const used=R.
 function clearWorld(){itemsClear();for(const c of cars.slice())removeCar(c);for(const g of gibs){dropBody(g);scene.remove(g.o);g.o.traverse(o=>{if(o.isMesh&&o.geometry)o.geometry.dispose()})}gibs.length=0;me=null}
 function startRound(){
  clearWorld();simT=truckTime();if(simT<HEAD+1||!RIGN)truckReset(Math.max(0,simT),true);const late=simT>HEAD;
- me=spawnLocal(myId,myCls,late?spawnPoint():gridPoint(gridSlot(myId)),false,0);
+ me=spec?null:spawnLocal(myId,myCls,late?spawnPoint():gridPoint(gridSlot(myId)),false,0);
  if(isHost)for(const b of R.bots)spawnLocal(b.id,b.cls,late?spawnPoint():gridPoint(gridSlot(b.id)),true,0);
  flash();dirSync()}
 function ensureBots(){if(!isHost||!R||R.phase!=='play')return;for(const b of R.bots){if(byId(b.id,'local'))continue;const old=byId(b.id,'remote');const life=old?old.life+1:0;if(old)huskify(old);const nc=spawnLocal(b.id,b.cls,spawnPoint(),true,life);nc.ghostT=3;setGhost(nc,true)}}
@@ -1370,9 +1433,13 @@ function onState(p){
  for(const e of p.ev||[]){
   if(e[0]==='spk'){if(e[4]!==myId)addSpikes(e[1],e[2],e[3],e[4]);continue}
   if(e[0]==='paint'){if(me&&e[1]===myId)splat();continue}
+  if(e[0]==='fk'){addFake(e[1],e[2],e[3],e[4]);continue}
+  if(e[0]==='fkx'){const f=FAKES.find(q=>q.id===e[1]);if(f){fakeBoom(f,null);scene.remove(f.m);FAKES.splice(FAKES.indexOf(f),1)}continue}
+  if(e[0]==='tt'){const o=byId(e[1],'remote');if(o)TTOWS.push({c:o,rig:e[2]?TRL:TRK,an:[e[3],e[4],e[5]],t:6,ch:mkChain(),vis:true});continue}
   if(e[0]==='wb'){if(e[1]!==myId)spawnWreck(e[1],[e[2],e[3],e[4]],[e[5],e[6],e[7]]);continue}
   if(e[0]==='untow'){for(const r of ROPES.slice())if(r.a.id===e[1]||r.b.id===e[1]){dropRope(r);ROPES.splice(ROPES.indexOf(r),1)}continue}
-  if(e[0]==='tow'){const t=byId(e[1],'local'),o=byId(e[2],'remote');if(t&&o)attachRope(o,t,e[3],[0,-.1,o.hl+.1],[e[4],e[5],e[6]],6);continue}
+  if(e[0]==='tow'){const t=byId(e[1],'local')||byId(e[1],'remote'),o=byId(e[2],'remote');if(t&&o){attachRope(o,t,e[3],[0,-.1,o.hl+.1],[e[4],e[5],e[6]],6);for(const q of PROJ.slice())if(q.vis&&q.owner===o){scene.remove(q.m);if(q.ch)scene.remove(q.ch);PROJ.splice(PROJ.indexOf(q),1)}}continue}
+  if(e[0]==='tp'){const o=byId(e[1],'remote');if(o)PROJ.push({type:'tow',owner:o,x:e[2],y:e[3],z:e[4],v:[e[5],e[6],e[7]],t:0,m:projMesh('tow'),ch:mkChain(),vis:true});continue}
   if(e[0]==='ri'){const t=byId(e[1],'local');if(t&&t.body){IMP.x=e[2]*.85;IMP.y=e[3]*.85;IMP.z=e[4]*.85;PT.x=e[5];PT.y=e[6];PT.z=e[7];t.body.applyImpulseAtPoint(IMP,PT,true)}continue}const c=byId(e[1],'remote');if(!c)continue;
   if(e[0]==='d'){dentLocal(c,e[2],e[3],e[4],e[5],e[6],e[7],e[8]);sfxCrash(c.x,c.y,c.z,e[8]/.05)}
   else if(e[0]==='u')unlatch(c,c.det.find(q=>q.key===e[2]));
@@ -1383,9 +1450,9 @@ function onPresence(){
  const nh=players.length?players[0].id:myId;if(nh!==hostId){hostId=nh;offS=[]}
  const was=isHost,off=clockOff;isHost=hostId===myId;
  if(isHost){if(!R)R=newRoom();else if(!was){R.t0-=off;if(R.win)R.win.at-=off;clockOff=0}
-  for(const p of players)if(!R.order.includes(p.id))R.order.push(p.id);
+  for(const p of players)if(!p.spec&&!R.order.includes(p.id))R.order.push(p.id);
   while(R.bots.length&&players.length+R.bots.length>MAXP){const b=R.bots.pop();R.order=R.order.filter(i=>i!==b.id)}
-  R.order=R.order.filter(id=>players.some(p=>p.id===id)||R.bots.some(b=>b.id===id));dirOpen('host');dirSync()}
+  R.order=R.order.filter(id=>players.some(p=>p.id===id&&!p.spec)||R.bots.some(b=>b.id===id));dirOpen('host');dirSync()}
  refreshRoom()}
 function netTick(dt){if(!net||!ch||!chReady)return;sendAcc+=dt;const play=R&&R.phase==='play',rate=play?1/12:1/3;if(sendAcc<rate)return;sendAcc=0;
  if(!play&&!isHost)return;
@@ -1425,17 +1492,17 @@ function connect(code){
  ch.on('presence',{event:'sync'},onPresence);
  let ok=false;const to=setTimeout(()=>{if(!ok){leave();$('m-err').textContent="Couldn't reach the lobby. Check your connection or try Play vs AI."}},9000);
  net=true;isHost=false;R=null;hostId=null;
- ch.subscribe(s=>{if(s==='SUBSCRIBED'){ok=true;chReady=true;clearTimeout(to);$('m-err').textContent='';myJoined=Date.now();ch.track({id:myId,name:myName,cls:myCls,joined:myJoined});showRoom()}else if((s==='CHANNEL_ERROR'||s==='TIMED_OUT')&&!ok){clearTimeout(to);leave();$('m-err').textContent="Couldn't reach the lobby. Try Play vs AI."}})}
+ ch.subscribe(s=>{if(s==='SUBSCRIBED'){ok=true;chReady=true;clearTimeout(to);$('m-err').textContent='';myJoined=Date.now();ch.track({id:myId,name:myName,cls:myCls,joined:myJoined,spec});showRoom()}else if((s==='CHANNEL_ERROR'||s==='TIMED_OUT')&&!ok){clearTimeout(to);leave();$('m-err').textContent="Couldn't reach the lobby. Try Play vs AI."}})}
 function screen(id){for(const e of document.querySelectorAll('#menu .scr'))e.style.display=e.id===id?'block':'none';$('menu').classList.toggle('main',id==='m-main');$('menu').style.display='';bakeSoon();if(id!=='m-play')$('m-err').textContent='';if(id==='m-find'){$('fl').innerHTML='';$('f-st').textContent='Looking for lobbies…';dirOpen('find');renderFind()}}
 function leave(){chReady=false;RIGN=null;truckReset(0,false);dirClose();if(ch&&sb){try{sb.removeChannel(ch)}catch(e){}}ch=null;net=false;isHost=true;R=null;players=[];evQ=[];clearWorld();exitGame();screen('m-play')}
 function showRoom(){screen('m-room');refreshRoom()}
 function refreshRoom(){if($('m-room').style.display==='none')return;const ul=$('rl');ul.innerHTML='';
  const h=players.find(p=>p.id===hostId);$('r-title').innerHTML='';const tb=document.createElement('b');tb.textContent=(h?h.name:'')+"'s lobby";const tn=document.createElement('div');tn.style.cssText='font-size:13px;opacity:.75;margin-top:2px';tn.textContent=(players.length+(R?R.bots.length:0))+'/'+MAXP+' players';$('r-title').append(tb,tn);
- for(const p of players){const li=document.createElement('li');li.textContent=p.name+' · '+MODELS[parseCfg(p.cls).m].name+(p.id===hostId?' · host':'')+(p.id===myId?' (you)':'');ul.appendChild(li)}
+ for(const p of players){const li=document.createElement('li');li.textContent=p.name+' · '+(p.spec?'spectating':MODELS[parseCfg(p.cls).m].name)+(p.id===hostId?' · host':'')+(p.id===myId?' (you)':'');ul.appendChild(li)}
  for(const b of(R?R.bots:[])){const li=document.createElement('li');li.textContent=b.name+' · '+MODELS[parseCfg(b.cls).m].name+' · bot';ul.appendChild(li)}
  $('rh').style.display=isHost?'flex':'none';$('b-start').style.display=isHost?'block':'none';$('r-wait').style.display=isHost?'none':'block'}
-function enterGame(){endIntro();$('vbox').style.display='none';$('menu').style.display='none';setTimeout(placeJoy,0);for(const id of['hud','joy'])$(id).style.display='block';$('tr').style.display='flex';for(const id of['gas','rev','hb','rear'])$(id).style.display='block';if(padOn)showTouch(false)}
-function exitGame(){$('vbox').style.display='flex';for(const id of['hud','joy','tr','gas','rev','hb','boost','park','item','rear'])$(id).style.display='none';$('msg').textContent='';$('sub').textContent='';clearWorld()}
+function enterGame(){endIntro();$('vbox').style.display='none';$('menu').style.display='none';setTimeout(placeJoy,0);for(const id of['hud','joy'])$(id).style.display='block';$('tr').style.display='flex';for(const id of['gas','rev','hb','rear'])$(id).style.display='block';if(padOn)showTouch(false);specUI()}
+function exitGame(){$('vbox').style.display='flex';for(const id of['hud','joy','tr','gas','rev','hb','boost','park','item','rear','land'])$(id).style.display='none';$('msg').textContent='';$('sub').textContent='';clearWorld()}
 function startPractice(){if(!physReady){$('m-err').textContent='Loading physics…';return}dirClose();net=false;isHost=true;hostId=myId;players=[{id:myId,name:myName,cls:myCls,joined:0}];R=newRoom();for(let i=0;i<3;i++)addBot();R.phase='play';R.n=1;R.t0=Date.now()+300;enterGame();startRound()}
 function hostStart(){if(!isHost||!R)return;R.phase='play';R.n++;R.t0=Date.now()+300;R.scores={};R.win=null;enterGame();startRound();dirSync()}
 {$('nm').value=myName;$('nm').addEventListener('input',()=>{myName=$('nm').value.trim().slice(0,12)||'Driver';store('pursuit_name',myName)});
@@ -1467,7 +1534,7 @@ function garageUI(){const cfg=parseCfg(myCls),hx=n=>'#'+n.toString(16).padStart(
  const seg=(id,names,key)=>{const el=$(id);el.innerHTML='';names.forEach((n,i)=>{const b=document.createElement('button');b.textContent=n;if(cfg[key]===i)b.classList.add('sel');b.onclick=()=>setCfg(key,i);el.appendChild(b)})};
  const sw=(id,cols,key)=>{const el=$(id);el.innerHTML='';cols.forEach((c,i)=>{const b=document.createElement('button');b.style.background=hx(c);if(cfg[key]===i)b.classList.add('sel');b.setAttribute('aria-label','color '+i);b.onclick=()=>setCfg(key,i);el.appendChild(b)})};
  seg('g-m',MODELS.map(m=>m.name),'m');$('g-m').classList.add('gseg6');{const H=MODELS[cfg.m].h,rows=[['Accel',(1400*7*H.acc/H.mass)/9],['Top speed',(H.top-24)/7],['Steering',(H.steer/H.vs/H.yaw)/1.7],['Grip',(H.mu-.95)/.36],['Weight',H.mass/2200]];$('g-st').innerHTML=rows.map(r=>'<span>'+r[0]+'</span><i style="width:'+Math.round(clamp(r[1],.08,1)*100)+'%"></i>').join('');$('g-note').textContent=MODELS[cfg.m].note+(H.rwd?'':' · FWD')}sw('g-p',PAINTS,'p');seg('g-s',STRIPES,'s');sw('g-sc',PAINTS,'sc');$('g-sc').style.display=cfg.s?'flex':'none';seg('g-r',RIMS,'r');sw('g-rc',RIMCOLS,'rc');seg('g-w',SPOILERS,'w');sw('g-ac',ACCENTS,'ac');seg('g-ho',ORNAMENTS,'ho');seg('g-rf',ROOFS,'rf');seg('g-fr',FRONTS,'fr');seg('g-wt',TINTS,'wt')}
-function setCfg(k,v){const c=parseCfg(myCls);c[k]=v;myCls=cfgStr(c);store('pursuit_car',myCls);garageUI();buildShow();if(ch&&chReady)ch.track({id:myId,name:myName,cls:myCls,joined:myJoined})}
+function setCfg(k,v){const c=parseCfg(myCls);c[k]=v;myCls=cfgStr(c);store('pursuit_car',myCls);garageUI();buildShow();if(ch&&chReady)ch.track({id:myId,name:myName,cls:myCls,joined:myJoined,spec})}
 function openGarage(){endIntro();$('vbox').style.display='none';garageOn=true;$('menu').style.display='none';$('garage').style.display='block';garageUI();buildShow()}
 function closeGarage(){$('vbox').style.display='flex';garageOn=false;garageVO=-1;camera.clearViewOffset();camera.updateProjectionMatrix();$('garage').style.display='none';$('menu').style.display='';bakeSoon();if(show){scene.remove(show.g);show=null}}
 $('b-garage').addEventListener('click',openGarage);$('g-done').addEventListener('click',closeGarage);
@@ -1484,7 +1551,9 @@ function hud(dt){
  $('msg').textContent=msg;$('sub').textContent=sub;
  if(c){const b=$('boost'),pc=Math.round(c.boost*100);if(b._p!==pc){b._p=pc;b.style.background='conic-gradient(rgba(255,170,40,.75) '+pc+'%, rgba(10,15,20,.4) 0)';b.classList.toggle('empty',c.boost<.05)}}
  {const bm=$('bmeter');if(c&&c.boosting)c.bSeen=performance.now();const vis=c&&R&&R.phase==='play'&&c.sink===0;if(vis){_a.set(c.x-c.s*2.6,Math.max(0,c.y-c.hh),c.z-c.co*2.6).project(camera);bm.style.transform='translate('+((_a.x+1)/2*innerWidth)+'px,'+((1-_a.y)/2*innerHeight)+'px)';bm.firstChild.style.width=Math.round(c.boost*100)+'%';bm.classList.toggle('on',!!c.boosting)}bm.style.opacity=vis?1:0}
- {const b=$('item'),hov=c&&c.hoverT>0,it=hov?'land':c&&c.item,key=it+'|'+padOn;if(b._it!==key){b._it=key;b.style.display=it?'block':'none';if(it){b.innerHTML=(hov?'LAND<br><b id="hovt"></b>':ITEM_NAME[it])+(padOn?'<small style="display:block;font-size:9px;opacity:.85;margin-top:2px">&#9633; Square</small>':'');const col=hov?ITEM_COL.hover:ITEM_COL[it];b.style.borderColor=col;b.style.color=col}}if(hov){const t=$('hovt');if(t)t.textContent=c.hoverT.toFixed(1)+'s'}}
+ {const b=$('item'),hov=c&&c.hoverT>0&&R&&R.phase==='play',it=c&&c.item,key=it+'|'+padOn;if(b._it!==key){b._it=key;b.style.display=it?'block':'none';if(it){b.innerHTML=ITEM_NAME[it]+(it==='nitro'?'<i class="nf"><i id="nfl"></i></i>':'')+(padOn?'<small style="display:block;font-size:9px;opacity:.85;margin-top:2px">&#9633; Square</small>':'');b.style.borderColor=ITEM_COL[it];b.style.color=ITEM_COL[it]}}
+  if(it==='nitro'){const nf=$('nfl');if(nf)nf.style.width=Math.max(0,100*(c.nitroFuel==null?1:c.nitroFuel/NITRO_T))+'%'}
+  const L=$('land');L.style.display=hov?'block':'none';if(hov)$('hovt').textContent=c.hoverT.toFixed(1)+'s'+(padOn&&!it?' \u25A1':'')}
  let lead=null;for(const o of cars)if(o.net!=='husk'&&o.parkT>0&&(!lead||o.parkT>lead.parkT))lead=o;
  const pk=lead?lead.parkT/PARK_T:0,mine=lead===c;if(c&&c.parkBlocked&&c.parkT>0)$('sub').textContent='Another car is on the trailer: parking paused';
  $('park').style.display=pk>0&&!R.win?'block':'none';$('pk').style.width=Math.min(100,pk*100)+'%';$('pk').style.background=mine?'#35c46a':'#e8412f';

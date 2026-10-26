@@ -60,6 +60,7 @@ canvas{display:block}
 #bmeter{position:fixed;left:0;top:0;width:100px;height:10px;margin:14px 0 0 -50px;border-radius:5px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.7);opacity:0;pointer-events:none;transition:opacity .25s;z-index:3}#bmeter i{display:block;height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#1f5bff,#4fa0ff)}
 #bmeter.on i{background:linear-gradient(90deg,#4fa0ff,#bfe2ff)}
 #item{right:24px;bottom:132px;width:74px;height:74px;font-size:11px;font-weight:800;border-width:3px}
+#item.aimleft{transform:translateX(-14px);box-shadow:-10px 0 0 -4px currentColor}#item.aimright{transform:translateX(14px);box-shadow:10px 0 0 -4px currentColor}
 #item.aimup{transform:translateY(-14px);box-shadow:0 -10px 0 -4px currentColor}#item.aimback{transform:translateY(14px);box-shadow:0 10px 0 -4px currentColor}
 #specbar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);display:none;align-items:center;gap:8px;background:rgba(10,15,20,.7);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:6px 8px;z-index:3}
 #specbar button{height:44px;min-width:44px;border-radius:9px;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.08);color:#fff;font-size:16px;font-weight:800}#specbar div{min-width:130px;text-align:center}#specbar small{display:block;font-size:10px;letter-spacing:.2em;opacity:.7}#specbar b{font-size:16px}#specbar #spj{background:#ef6a1b;border-color:#ffd27a;padding:0 14px}
@@ -191,13 +192,31 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 @media (orientation:landscape) and (max-height:560px){#set .card{padding:10px 16px}#set .card h1{margin-bottom:8px;font-size:22px}#set .card label{margin:6px 0 2px!important}#set .card .big.red{height:46px;margin-top:10px}#joyh{display:none}#set input.vs{height:32px;background-position:0 25px}}
 
 @media (orientation:portrait){#menu:not(.main){grid-template-rows:auto auto 1fr;align-items:start}#menu:not(.main) #logo{margin:46px 0 14px}#menu:not(.main) #logo .small{font-size:clamp(14px,4.4vw,32px)}#menu:not(.main) #logo .big{font-size:clamp(34px,14vw,96px)}#menu:not(.main)>.card{margin-bottom:56px}}
+
+#b-edit{position:absolute;top:6px;right:6px;width:28px;height:28px;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;color:rgba(40,25,10,.28)!important;z-index:2}
+#editor{position:fixed;inset:0;display:none;z-index:9;background:#5f8f3a;touch-action:none}
+#edc{position:absolute;inset:0;width:100%;height:100%;display:block}
+#edtop,#edtools{position:absolute;left:8px;right:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;pointer-events:none}
+#edtop{top:8px}#edtools{bottom:8px}
+#edtop>*,#edtools>*{pointer-events:auto}
+#editor button{height:38px;padding:0 12px;border-radius:8px;border:2px solid #0d0d0d;background:linear-gradient(#3a3a3a,#1e1e1e);color:#ddd;font-weight:800;font-size:13px}
+#editor button.sel{background:linear-gradient(#ff8a2a,#c9530f);color:#fff}#editor button.go{background:radial-gradient(circle at 40% 30%,#ff6a50,#b8231a 60%,#6d120c);color:#fff}
+#edname{height:38px;border-radius:8px;border:2px solid #3a2a1c;background:#fffaf0;color:#1a1a1a;font-weight:700;padding:0 10px;width:150px}
+#edtools label{background:rgba(10,8,6,.6);color:#eee;border-radius:8px;padding:4px 8px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px}#edtools input[type=range]{width:90px}
+#edhelp,#edmsg{position:absolute;left:50%;transform:translateX(-50%);max-width:92%;text-align:center;font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 3px #000;pointer-events:none}
+#edhelp{top:56px}#edmsg{top:78px;color:#ffd760}
+#edio{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,6,4,.55);padding:16px}
+#edio textarea{width:100%;font:12px/1.3 monospace;border:2px solid #3a2a1c;border-radius:4px;background:#fffaf0;color:#1a1a1a;padding:6px;resize:none}
+#testbar{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:7;display:flex;gap:8px;align-items:center;background:rgba(10,8,6,.75);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:5px 8px;color:#ffd760;font-size:13px}
+#testbar button{height:32px;border-radius:7px;border:1px solid #888;background:#222;color:#fff;font-weight:700;padding:0 10px}
+@media (orientation:portrait){#edtop button{padding:0 8px;font-size:12px}#edname{width:110px}}
 </style></head>
 <body>
 <div id="hud"><div id="spd">0 mph</div><div class="bar"><i id="hp"></i></div><div id="sc"></div></div>
 <div id="tr"><button class="ib fsb" id="b-fs" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><button class="ib" id="b-set" aria-label="Settings">&#x2699;</button><button class="ib" id="b-spec" aria-label="Spectate"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="ib" id="b-reset" aria-label="Respawn">&#x21bb;</button><button class="ib" id="b-exit" aria-label="Leave">&#x2715;</button></div>
 <div id="ver"></div>
 <div id="vbox"><span id="vlab"></span><button id="b-log">CHANGELOG</button></div>
-<div id="logp"><div class="card"><h1>Changelog</h1><div class="sheet" id="logs"><div id="logl"></div></div><button id="b-logx" class="big red">Close</button></div></div>
+<div id="logp"><div class="card" style="position:relative"><button id="b-edit" aria-label="Map maker"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg></button><h1>Changelog</h1><div class="sheet" id="logs"><div id="logl"></div></div><button id="b-logx" class="big red">Close</button></div></div>
 <div id="specbar"><button id="spl" aria-label="Previous">&#9664;</button><div><small>SPECTATING</small><b id="specn"></b></div><button id="spr" aria-label="Next">&#9654;</button><button id="spj">Play</button></div><div id="msg"></div><div id="sub"></div>
 <div id="park"><span id="pkl">Parking</span><div class="bar"><i id="pk"></i></div></div>
 <div id="joy"><div id="jb"><div id="jk"></div></div><div id="jh">Steer</div></div>
@@ -231,6 +250,13 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
   <label>Effects (crashes, boost, beeps)</label><input type="range" class="vs" data-k="f" min="0" max="1" step="0.01"></div>
   <button id="b-setx" class="big red">Done</button>
 </div></div>
+<div id="editor"><canvas id="edc"></canvas>
+ <div id="edtop"><input id="edname" maxlength="32" placeholder="Map name"><button id="edfit">Fit</button><button id="edexp">Export</button><button id="edimp">Import</button><button id="edreset">Reset</button><button id="edtest" class="go">Test drive</button><button id="edexit">Close</button></div>
+ <div id="edtools"><button data-t="track">Track</button><button data-t="cut">Shortcuts</button><button data-t="crate">Crates</button><button data-t="start">Start</button><button id="ednew">New shortcut</button><button id="eddel">Delete</button>
+  <label>Track width <input type="range" id="edw" min="6" max="16" step=".5"> <span id="edwv"></span></label><label>Shortcut width <input type="range" id="edcw" min="5" max="14" step=".5"> <span id="edcwv"></span></label></div>
+ <div id="edhelp"></div><div id="edmsg"></div>
+ <div id="edio"><div class="card"><h1>Map code</h1><div class="sheet"><p id="edioh" class="hint"></p><textarea id="edtxt" rows="6"></textarea><div class="row"><button id="edcopy">Copy</button><button id="eddl">Download file</button><button id="edload">Load this map</button></div><label class="hint">Open a file <input type="file" id="edfile" accept=".json,application/json"></label></div><button id="edioclose" class="big red">Close</button></div></div>
+</div>
 <div id="fade"></div>
 <div id="menu" class="main"><div id="mdim"></div><div id="logo" aria-label="King Of the Hill - Derby"><div class="chain l"></div><div class="chain r"></div><div class="plate"></div><div class="lrow small"><span style="--i:0">K</span><span style="--i:1">I</span><span style="--i:2">N</span><span style="--i:3">G</span><span style="--i:4">&nbsp;</span><span style="--i:5">O</span><span style="--i:6">F</span><span style="--i:7">&nbsp;</span><span style="--i:8">T</span><span style="--i:9">H</span><span style="--i:10">E</span><span style="--i:11">&nbsp;</span><span style="--i:12">H</span><span style="--i:13">I</span><span style="--i:14">L</span><span style="--i:15">L</span></div><div class="lrow big"><span style="--i:16">D</span><span style="--i:17">E</span><span style="--i:18">R</span><span style="--i:19">B</span><span style="--i:20">Y</span></div></div><div id="mvol" title="Volume"><svg width="18" height="18" viewBox="0 0 20 20" fill="#fff"><path d="M3 7h3l5-4v14l-5-4H3z"/><path d="M14 6.5a5 5 0 0 1 0 7M16.5 4a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg><input type="range" class="vs" data-k="m" min="0" max="1" step="0.01" aria-label="Volume"></div><button class="ib fsb" id="b-fs2" aria-label="Full screen"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M2 7V2h5M13 2h5v5M18 13v5h-5M7 18H2v-5"/></svg></button><div class="card">
   <div id="m-main" class="scr">
@@ -265,8 +291,8 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-const CHANGELOG=[["v0.25",["Reverse and hand brake can no longer be used together; the hand brake wins"]],["v0.24",["Leftover tow chains are cleaned up, no more floating chains"]],["v0.23",["New item: Fake Crate. Drops a decoy item crate behind you that blows up whoever drives into it","Tow Hook can hook the truck or trailer: it reels you in without hurting the rig","Tow chain is now a soft chain that draws cars together when the hook lands beyond its length, and every player sees the hook and chain","Respawning releases your tow chain from whoever you hooked","Wrecking Ball: hold the item button and drag up to lob it, drag down to look back and fire it behind you (controller: hold Square and push the left stick); it flies further and only does impact damage","Nitro: hold the item button to burn it; let go to save the rest","Chrome makes your car immune to damage","Pick up items while hovering; LAND is its own button","Spring: no damage from the landing","Spectator mode: the eye button in game, or Spectate in the lobby; arrows switch who you watch","Ramps have side rails, so hitting a ramp from the side shoves the trailer","Stronger reverse","Cars losing panels show a dark inside instead of see-through holes"]],["v0.22",["Paint Bomb replaced by the Wrecking Ball: fires a heavy iron ball at medium speed that bounces with real physics, knocks cars around and wrecks them"]],["v0.21",["Ghost item: your car turns see-through, breaks any tow chain on you, and no item can hit you (respawn protection still blinks)","Tow hook flies as a hook trailing a real chain, and the tow line is a chain","Controller players see their current item on screen"]],["v0.20",["Accessories rebuilt to fit each car: wings and lip spoilers follow the trunk or roof, roof racks and light bars sit on the roofline, bull bars follow the front bumper, ornaments sit on the hood","Racing stripes stay on the top surfaces","Exhaust tips on every new car; boost flames come out of them","Wider shortcut lanes and the truck carries more speed into them"]],["v0.19",["New car models (Quaternius): Coupe, Sedan, Hatch, Wagon and Muscle, with breakable hoods, trunks, doors, bumpers, mirrors and wheels","Garage camera: drag to rotate, pinch or mouse wheel to zoom (no more auto-spin)","Hover: gas now accelerates properly, the item button shows LAND with time left, tap it to come down early","Truck carries more speed into the shortcut corners"]],["v0.18",["New item crate layout: 18 crates","License plates centered","Title sign shrinks above the pegboard on portrait sub-menus","Fixed a crash when the browser blocks game controller access"]],["v0.17",["Pegboard style for Play, Find Match, lobby, Settings, Garage and Changelog panels","Portrait menus stack top to bottom","Screen shake no longer shows the undimmed scene at the edges","Menu art no longer gets recolored by phone dark modes (Samsung Internet)","Cars already holding an item drive straight through crates"]],["v0.16",["Main menu matched to the junkyard design: darker dusk scene, bigger title sign and plates","Title sign starts swinging smoothly instead of jumping"]],["v0.15",["New junkyard main menu: rusted steel title sign on chains, license-plate buttons, dusk floodlights","Title sign drops in and the screen shakes on the intro crash","Version and changelog moved to a bumper sticker"]],["v0.14",["Item crates on the track. Drive through one to get a random item, tap the item button to use it (controller: Square): Nitro, Tow Hook, Chrome, Spikes, Hover, Paint Bomb, Spring Jump, Ghost","REAR button to look behind (controller: L1); hand brake is Cross only on controller now","Truck reads bends properly and takes the shortcut curves and oval turns much slower"]],["v0.13",["Truck drives smoother: gentler steering, lane changes and brake checks, so cars on the trailer slide much less","Truck slows down earlier for corners and comes out of them slower","Tires hold the deck better before sliding","Parking progress bar moved to the top of the screen"]],["v0.12",["Removed invisible debris that piled up on the track every round","Boost bar always shown under your car","Parking also pauses when another car has 2 tires on the ramps or trailer","Big parking progress bar: green when it's you, red when it's another player","Ramming another player on the trailer now actually pushes them"]],["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
-const VERSION='v0.25';
+const CHANGELOG=[["v0.26",["Map maker: tap the wrench in the corner of the changelog. Shape the track, add shortcuts and crates, set the start, test drive it, and export a map code or file to share","New item: Punch. A punching bag on a spring shoots out of your side and slams the car next to you (drag left/right on the item button, or Square + left stick)","Fake Crate now sticks to the front of the car that grabs it and flashes orange for a second before it blows","Backward Wrecking Ball keeps its full speed; the ball launches lower","Ramp side rails removed; cars now catch the side of a ramp instead of driving up it","Spectator mode fixed for online games"]],["v0.25",["Reverse and hand brake can no longer be used together; the hand brake wins"]],["v0.24",["Leftover tow chains are cleaned up, no more floating chains"]],["v0.23",["New item: Fake Crate. Drops a decoy item crate behind you that blows up whoever drives into it","Tow Hook can hook the truck or trailer: it reels you in without hurting the rig","Tow chain is now a soft chain that draws cars together when the hook lands beyond its length, and every player sees the hook and chain","Respawning releases your tow chain from whoever you hooked","Wrecking Ball: hold the item button and drag up to lob it, drag down to look back and fire it behind you (controller: hold Square and push the left stick); it flies further and only does impact damage","Nitro: hold the item button to burn it; let go to save the rest","Chrome makes your car immune to damage","Pick up items while hovering; LAND is its own button","Spring: no damage from the landing","Spectator mode: the eye button in game, or Spectate in the lobby; arrows switch who you watch","Ramps have side rails, so hitting a ramp from the side shoves the trailer","Stronger reverse","Cars losing panels show a dark inside instead of see-through holes"]],["v0.22",["Paint Bomb replaced by the Wrecking Ball: fires a heavy iron ball at medium speed that bounces with real physics, knocks cars around and wrecks them"]],["v0.21",["Ghost item: your car turns see-through, breaks any tow chain on you, and no item can hit you (respawn protection still blinks)","Tow hook flies as a hook trailing a real chain, and the tow line is a chain","Controller players see their current item on screen"]],["v0.20",["Accessories rebuilt to fit each car: wings and lip spoilers follow the trunk or roof, roof racks and light bars sit on the roofline, bull bars follow the front bumper, ornaments sit on the hood","Racing stripes stay on the top surfaces","Exhaust tips on every new car; boost flames come out of them","Wider shortcut lanes and the truck carries more speed into them"]],["v0.19",["New car models (Quaternius): Coupe, Sedan, Hatch, Wagon and Muscle, with breakable hoods, trunks, doors, bumpers, mirrors and wheels","Garage camera: drag to rotate, pinch or mouse wheel to zoom (no more auto-spin)","Hover: gas now accelerates properly, the item button shows LAND with time left, tap it to come down early","Truck carries more speed into the shortcut corners"]],["v0.18",["New item crate layout: 18 crates","License plates centered","Title sign shrinks above the pegboard on portrait sub-menus","Fixed a crash when the browser blocks game controller access"]],["v0.17",["Pegboard style for Play, Find Match, lobby, Settings, Garage and Changelog panels","Portrait menus stack top to bottom","Screen shake no longer shows the undimmed scene at the edges","Menu art no longer gets recolored by phone dark modes (Samsung Internet)","Cars already holding an item drive straight through crates"]],["v0.16",["Main menu matched to the junkyard design: darker dusk scene, bigger title sign and plates","Title sign starts swinging smoothly instead of jumping"]],["v0.15",["New junkyard main menu: rusted steel title sign on chains, license-plate buttons, dusk floodlights","Title sign drops in and the screen shakes on the intro crash","Version and changelog moved to a bumper sticker"]],["v0.14",["Item crates on the track. Drive through one to get a random item, tap the item button to use it (controller: Square): Nitro, Tow Hook, Chrome, Spikes, Hover, Paint Bomb, Spring Jump, Ghost","REAR button to look behind (controller: L1); hand brake is Cross only on controller now","Truck reads bends properly and takes the shortcut curves and oval turns much slower"]],["v0.13",["Truck drives smoother: gentler steering, lane changes and brake checks, so cars on the trailer slide much less","Truck slows down earlier for corners and comes out of them slower","Tires hold the deck better before sliding","Parking progress bar moved to the top of the screen"]],["v0.12",["Removed invisible debris that piled up on the track every round","Boost bar always shown under your car","Parking also pauses when another car has 2 tires on the ramps or trailer","Big parking progress bar: green when it's you, red when it's another player","Ramming another player on the trailer now actually pushes them"]],["v0.11", ["Doors fit between the wheel arches and sit flush with the body", "Muscle car is now rear-wheel drive", "Boost: double-tap GAS and hold (controller: R1 or Circle); a boost bar shows over your car", "You ride along on the ramps instead of rolling back down", "Easier to drive onto a ramp from the side", "Parking pauses while two cars are on the trailer", "A totalled car on the trailer can still finish parking", "Hand brake now brakes, and on the trailer locks your drive wheels", "Samsung dark mode no longer dulls the colors"]], ["v0.10", ["Pickup truck (RWD) is back", "Every model handles differently: Coupe steers sharpest, Muscle accelerates fastest, Sedan is fastest, Hatch grips most, Wagon is the all-rounder, Pickup is heaviest", "Real hood ornaments: Longhorns, Eagle, Skull, Flames", "Chrome paint, brighter colors and real reflections", "Wheel-arch flares and side skirts", "New menu with a crash intro and animated title", "Volume sliders (master, engines, effects)", "Trailer feels the weight of cars on it, including other players' cars; heavier trailer"]], ["v0.09", ["Holding boost no longer gives endless boost", "Ramps can't fold under the trailer anymore", "3 seconds of no-collide after respawning", "Straightaways 75% longer"]], ["v0.08", ["Truck totalled or stuck for 10 s ends the round", "Starting grid rotates each round", "Sounds: engines, truck, skids, crashes, boost, countdown", "More customization: accent color, hood ornament, roof, bull bar, window tint", "Parking now takes 5 seconds", "Add to Home screen for true full screen"]], ["v0.07", ["Boost also gives full gas"]], ["v0.06", ["Boost strength halved"]], ["v0.05", ["Boost", "Stronger, heavier truck that pushes through cars", "Trailer can't flip completely over", "Fixed dark lines on the dirt"]], ["v0.04", ["Full screen button"]], ["v0.03", ["Fixed lobbies not showing up", "PS5 controller support"]], ["v0.02", ["Lobby browser: Find Match, Host Match, Play vs AI", "Renamed to King Of the Hill - Derby"]], ["v0.01", ["First release"]]];
+const VERSION='v0.26';
 const SB_URL='https://ucdwqexhkglvhilurqti.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjZHdxZXhoa2dsdmhpbHVycXRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MzI5NTcsImV4cCI6MjEwNzMwODk1N30.U1uK7IGF6Oc9-0ETMEq-qn-fer3GI1W_DeQkN2htpLM';
 const $=id=>document.getElementById(id);
@@ -347,7 +373,6 @@ const plateTex=canvasTex(64,64,(x,w,h)=>{x.fillStyle='#8d9196';x.fillRect(0,0,w,
 
 // ---------- track ----------
 //GEO-START
-const HW=10,CUT_HW=8.5;
 function crPt(p0,p1,p2,p3,t){const td=(a,b)=>Math.pow(Math.hypot(b[0]-a[0],b[1]-a[1]),.5)||1e-4,t1=td(p0,p1),t2=t1+td(p1,p2),t3=t2+td(p2,p3),u=t1+(t2-t1)*t,L=(a,b,ta,tb)=>[(tb-u)/(tb-ta)*a[0]+(u-ta)/(tb-ta)*b[0],(tb-u)/(tb-ta)*a[1]+(u-ta)/(tb-ta)*b[1]];
  const A1=L(p0,p1,0,t1),A2=L(p1,p2,t1,t2),A3=L(p2,p3,t2,t3),B1=L(A1,A2,0,t2),B2=L(A2,A3,t1,t3);return L(B1,B2,t1,t2)}
 function spline(P,closed,step){const n=P.length,raw=[],a=closed?0:1,b=closed?n:n-2;
@@ -359,29 +384,45 @@ function spline(P,closed,step){const n=P.length,raw=[],a=closed?0:1,b=closed?n:n
  const nx=new Float32Array(cnt),nz=new Float32Array(cnt);
  for(let i=0;i<cnt;i++){const a2=closed?(i-1+cnt)%cnt:Math.max(0,i-1),b2=closed?(i+1)%cnt:Math.min(cnt-1,i+1);const tx=x[b2]-x[a2],tz=z[b2]-z[a2],l=Math.hypot(tx,tz)||1;nx[i]=tz/l;nz[i]=-tx/l}
  return{x,z,nx,nz,n:cnt,L,ds:L/N,closed}}
-const MAIN_CTRL=[[-131.25,-30],[-105.0,-30],[-78.75,-30],[-52.5,-30],[-26.25,-30],[0.0,-30],[26.25,-30],[52.5,-30],[78.75,-30],[105.0,-30],[131.25,-30],[146.25,-26],[157.25,-15],[161.25,0],[157.25,15],[146.25,26],[131.25,30],[105.0,30],[78.75,30],[52.5,30],[26.25,30],[0.0,30],[-26.25,30],[-52.5,30],[-78.75,30],[-105.0,30],[-131.25,30],[-146.25,26],[-157.25,15],[-161.25,0],[-157.25,-15],[-146.25,-26]];
+// ---------- level data (the map editor writes this format) ----------
+const SX=1.75;
+const DEFAULT_LEVEL={v:1,name:'Dirt Oval',hw:10,cutHw:8.5,start:20,
+ main:[[-131.25,-30],[-105.0,-30],[-78.75,-30],[-52.5,-30],[-26.25,-30],[0.0,-30],[26.25,-30],[52.5,-30],[78.75,-30],[105.0,-30],[131.25,-30],[146.25,-26],[157.25,-15],[161.25,0],[157.25,15],[146.25,26],[131.25,30],[105.0,30],[78.75,30],[52.5,30],[26.25,30],[0.0,30],[-26.25,30],[-52.5,30],[-78.75,30],[-105.0,30],[-131.25,30],[-146.25,26],[-157.25,15],[-161.25,0],[-157.25,-15],[-146.25,-26]],
+ cuts:[{a:[7.5*SX,-30],b:[7.5*SX,30],pts:[[25*SX,-27],[37.5*SX,-18],[45*SX,-5],[45*SX,8],[37.5*SX,20],[22.5*SX,28]]},
+       {a:[-62.5*SX,30],b:[-15*SX,-30],pts:[[-77.5*SX,26],[-82.5*SX,14],[-77.5*SX,2],[-62.5*SX,-8],[-45*SX,-16],[-30*SX,-24]]}],
+ crates:[[-75.2,-34.9],[0.8,-21.7],[96.8,-35],[97.3,-24],[86.7,30],[-1.4,31.1],[-96.1,21.9],[-155.9,14.6],[61.5,-14.9],[48.9,21.1],[-121,-9.2],[-23.4,-36.1],[-75.5,-25.2],[123.6,-30.3],[-95.8,36.1],[-134.9,30.5],[152.4,9.4],[-151.5,-12.4]]};
+function levelOk(L){return L&&Array.isArray(L.main)&&L.main.length>=5&&L.main.every(p=>Array.isArray(p)&&isFinite(p[0])&&isFinite(p[1]))&&(!L.cuts||(L.cuts.length<=4&&L.cuts.every(c=>c.a&&c.b&&Array.isArray(c.pts))))}
+const TEST_LEVEL=(()=>{try{const t=sessionStorage.getItem('kohd_test');if(!t)return null;const L=JSON.parse(t);return levelOk(L)?L:null}catch(e){return null}})();
+const LEVEL=TEST_LEVEL||DEFAULT_LEVEL;
+const HW=LEVEL.hw||10,CUT_HW=LEVEL.cutHw||8.5;
+const MAIN_CTRL=LEVEL.main;
 const MAIN=spline(MAIN_CTRL,true,.36),TN=MAIN.n,TL=MAIN.L,DS=MAIN.ds,TX=MAIN.x,TZ=MAIN.z,NX=MAIN.nx,NZ=MAIN.nz;
 function trackPos(s){s=((s%TL)+TL)%TL;const f=s/DS,i=Math.floor(f)%TN,k=f-Math.floor(f),j=(i+1)%TN;return[TX[i]+(TX[j]-TX[i])*k,TZ[i]+(TZ[j]-TZ[i])*k,i]}
 function trackHeading(s){const a=trackPos(s-2),b=trackPos(s+2);return Math.atan2(b[0]-a[0],b[1]-a[1])}
 function nearestIdx(x,z,h){let best=1e18,bi=h;for(let k=-40;k<=40;k++){const i=(h+k+TN)%TN,dx=x-TX[i],dz=z-TZ[i],d=dx*dx+dz*dz;if(d<best){best=d;bi=i}}return bi}
 function fullNearest(x,z){let best=1e18,bi=0;for(let i=0;i<TN;i++){const dx=x-TX[i],dz=z-TZ[i],d=dx*dx+dz*dz;if(d<best){best=d;bi=i}}return bi}
 const mainS=(x,z)=>fullNearest(x,z)*DS,mp=s=>{const p=trackPos(s);return[p[0],p[1]]};
-const SX=1.75,sRC0=mainS(7.5*SX,-30),sRC1=mainS(7.5*SX,30),sLC0=mainS(-62.5*SX,30),sLC1=mainS(-15*SX,-30);
-const CUT_R=spline([mp(sRC0-8),mp(sRC0),mp(sRC0+5),[25*SX,-27],[37.5*SX,-18],[45*SX,-5],[45*SX,8],[37.5*SX,20],[22.5*SX,28],mp(sRC1-5),mp(sRC1),mp(sRC1+8)],false,.36);
-const CUT_L=spline([mp(sLC0-8),mp(sLC0),mp(sLC0+5),[-77.5*SX,26],[-82.5*SX,14],[-77.5*SX,2],[-62.5*SX,-8],[-45*SX,-16],[-30*SX,-24],mp(sLC1-5),mp(sLC1),mp(sLC1+8)],false,.36);
-const LANES=[Object.assign(MAIN,{hw:HW}),Object.assign(CUT_R,{hw:CUT_HW}),Object.assign(CUT_L,{hw:CUT_HW})];
-const SEGS=[{main:true,s0:sLC1,s1:sRC0,next:[1,4]},{main:true,s0:sRC0,s1:sRC1,next:[2]},{main:true,s0:sRC1,s1:sLC0,next:[3,5]},{main:true,s0:sLC0,s1:sLC1,next:[0]},{lane:CUT_R,next:[2]},{lane:CUT_L,next:[0]}];
-SEGS.forEach(g=>{g.len=g.main?((g.s1-g.s0)%TL+TL)%TL:g.lane.L});
-const SEG_PREV=[3,0,1,2,0,2];
+// shortcuts leave the main loop at a and rejoin it at b, travelling forward
+const CUTS=(LEVEL.cuts||[]).map(c=>{const s0=mainS(c.a[0],c.a[1]),s1=mainS(c.b[0],c.b[1]);return{s0,s1,lane:spline([mp(s0-8),mp(s0),mp(s0+5),...c.pts,mp(s1-5),mp(s1),mp(s1+8)],false,.36)}});
+const LANES=[Object.assign(MAIN,{hw:HW})].concat(CUTS.map(c=>Object.assign(c.lane,{hw:CUT_HW})));
+// route graph: the main loop split at every junction, plus one segment per shortcut
+const SEGS=[],SEG_PREV=[];
+{const J=[...new Set(CUTS.flatMap(c=>[c.s0,c.s1]).map(v=>Math.round(v*100)/100))].sort((a,b)=>a-b);if(!J.length)J.push(0);
+ const nm=J.length,mainOf=sv=>{sv=((sv%TL)+TL)%TL;for(let k=0;k<nm;k++){const a=J[k],b=J[(k+1)%nm],u=((sv-a)%TL+TL)%TL,len=nm===1?TL:((b-a)%TL+TL)%TL;if(u<len)return k}return 0};
+ for(let k=0;k<nm;k++)SEGS.push({main:true,s0:J[k],s1:J[(k+1)%nm],next:[(k+1)%nm]});
+ CUTS.forEach((c,ci)=>{const id=nm+ci,from=mainOf(c.s0-.05),to=mainOf(c.s1+.05);SEGS.push({lane:c.lane,next:[to]});SEGS[from].next.push(id)});
+ SEGS.forEach((g,k)=>{SEG_PREV[k]=k<nm?(k-1+nm)%nm:mainOf(CUTS[k-nm].s0-.05)});
+ SEGS.forEach(g=>{g.len=g.main?(nm===1?TL:((g.s1-g.s0)%TL+TL)%TL):g.lane.L})}
+const N_MAIN=SEGS.filter(g=>g.main).length;
 function segPos(k,u){const g=SEGS[k];if(g.main){const s=g.s0+u,p=trackPos(s),i=p[2];return[p[0],p[1],trackHeading(s),NX[i],NZ[i]]}
  const L=g.lane,f=Math.min(Math.max(u/L.ds,0),L.n-1.001),i=Math.floor(f),k2=f-i,j=i+1,a=Math.max(0,i-2),b=Math.min(L.n-1,i+3);
  return[L.x[i]+(L.x[j]-L.x[i])*k2,L.z[i]+(L.z[j]-L.z[i])*k2,Math.atan2(L.x[b]-L.x[a],L.z[b]-L.z[a]),L.nx[i],L.nz[i]]}
 function routePos(k,u,prev,next){const g=SEGS[k];if(u<0&&prev>=0)return segPos(prev,Math.max(0,SEGS[prev].len+u));if(u>g.len&&next>=0)return segPos(next,Math.min(SEGS[next].len,u-g.len));return segPos(k,Math.min(Math.max(u,0),g.len))}
-function locateMain(s){s=((s%TL)+TL)%TL;for(let k=0;k<4;k++){const g=SEGS[k],u=((s-g.s0)%TL+TL)%TL;if(u<=g.len)return[k,u]}return[0,0]}
-const SDF={x0:-186,z0:-76,res:1,w:373,h:153};SDF.d=new Float32Array(SDF.w*SDF.h);
-{const B=4,BW=120,bk=[];LANES.forEach((L,li)=>{for(let i=0;i<L.n;i+=3){const k=(Math.floor(L.x[i]/B)+60)+(Math.floor(L.z[i]/B)+60)*BW;(bk[k]||(bk[k]=[])).push(li,i)}});
+function locateMain(s){s=((s%TL)+TL)%TL;for(let k=0;k<N_MAIN;k++){const g=SEGS[k],u=((s-g.s0)%TL+TL)%TL;if(u<=g.len)return[k,u]}return[0,0]}
+const SDF=(()=>{let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const L of LANES)for(let i=0;i<L.n;i++){x0=Math.min(x0,L.x[i]);x1=Math.max(x1,L.x[i]);z0=Math.min(z0,L.z[i]);z1=Math.max(z1,L.z[i])}const m=48;x0=Math.floor(x0-m);z0=Math.floor(z0-m);return{x0,z0,res:1,w:Math.ceil(x1+m-x0),h:Math.ceil(z1+m-z0)}})();SDF.d=new Float32Array(SDF.w*SDF.h);
+{const B=4,BW=400,bk=[];LANES.forEach((L,li)=>{for(let i=0;i<L.n;i+=3){const k=(Math.floor(L.x[i]/B)+200)+(Math.floor(L.z[i]/B)+200)*BW;(bk[k]||(bk[k]=[])).push(li,i)}});
  const best=new Float64Array(LANES.length);
- for(let gz=0;gz<SDF.h;gz++)for(let gx=0;gx<SDF.w;gx++){const x=SDF.x0+gx*SDF.res,z=SDF.z0+gz*SDF.res,bx=Math.floor(x/B)+60,bz=Math.floor(z/B)+60;best.fill(1e9);
+ for(let gz=0;gz<SDF.h;gz++)for(let gx=0;gx<SDF.w;gx++){const x=SDF.x0+gx*SDF.res,z=SDF.z0+gz*SDF.res,bx=Math.floor(x/B)+200,bz=Math.floor(z/B)+200;best.fill(1e9);
   for(let dz=-4;dz<=4;dz++)for(let dx=-4;dx<=4;dx++){const a=bk[(bx+dx)+(bz+dz)*BW];if(!a)continue;for(let q=0;q<a.length;q+=2){const L=LANES[a[q]],i=a[q+1],ex=x-L.x[i],ez=z-L.z[i],d=ex*ex+ez*ez;if(d<best[a[q]])best[a[q]]=d}}
   let sd=-4;for(let l=0;l<LANES.length;l++)if(best[l]<1e9)sd=Math.max(sd,LANES[l].hw-Math.sqrt(best[l]));SDF.d[gz*SDF.w+gx]=Math.min(4,Math.max(-4,sd))}}
 function sdAt(x,z){const fx=(x-SDF.x0)/SDF.res,fz=(z-SDF.z0)/SDF.res;if(fx<0||fz<0||fx>=SDF.w-1||fz>=SDF.h-1)return-4;const ix=fx|0,iz=fz|0,tx=fx-ix,tz=fz-iz,W=SDF.w,d=SDF.d,i=iz*W+ix;return(d[i]*(1-tx)+d[i+1]*tx)*(1-tz)+(d[i+W]*(1-tx)+d[i+W+1]*tx)*tz}
@@ -714,7 +755,7 @@ function wheelsStep(V,dt,drive,brake,delta,onLand,reactOnly){
  V.vlo=V.nc?svl/V.nc:0}
 
 // ---------- truck + trailer ----------
-const S0=20,HITCH=3.4,TONGUE=6.36,DECK_HL=3,DECK_HW=1.15,DH=.8,RL=4.0,RAMP_IN=.34,RAMP_OUT=1.14;
+const S0=LEVEL.start!=null?LEVEL.start:20,HITCH=3.4,TONGUE=6.36,DECK_HL=3,DECK_HW=1.15,DH=.8,RL=4.0,RAMP_IN=.34,RAMP_OUT=1.14;
 const RANG=Math.atan2(DH-.05,RL),RLEN=Math.hypot(RL,DH-.05),TRK_Y=1.11,HITCH_Y=-.56,TONGUE_Y=.55;
 const truckV=buildVehicle(HAULER,0xe9e5dc,true);
 truckV.det.forEach(p=>p.off=true);
@@ -732,7 +773,6 @@ const trailerG=new THREE.Group();scene.add(trailerG);const RAMPV=[];const traile
  add(new THREE.BoxGeometry(.2,.16,.3),steel,0,TONGUE_Y,TONGUE);
  for(const sx of[1,-1]){const g=new THREE.Group();scene.add(g);const pv=new THREE.Group();pv.rotation.x=-RANG;g.add(pv);
   const r=new THREE.Mesh(new THREE.BoxGeometry(RAMP_OUT-RAMP_IN,.06,RLEN),plate);r.position.z=-RLEN/2;r.castShadow=true;r.receiveShadow=true;pv.add(r);
-  const rail=new THREE.Mesh(new THREE.BoxGeometry(.07,.32,RLEN),mStd(0x3a3d42,{metalness:.6,roughness:.5}));rail.position.set(sx*((RAMP_OUT-RAMP_IN)/2-.03),.16,-RLEN/2);rail.castShadow=true;pv.add(rail);
   RAMPV.push({g,sx,body:null,col:null,od:0,nb:1,loaded:false,dustT:0,hinge:[sx*(RAMP_IN+RAMP_OUT)/2,DH-.02,-DECK_HL]})}}
 
 const TRK={x:0,y:TRK_Y,z:0,a:0,vx:0,vz:0,w:0,s:0,co:1,body:null,V:null},TRL={x:0,y:0,z:0,a:0,vx:0,vz:0,w:0,s:0,co:1,body:null,V:null};
@@ -776,8 +816,7 @@ function buildPhysics(){
  // ramps: hinged plates resting on the ground
  for(const R0 of RAMPV){const h=R0.hinge,rb=world.createRigidBody(B.dynamic().setTranslation(h[0],h[1],h[2]-HITCH-TONGUE).setAdditionalMassProperties(70,{x:0,y:-RLEN/2*Math.sin(RANG),z:-RLEN/2*Math.cos(RANG)},{x:95,y:95,z:4},{x:0,y:0,z:0,w:1}).setCanSleep(false).setAngularDamping(1.5).setCcdEnabled(true));
   R0.body=rb;R0.col=own(world.createCollider(cdesc(C.cuboid((RAMP_OUT-RAMP_IN)/2,.03,RLEN/2).setTranslation(0,-RLEN/2*Math.sin(RANG),-RLEN/2*Math.cos(RANG)).setRotation({x:Math.sin(-RANG/2),y:0,z:0,w:Math.cos(-RANG/2)}),G_RAMP,F_ALL&~G_RIG,.35,0),rb),{kind:'ramp',ramp:R0});
-  {/* outer side rail: a car hitting the ramp from the side shoves the ramp (and through its hinge the trailer) instead of driving up it */const q={x:Math.sin(-RANG/2),y:0,z:0,w:Math.cos(-RANG/2)},hw=(RAMP_OUT-RAMP_IN)/2,o=rot(q,R0.sx*(hw-.03),.16,0);
-   own(world.createCollider(cdesc(C.cuboid(.035,.16,RLEN/2).setTranslation(o[0],-RLEN/2*Math.sin(RANG)+o[1],-RLEN/2*Math.cos(RANG)+o[2]).setRotation(q),G_RAMP,F_ALL&~G_RIG,.35,0),rb),{kind:'rail',ramp:R0})}
+
   const jd=RAPIER.JointData.revolute({x:h[0],y:h[1],z:h[2]},{x:0,y:0,z:0},{x:1,y:0,z:0});const j=world.createImpulseJoint(jd,lb,rb,true);j.setLimits(RAMP_LIM[0],RAMP_LIM[1]);j.setContactsEnabled(false);R0.joint=j}
  physReady=true}
 
@@ -897,7 +936,7 @@ function carBody(c,pos,remote){
  const b=world.createRigidBody(bd),add=d=>{const cl=own(world.createCollider(d,b),{kind:'car',c});return cl};c.body=b;
  c.cols=[add(cdesc(C.convexHull(CHASSIS_HULL),G_CAR,F_ALL,.45,.12)),add(cdesc(C.cuboid(.76,.24,1.0).setTranslation(0,.34,-.35),G_CAR,F_ALL,.45,.12))];
  const fd=S.rwd?0:1;c.V={body:b,m:S.mass,kn:40,cn:2.6,mu:S.mu,vsat:S.vsat,nd:2,wl:mkWheels([[wx,wz,1,fd],[-wx,wz,1,fd],[wx,-wz,0,1-fd],[-wx,-wz,0,1-fd]],S.R,.3,40,yW)};
- for(const w of c.V.wl){w.ball=add(cdesc(C.ball(.25).setTranslation(Math.sign(w.x)*(Math.abs(w.x)-.06),yW+.08,w.z),G_WB,F_ALL&~G_GROUND,0,0));c.cols.push(w.ball)}}
+ for(const w of c.V.wl){w.ball=add(cdesc(C.ball(.25).setTranslation(Math.sign(w.x)*(Math.abs(w.x)-.06),yW+.01,w.z),G_WB,F_ALL&~G_GROUND,0,0));c.cols.push(w.ball)}}
 // just-respawned cars pass through other cars (and their debris) for 3 s; they still hit walls, the truck and the trailer
 const RAYF_GHOST=grp(0xffff,G_GROUND|G_WALL|G_RIG|G_RAMP);
 function setGhost(c,on){if(!c.body||c.ghost===on)return;c.ghost=on;const solid=F_ALL&~(G_CAR|G_WB|G_GIB|G_GHOST);
@@ -1090,21 +1129,45 @@ function spawnLocal(id,cls,pos,bot,life){const c=makeCar(id,cls,0,'local',pos);c
 function respawn(c){const id=c.id,cls=c.cls,life=c.life+1,bot=c.bot,mine=c===me;huskify(c);const nc=spawnLocal(id,cls,spawnPoint(),bot,life);nc.ghostT=3;setGhost(nc,true);if(mine){me=nc;flash()}}
 
 // ---------- item pickups ----------
-const ITEMS=['nitro','tow','chrome','spikes','hover','wreck','spring','ghost','fake'];
-const ITEM_NAME={nitro:'NITRO',tow:'TOW HOOK',chrome:'CHROME',spikes:'SPIKES',hover:'HOVER',wreck:'WRECKING BALL',fake:'FAKE CRATE',spring:'SPRING',ghost:'GHOST'};
-const ITEM_COL={nitro:'#4fa0ff',tow:'#c9c9c9',chrome:'#e8eaee',spikes:'#ff5a2a',hover:'#4ff0d0',wreck:'#ff9a3a',fake:'#ffd23a',spring:'#b8ff3a',ghost:'#b9a8ff'};
+const ITEMS=['nitro','tow','chrome','spikes','hover','wreck','spring','ghost','fake','punch'];
+const ITEM_NAME={nitro:'NITRO',tow:'TOW HOOK',chrome:'CHROME',spikes:'SPIKES',hover:'HOVER',wreck:'WRECKING BALL',fake:'FAKE CRATE',punch:'PUNCH',spring:'SPRING',ghost:'GHOST'};
+const ITEM_COL={nitro:'#4fa0ff',tow:'#c9c9c9',chrome:'#e8eaee',spikes:'#ff5a2a',hover:'#4ff0d0',wreck:'#ff9a3a',fake:'#ffd23a',punch:'#ff3b3b',spring:'#b8ff3a',ghost:'#b9a8ff'};
 const CHROME_MAT=mStd(0xeef1f5,{metalness:1,roughness:.04,flatShading:false});
-const CRATES=[],SPIKES=[],ROPES=[],PROJ=[],WBALLS=[],FAKES=[],TTOWS=[];
+const CRATES=[],SPIKES=[],ROPES=[],PROJ=[],WBALLS=[],FAKES=[],TTOWS=[],PUNCHES=[];
+// punch: a punching bag on a spring shoots out of the car's side; it hits the other car hard and pushes nothing back on yours
+const PUNCH_REACH=3.3,PUNCH_BAG_M=mStd(0xd6302a,{roughness:.55,metalness:.05}),PUNCH_SPR_M=mStd(0xc9ccd2,{metalness:.85,roughness:.3});
+function punchMesh(){const g=new THREE.Group(),coil=[];for(let i=0;i<=48;i++){const t=i/48,a=t*Math.PI*2*7;coil.push(new THREE.Vector3(t,Math.cos(a)*.11,Math.sin(a)*.11))}
+ const spr=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(coil),96,.022,5,false),PUNCH_SPR_M);spr.castShadow=true;g.add(spr);
+ const bag=new THREE.Group(),body=new THREE.Mesh(new THREE.CylinderGeometry(.34,.38,.95,10),PUNCH_BAG_M);body.rotation.z=Math.PI/2;body.position.x=.47;body.castShadow=true;bag.add(body);
+ for(const sx of[.04,.9]){const r=new THREE.Mesh(new THREE.TorusGeometry(.35,.04,5,12),mStd(0x2a2a2a,{roughness:.8}));r.rotation.y=Math.PI/2;r.position.x=sx;bag.add(r)}
+ g.add(bag);g.spr=spr;g.bag=bag;return g}
+function startPunch(c,sx){const g=punchMesh();c.g.add(g);g.scale.x=sx;PUNCHES.push({c,sx,t:0,g,hit:new Set()})}
+function punchesStep(dt){for(let i=PUNCHES.length-1;i>=0;i--){const P=PUNCHES[i],c=P.c;P.t+=dt;
+  if(!cars.includes(c)||c.net==='husk'||P.t>.6){c.g.remove(P.g);PUNCHES.splice(i,1);continue}
+  const t=P.t,ext=t<.1?t/.1:t<.22?1:Math.max(0,1-(t-.22)/.38),reach=.25+ext*PUNCH_REACH,x0=c.hw-.05;
+  P.g.position.set(P.sx*x0,-.05,.25);P.g.spr.scale.set(reach,1,1);P.g.bag.position.x=reach;
+  if(c.net!=='local'||ext<.5||t>.3)continue;
+  const W=rot(c.q,P.sx*(x0+reach+.45),-.05,.25),bx=c.x+W[0],by=c.y+W[1],bz=c.z+W[2],dir=rot(c.q,P.sx,0,0);
+  for(const o of cars){if(o===c||!o.body||o.net==='husk'||o.sink>0||o.ghostItem||P.hit.has(o))continue;const l=irot(o.q,bx-o.x,by-o.y,bz-o.z),ex=Math.max(0,Math.abs(l[0])-o.hw),ez=Math.max(0,Math.abs(l[2])-o.hl),ey=Math.max(0,Math.abs(l[1])-.8);
+   if(Math.hypot(ex,ey,ez)>.55)continue;P.hit.add(o);sfxCrash(bx,by,bz,22);sparkBurst(bx,by,bz,o.vx,o.vz,18);
+   const imp=[dir[0]*o.m*13,o.m*3.2,dir[2]*o.m*13];
+   if(o.net==='local')punchApply(o,imp,[bx,by,bz]);else if(net)evQ.push(['pu',o.id,r2(imp[0]),r2(imp[1]),r2(imp[2]),r2(bx),r2(by),r2(bz)])}}}
+function punchApply(o,imp,pt){if(!o.body||o.ghostItem)return;IMP.x=imp[0];IMP.y=imp[1];IMP.z=imp[2];PT.x=pt[0];PT.y=pt[1];PT.z=pt[2];o.body.applyImpulseAtPoint(IMP,PT,true);const l=Math.hypot(imp[0],imp[2])||1;hit(o,pt[0],pt[1],pt[2],imp[0]/l,0,imp[2]/l,18);if(o===me)shake=Math.max(shake,.9)}
 // fake crate: looks like an item crate, blows up whoever drives into it
 let CRATE_GEO=null,CRATE_MAT=null;
 function addFake(id,x,z,owner){if(FAKES.some(f=>f.id===id))return;const m=new THREE.Mesh(CRATE_GEO,CRATE_MAT);m.castShadow=true;scene.add(m);FAKES.push({id,x,z,owner,t:0,m,ph:Math.random()*6})}
 function fakeBoom(f,c){puff(FIRE,f.x,1,f.z,0xff8a1a,1,1.2,.6,1.2,0,3,0);for(let k=0;k<10;k++)puff(PUFF,f.x+rand(-1,1),.6,f.z+rand(-1,1),0x2c2c2a,.7,.8,5,rand(1,2),rand(-2,2),rand(1,3),rand(-2,2));sparkBurst(f.x,1,f.z,0,0,24);sfxCrash(f.x,1,f.z,30);
  if(c&&c.body&&c.net==='local'){hit(c,c.x,c.y-.3,c.z,0,1,0,22);IMP.x=rand(-1,1)*c.m;IMP.y=c.m*7.5;IMP.z=rand(-1,1)*c.m;c.body.applyImpulse(IMP,true);c.body.applyTorqueImpulse({x:rand(-1,1)*c.m*2.5,y:rand(-1,1)*c.m,z:rand(-1,1)*c.m*2.5},true)}}
+function fakeStick(f,c){f.stuck=c;f.st=1;f.m.material=CRATE_MAT.clone();f.m.material.emissive=new THREE.Color(0xff6a00)}
 function fakesStep(dt){const t=performance.now()/1000;
- for(let i=FAKES.length-1;i>=0;i--){const f=FAKES[i];f.t+=dt;f.m.position.set(f.x,.9+Math.sin(t*2+f.ph)*.15,f.z);f.m.rotation.set(.4,t*1.4+f.ph,.3);
+ for(let i=FAKES.length-1;i>=0;i--){const f=FAKES[i];f.t+=dt;
+  if(f.stuck){const c=f.stuck;f.st-=dt;if(c&&c.q){const o=rot(c.q,0,.45,c.hl+.75);f.m.position.set(c.x+o[0],c.y+o[1],c.z+o[2]);f.m.quaternion.set(c.q.x,c.q.y,c.q.z,c.q.w);f.x=f.m.position.x;f.z=f.m.position.z}
+   const on=Math.floor(f.st*10)%2===0;f.m.material.emissiveIntensity=on?2.2:.2;f.m.material.color.setHex(on?0xff7a1a:0xffb52e);f.m.scale.setScalar(1+(1-f.st)*.25);
+   if(f.st<=0){fakeBoom(f,c&&c.net==='local'?c:null);scene.remove(f.m);FAKES.splice(i,1)}continue}
+  f.m.position.set(f.x,.9+Math.sin(t*2+f.ph)*.15,f.z);f.m.rotation.set(.4,t*1.4+f.ph,.3);
   let boom=null;if(R&&R.phase==='play')for(const c of cars){if(c.net!=='local'||!c.body||c.sink>0||c.ghostItem)continue;if(c.id===f.owner&&f.t<1.5)continue;if((c.x-f.x)**2+(c.z-f.z)**2<6.2&&c.y<3){boom=c;break}}
-  if(boom||f.t>40){if(boom){fakeBoom(f,boom);if(net)evQ.push(['fkx',f.id])}scene.remove(f.m);FAKES.splice(i,1)}}}
-// wrecking ball: a 0.75 m, 2.5 t iron ball with real physics; every client simulates it and it wrecks the cars it hits
+  if(boom){fakeStick(f,boom);if(boom===me)sfxTone(300,.9,.12,'sawtooth',900);if(net)evQ.push(['fkx',f.id,boom.id])}
+  else if(f.t>40){scene.remove(f.m);FAKES.splice(i,1)}}}
 const WB_R=.75,WB_GEO=THREE.IcosahedronGeometry?new THREE.IcosahedronGeometry(WB_R,1):new THREE.BoxGeometry(1.5,1.5,1.5),WB_M=mStd(0x3a3d42,{metalness:.75,roughness:.45});
 function spawnWreck(owner,P,v){if(!physReady)return;const g=new THREE.Group(),m=new THREE.Mesh(WB_GEO,WB_M);m.castShadow=true;g.add(m);
  const ring=new THREE.Mesh(new THREE.TorusGeometry(.2,.06,5,10),WB_M);ring.position.y=WB_R+.12;g.add(ring);for(const a of[0,Math.PI/2]){const band=new THREE.Mesh(new THREE.TorusGeometry(WB_R+.01,.04,4,18),mStd(0x1f2125,{metalness:.6,roughness:.6}));band.rotation.y=a;g.add(band)}
@@ -1117,7 +1180,7 @@ function wreckStep(dt){const now=performance.now();
   if(w.lastV!==undefined&&Math.abs(Math.hypot(v.x,v.y,v.z)-w.lastV)>3)sfxCrash(t.x,t.y,t.z,Math.abs(Math.hypot(v.x,v.y,v.z)-w.lastV)*2);w.lastV=Math.hypot(v.x,v.y,v.z);
   if(w.t>7||t.y<-15){dropBody(w);scene.remove(w.g);WBALLS.splice(i,1)}}}
 {const geo=new THREE.BoxGeometry(1.1,1.1,1.1),mat=new THREE.MeshStandardMaterial({color:0xffb52e,emissive:0x7a3a00,roughness:.4,metalness:.2}),pts=[];
- pts.push(...[[-75.2,-34.9],[0.8,-21.7],[96.8,-35],[97.3,-24],[86.7,30],[-1.4,31.1],[-96.1,21.9],[-155.9,14.6],[61.5,-14.9],[48.9,21.1],[-121,-9.2],[-23.4,-36.1],[-75.5,-25.2],[123.6,-30.3],[-95.8,36.1],[-134.9,30.5],[152.4,9.4],[-151.5,-12.4]]);
+ pts.push(...(LEVEL.crates||[]));
  CRATE_GEO=geo;CRATE_MAT=mat;for(const p of pts){const m=new THREE.Mesh(geo,mat);m.castShadow=true;scene.add(m);CRATES.push({x:p[0],z:p[1],m,off:0,ph:Math.random()*6})}}
 function giveItem(c){c.item=ITEMS[(Math.random()*ITEMS.length)|0];c.itemHold=0;c.nitroFuel=NITRO_T;c.nitroHeld=false}
 const NITRO_T=2;
@@ -1129,13 +1192,14 @@ function itemPress(c){if(c.item){useItem(c);return}if(c.hoverT>0)c.hoverT=0}
 function useItem(c,aim){const it=c.item;if(!it||!c.body||c.wrecked)return;c.item=null;const f=rot(c.q,0,0,1),fl=Math.hypot(f[0],f[2])||1,fx=f[0]/fl,fz=f[2]/fl;
  if(c===me)sfxTone(520,.15,.15,'square',780);
  if(it==='nitro')c.nitroT=NITRO_T;
+ else if(it==='punch'){let sx;if(aim==='left')sx=1;else if(aim==='right')sx=-1;else{let best=9,bs=-1;for(const o of cars){if(o===c||!o.body||o.net==='husk')continue;const l=irot(c.q,o.x-c.x,o.y-c.y,o.z-c.z);if(Math.abs(l[2])<4&&Math.abs(l[0])<best){best=Math.abs(l[0]);bs=Math.sign(l[0])||1}}sx=bs}startPunch(c,sx);if(net)evQ.push(['pv',c.id,sx]);sfxBurst(.6,900,200,.25)}
  else if(it==='ghost'){c.ghostT=3;setGhost(c,true);c.ghostItem=true;if(freeTow(c)&&net)evQ.push(['untow',c.id])}
  else if(it==='chrome'){c.chromeT=5;setMassF(c,5)}
  else if(it==='hover')c.hoverT=6;
  else if(it==='spring'){c.springT=5;IMP.x=fx*c.m*8;IMP.y=c.m*7.5;IMP.z=fz*c.m*8;c.body.applyImpulse(IMP,true);sparkBurst(c.x,c.y-c.hh,c.z,0,0,10)}
  else if(it==='spikes'){const x=c.x-fx*(c.hl+1.3),z=c.z-fz*(c.hl+1.3);addSpikes(x,z,c.a,c.id);if(net)evQ.push(['spk',r2(x),r2(z),r2(c.a),c.id])}
  else if(it==='fake'){const o=rot(c.q,0,0,-c.hl-1.6),id=rid();addFake(id,c.x+o[0],c.z+o[2],c.id);if(net)evQ.push(['fk',id,r2(c.x+o[0]),r2(c.z+o[2]),c.id])}
- else if(it==='wreck'){const back=aim==='back',up=aim==='up',sg=back?-1:1,o=rot(c.q,0,.55,sg*(c.hl+1.1)),sp=up?15:25,v=[c.vx+fx*sp*sg,Math.max(0,c.vy)+(up?11:3.5),c.vz+fz*sp*sg],P=[c.x+o[0],c.y+o[1],c.z+o[2]];spawnWreck(c.id,P,v);if(net)evQ.push(['wb',c.id,r2(P[0]),r2(P[1]),r2(P[2]),r2(v[0]),r2(v[1]),r2(v[2])]);sfxBurst(.7,300,80,.35)}
+ else if(it==='wreck'){const back=aim==='back',up=aim==='up',sg=back?-1:1,o=rot(c.q,0,.41,sg*(c.hl+1.1)),sp=up?15:25,vf0=c.vx*fx+c.vz*fz,bvx=back?c.vx-fx*vf0:c.vx,bvz=back?c.vz-fz*vf0:c.vz,v=[bvx+fx*sp*sg,Math.max(0,c.vy)+(up?11:3.5),bvz+fz*sp*sg],P=[c.x+o[0],c.y+o[1],c.z+o[2]];spawnWreck(c.id,P,v);if(net)evQ.push(['wb',c.id,r2(P[0]),r2(P[1]),r2(P[2]),r2(v[0]),r2(v[1]),r2(v[2])]);sfxBurst(.7,300,80,.35)}
  else if(it==='tow'){const v=[c.vx+fx*42,c.vy+1.5,c.vz+fz*42],o=rot(c.q,0,.1,c.hl+.4);PROJ.push({type:it,owner:c,x:c.x+o[0],y:c.y+o[1],z:c.z+o[2],v,t:0,m:projMesh(it),ch:it==='tow'?mkChain():null});if(it==='tow'&&net)evQ.push(['tp',c.id,r2(c.x+o[0]),r2(c.y+o[1]),r2(c.z+o[2]),r2(v[0]),r2(v[1]),r2(v[2])])}}
 const CHAIN_GEO=new THREE.TorusGeometry(.065,.02,5,8),CHAIN_M=mStd(0x8f949b,{metalness:.85,roughness:.35}),_cd=new THREE.Object3D();
 const CHAINS=new Set();
@@ -1165,7 +1229,7 @@ function attachRope(a,b,len,anA,anB,dur){if(!a||!b)return;if(ROPES.some(r=>r.a==
 function dropRope(r){if(r.ch)scene.remove(r.ch)}
 function freeTow(c){let n=0;for(let i=ROPES.length-1;i>=0;i--){const r=ROPES[i];if(r.a===c||r.b===c){dropRope(r);ROPES.splice(i,1);n++}}return n}
 function itemsStep(dt){
- wreckStep(dt);chainSweep();fakesStep(dt);ttowStep(dt);
+ punchesStep(dt);wreckStep(dt);chainSweep();fakesStep(dt);ttowStep(dt);
  for(let i=PROJ.length-1;i>=0;i--){const p=PROJ[i];p.t+=dt;p.v[1]-=GRAV*.25*dt;p.x+=p.v[0]*dt;p.y+=p.v[1]*dt;p.z+=p.v[2]*dt;let hit=null;
   if(!p.vis)for(const c of cars){if(c===p.owner||!c.body||c.net==='husk'||c.ghost)continue;const l=irot(c.q,p.x-c.x,p.y-c.y,p.z-c.z);if(Math.abs(l[0])<c.hw+.3&&Math.abs(l[2])<c.hl+.3&&Math.abs(l[1])<1.2){hit=c;break}}
   if(!hit&&p.type==='tow'&&physReady&&!p.vis){for(const[B,hl,hw,k] of[[TRK,HAULER.L/2+.2,HAULER.W/2+.2,0],[TRL,DECK_HL+.4,DECK_HW+.2,1]]){if(!B.q)continue;const l=irot(B.q,p.x-B.x,p.y-B.y,p.z-B.z);if(Math.abs(l[0])<hw&&Math.abs(l[2])<hl&&l[1]>-1.2&&l[1]<2){const o=p.owner;TTOWS.push({c:o,rig:B,an:l,t:8,ch:mkChain()});if(net)evQ.push(['tt',o.id,k,r2(l[0]),r2(l[1]),r2(l[2])]);sfxClank(p.x,p.y,p.z);scene.remove(p.m);if(p.ch)scene.remove(p.ch);PROJ.splice(i,1);p.done=true;break}}if(p.done)continue}
@@ -1210,9 +1274,9 @@ function splat(){const e=$('paintov');e.innerHTML='';for(let i=0;i<7;i++){const 
  e.style.transition='none';e.style.opacity=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{e.style.transition='opacity 3s ease-in';e.style.opacity=0}));sfxBurst(.5,900,200,.4)}
 function botItem(c,dt){if(!c.item)return;c.itemHold=(c.itemHold||0)+dt;const it=c.item,dTr=Math.hypot(c.x-TRL.x,c.z-TRL.z);let use=c.itemHold>8;
  const ahead=cars.some(o=>{if(o===c||!o.body||o.net==='husk')return false;const l=irot(c.q,o.x-c.x,0,o.z-c.z);return l[2]>4&&l[2]<28&&Math.abs(l[0])<3}),behind=cars.some(o=>{if(o===c||!o.body||o.net==='husk')return false;const l=irot(c.q,o.x-c.x,0,o.z-c.z);return l[2]<-4&&l[2]>-18&&Math.abs(l[0])<3});
- if((it==='tow'||it==='wreck')&&ahead)use=true;if((it==='spikes'||it==='fake')&&behind)use=true;if((it==='nitro'||it==='spring')&&dTr>30&&c.itemHold>1.5)use=true;if((it==='chrome'||it==='ghost'||it==='hover')&&dTr<14)use=true;
+ if((it==='tow'||it==='wreck')&&ahead)use=true;if((it==='spikes'||it==='fake')&&behind)use=true;if(it==='punch'&&cars.some(o=>{if(o===c||!o.body||o.net==='husk')return false;const l=irot(c.q,o.x-c.x,o.y-c.y,o.z-c.z);return Math.abs(l[2])<3&&Math.abs(l[0])<4.2}))use=true;if((it==='nitro'||it==='spring')&&dTr>30&&c.itemHold>1.5)use=true;if((it==='chrome'||it==='ghost'||it==='hover')&&dTr<14)use=true;
  if(use&&c.itemHold>.8)useItem(c)}
-function itemsClear(){for(const p of PROJ)if(p.ch)scene.remove(p.ch);for(const f of FAKES)scene.remove(f.m);FAKES.length=0;for(const t of TTOWS)scene.remove(t.ch);TTOWS.length=0;for(const w of WBALLS){dropBody(w);scene.remove(w.g)}WBALLS.length=0;for(const r of ROPES)dropRope(r);ROPES.length=0;for(const s of SPIKES)scene.remove(s.g);SPIKES.length=0;for(const p of PROJ)scene.remove(p.m);PROJ.length=0;for(const k of CRATES)k.off=0}
+function itemsClear(){for(const P of PUNCHES)P.c.g.remove(P.g);PUNCHES.length=0;for(const p of PROJ)if(p.ch)scene.remove(p.ch);for(const f of FAKES)scene.remove(f.m);FAKES.length=0;for(const t of TTOWS)scene.remove(t.ch);TTOWS.length=0;for(const w of WBALLS){dropBody(w);scene.remove(w.g)}WBALLS.length=0;for(const r of ROPES)dropRope(r);ROPES.length=0;for(const s of SPIKES)scene.remove(s.g);SPIKES.length=0;for(const p of PROJ)scene.remove(p.m);PROJ.length=0;for(const k of CRATES)k.off=0}
 
 // ---------- visuals ----------
 function setPose(o,B,dy){o.position.set(B.x,B.y-(dy||0),B.z);if(B.q)o.quaternion.set(B.q.x,B.q.y,B.q.z,B.q.w)}
@@ -1335,9 +1399,9 @@ addEventListener('resize',placeJoy);
  {const g=$('gas');let last=0,pid=null;g.addEventListener('pointerdown',e=>{if(performance.now()-last<320)inp.boost=true;pid=e.pointerId});const up=e=>{if(e.pointerId!==pid)return;inp.boost=false;last=performance.now()};g.addEventListener('pointerup',up);g.addEventListener('pointercancel',up)}
  // wrecking ball: hold the item button, drag up to lob it, drag down to look back and fire it behind you; release fires
 var AIM={on:false,src:null,dir:null,y0:0,id:null};
-function aimEnd(){AIM.on=false;AIM.src=null;AIM.dir=null;inp.rear=false;$('item').classList.remove('aimup','aimback')}
-$('item').addEventListener('pointerdown',e=>{e.preventDefault();if(!me)return;if(me.item==='nitro'){me.nitroHeld=true;try{$('item').setPointerCapture(e.pointerId)}catch(_){}return}if(me.item==='wreck'){AIM.on=true;AIM.src='touch';AIM.dir=null;AIM.y0=e.clientY;AIM.id=e.pointerId;try{$('item').setPointerCapture(e.pointerId)}catch(_){}}else itemPress(me)});
-$('item').addEventListener('pointermove',e=>{if(!AIM.on||AIM.src!=='touch'||e.pointerId!==AIM.id)return;const dy=e.clientY-AIM.y0;AIM.dir=dy<-35?'up':dy>35?'back':null;inp.rear=AIM.dir==='back';$('item').classList.toggle('aimup',AIM.dir==='up');$('item').classList.toggle('aimback',AIM.dir==='back')});
+function aimEnd(){AIM.on=false;AIM.src=null;AIM.dir=null;inp.rear=false;$('item').classList.remove('aimup','aimback','aimleft','aimright')}
+$('item').addEventListener('pointerdown',e=>{e.preventDefault();if(!me)return;if(me.item==='nitro'){me.nitroHeld=true;try{$('item').setPointerCapture(e.pointerId)}catch(_){}return}if(me.item==='wreck'||me.item==='punch'){AIM.on=true;AIM.src='touch';AIM.x0=e.clientX;AIM.dir=null;AIM.y0=e.clientY;AIM.id=e.pointerId;try{$('item').setPointerCapture(e.pointerId)}catch(_){}}else itemPress(me)});
+$('item').addEventListener('pointermove',e=>{if(!AIM.on||AIM.src!=='touch'||e.pointerId!==AIM.id)return;const dy=e.clientY-AIM.y0,dx=e.clientX-AIM.x0;if(me&&me.item==='punch'){AIM.dir=dx<-25?'left':dx>25?'right':null;$('item').classList.toggle('aimleft',AIM.dir==='left');$('item').classList.toggle('aimright',AIM.dir==='right');return}AIM.dir=dy<-35?'up':dy>35?'back':null;inp.rear=AIM.dir==='back';$('item').classList.toggle('aimup',AIM.dir==='up');$('item').classList.toggle('aimback',AIM.dir==='back')});
 for(const ev of['pointerup','pointercancel'])$('item').addEventListener(ev,e=>{if(me)me.nitroHeld=false;if(!AIM.on||AIM.src!=='touch'||e.pointerId!==AIM.id)return;const d=AIM.dir;aimEnd();if(me&&ev==='pointerup')useItem(me,d)});$('land').addEventListener('pointerdown',e=>{e.preventDefault();if(me)me.hoverT=0});
  for(const[id,key]of[['gas','gas'],['rev','rev'],['hb','hb'],['rear','rear']]){const b=$(id);let pid=null;
   b.addEventListener('pointerdown',e=>{pid=e.pointerId;b.setPointerCapture(pid);inp[key]=true;b.classList.add('on')});
@@ -1362,8 +1426,8 @@ let padOff=false;function pollPad(){let gs=[];if(!padOff&&navigator.getGamepads)
  if(!padOn)return;
  pad={g,steer:clamp(st,-1,1),gas:r2>.06,ga:r2,rev:l2>.06,ra:l2,hb:bt(0).pressed,boost:bt(5).pressed||bt(1).pressed,rear:bt(4).pressed};
  {const sq=bt(2).pressed,ay=g.axes[1]||0;
-  if(me&&me.item==='nitro')me.nitroHeld=sq;else if(sq&&!padSq&&me){if(me.item==='wreck')AIM.on=true;else itemPress(me)}
-  if(AIM.on&&AIM.src!=='touch'){AIM.src='pad';AIM.dir=ay<-.55?'up':ay>.55?'back':null;if(AIM.dir==='back')pad.rear=true;if(!sq){const d=AIM.dir;aimEnd();if(me)useItem(me,d)}}
+  if(me&&me.item==='nitro')me.nitroHeld=sq;else if(sq&&!padSq&&me){if(me.item==='wreck'||me.item==='punch')AIM.on=true;else itemPress(me)}
+  if(AIM.on&&AIM.src!=='touch'){AIM.src='pad';const axx=g.axes[0]||0;if(me&&me.item==='punch')AIM.dir=axx<-.5?'left':axx>.5?'right':null;else AIM.dir=ay<-.55?'up':ay>.55?'back':null;if(AIM.dir==='back')pad.rear=true;if(!sq){const d=AIM.dir;aimEnd();if(me)useItem(me,d)}}
   padSq=sq}
  const tri=bt(3).pressed;if(tri&&!padTri&&me&&!me.respawnT&&R&&R.phase==='play'){me.respawnT=3;me.why='Respawning'}padTri=tri;
  if(shake>padShake+.08){const a=g.vibrationActuator;if(a&&a.playEffect)try{a.playEffect('dual-rumble',{duration:140,strongMagnitude:Math.min(1,shake),weakMagnitude:Math.min(1,shake*.7)})}catch(e){}}padShake=shake}
@@ -1378,7 +1442,8 @@ addEventListener('touchstart',()=>{if(padOn){padOn=false;showTouch(true)}},{pass
 $('b-reset').addEventListener('click',()=>{if(me&&!me.respawnT){me.respawnT=3;me.why='Respawning'}});
 // ---------- spectator mode ----------
 function refreshOrder(){if(!R)return;for(const p of players)if(!p.spec&&!R.order.includes(p.id))R.order.push(p.id);R.order=R.order.filter(id=>players.some(p=>p.id===id&&!p.spec)||R.bots.some(b=>b.id===id));if(net&&typeof dirSync==='function')dirSync()}
-let spec=false,specIdx=0;
+let spec=false,specIdx=0;const SPECS={};let specT=0;
+function specSend(){if(ch&&chReady)ch.send({type:'broadcast',event:'sp',payload:{id:myId,spec}})}
 function specList(){return[TRK].concat(cars.filter(c=>c.body&&c.net!=='husk'&&c.sink===0&&!c.intro))}
 function specTarget(){const L=specList();specIdx=((specIdx%L.length)+L.length)%L.length;return L[specIdx]}
 function specName(t){return t===TRK?'The truck':nameOf(t.id)}
@@ -1388,7 +1453,7 @@ function specUI(){const inGame=R&&R.phase==='play'&&$('menu').style.display==='n
 function setSpec(on){if(on===spec)return;spec=on;camSnap=true;
  if(R&&R.phase==='play'){if(on&&me){const c=me;freeTow(c);removeCar(c);puff(PUFF,c.x,c.y,c.z,0xcfd6dd,.6,.8,3,1,0,1,0);me=null}
   else if(!on&&!me){me=spawnLocal(myId,myCls,spawnPoint(),false,0);me.ghostT=3;setGhost(me,true);flash()}}
- const p=players.find(q=>q.id===myId);if(p)p.spec=on;if(ch&&chReady)ch.track({id:myId,name:myName,cls:myCls,joined:myJoined,spec});
+ const p=players.find(q=>q.id===myId);if(p)p.spec=on;SPECS[myId]=on;specSend();
  if(isHost&&R)refreshOrder();specUI();if(typeof refreshRoom==='function')refreshRoom()}
 $('b-spec').addEventListener('click',()=>setSpec(!spec));$('b-spec2').addEventListener('click',()=>setSpec(!spec));
 $('spl').addEventListener('click',()=>{specIdx--;camSnap=true;specUI()});$('spr').addEventListener('click',()=>{specIdx++;camSnap=true;specUI()});
@@ -1438,8 +1503,10 @@ function onState(p){
   if(e[0]==='spk'){if(e[4]!==myId)addSpikes(e[1],e[2],e[3],e[4]);continue}
   if(e[0]==='paint'){if(me&&e[1]===myId)splat();continue}
   if(e[0]==='fk'){addFake(e[1],e[2],e[3],e[4]);continue}
-  if(e[0]==='fkx'){const f=FAKES.find(q=>q.id===e[1]);if(f){fakeBoom(f,null);scene.remove(f.m);FAKES.splice(FAKES.indexOf(f),1)}continue}
+  if(e[0]==='fkx'){const f=FAKES.find(q=>q.id===e[1]);if(f&&!f.stuck){const c=byId(e[2],'remote');if(c)fakeStick(f,c);else{fakeBoom(f,null);scene.remove(f.m);FAKES.splice(FAKES.indexOf(f),1)}}continue}
   if(e[0]==='tt'){const o=byId(e[1],'remote');if(o)TTOWS.push({c:o,rig:e[2]?TRL:TRK,an:[e[3],e[4],e[5]],t:6,ch:mkChain(),vis:true});continue}
+  if(e[0]==='pv'){const o=byId(e[1],'remote');if(o)startPunch(o,e[2]);continue}
+  if(e[0]==='pu'){const t=byId(e[1],'local');if(t)punchApply(t,[e[2],e[3],e[4]],[e[5],e[6],e[7]]);continue}
   if(e[0]==='wb'){if(e[1]!==myId)spawnWreck(e[1],[e[2],e[3],e[4]],[e[5],e[6],e[7]]);continue}
   if(e[0]==='untow'){for(const r of ROPES.slice())if(r.a.id===e[1]||r.b.id===e[1]){dropRope(r);ROPES.splice(ROPES.indexOf(r),1)}continue}
   if(e[0]==='tow'){const t=byId(e[1],'local')||byId(e[1],'remote'),o=byId(e[2],'remote');if(t&&o){attachRope(o,t,e[3],[0,-.1,o.hl+.1],[e[4],e[5],e[6]],6);for(const q of PROJ.slice())if(q.vis&&q.owner===o){scene.remove(q.m);if(q.ch)scene.remove(q.ch);PROJ.splice(PROJ.indexOf(q),1)}}continue}
@@ -1449,7 +1516,7 @@ function onState(p){
   else if(e[0]==='u')unlatch(c,c.det.find(q=>q.key===e[2]));
   else if(e[0]==='g')detach(c,c.det.find(q=>q.key===e[2]),[e[3],e[4],e[5]])}}
 function onPresence(){
- const st=ch.presenceState();players=[];for(const k in st){const m=st[k][0];if(m)players.push(m)}
+ const st=ch.presenceState();players=[];for(const k in st){const m=st[k][0];if(m)players.push(Object.assign({},m,m.id in SPECS?{spec:SPECS[m.id]}:{}))}
  players.sort((a,b)=>a.joined-b.joined||(a.id<b.id?-1:1));
  const nh=players.length?players[0].id:myId;if(nh!==hostId){hostId=nh;offS=[]}
  const was=isHost,off=clockOff;isHost=hostId===myId;
@@ -1458,7 +1525,7 @@ function onPresence(){
   while(R.bots.length&&players.length+R.bots.length>MAXP){const b=R.bots.pop();R.order=R.order.filter(i=>i!==b.id)}
   R.order=R.order.filter(id=>players.some(p=>p.id===id&&!p.spec)||R.bots.some(b=>b.id===id));dirOpen('host');dirSync()}
  refreshRoom()}
-function netTick(dt){if(!net||!ch||!chReady)return;sendAcc+=dt;const play=R&&R.phase==='play',rate=play?1/12:1/3;if(sendAcc<rate)return;sendAcc=0;
+function netTick(dt){if(!net||!ch||!chReady)return;specT+=dt;if(specT>3){specT=0;if(spec)specSend()}sendAcc+=dt;const play=R&&R.phase==='play',rate=play?1/12:1/3;if(sendAcc<rate)return;sendAcc=0;
  if(!play&&!isHost)return;
  const p={id:myId,cars:play?cars.filter(c=>c.net==='local').map(rec):[],ev:evQ.splice(0)};
  if(isHost){p.room=R;p.hn=Date.now();p.rig=rigRec(TRK).concat(rigRec(TRL),[r3(TK.steer)])}
@@ -1492,6 +1559,7 @@ function connect(code){
  $('m-err').textContent='Connecting…';roomCode=code;
  ch=sb.channel('kohd-'+code,{config:{broadcast:{self:false},presence:{key:myId,enabled:true}}});
  ch.on('broadcast',{event:'s'},({payload})=>onState(payload));
+ ch.on('broadcast',{event:'sp'},({payload})=>{if(!payload||!payload.id)return;SPECS[payload.id]=!!payload.spec;const p=players.find(q=>q.id===payload.id);if(p)p.spec=!!payload.spec;if(isHost)refreshOrder();refreshRoom()});
  ch.on('broadcast',{event:'c'},({payload})=>{if(isHost)handleClaim(payload.id,payload.n)});
  ch.on('presence',{event:'sync'},onPresence);
  let ok=false;const to=setTimeout(()=>{if(!ok){leave();$('m-err').textContent="Couldn't reach the lobby. Check your connection or try Play vs AI."}},9000);
@@ -1608,5 +1676,115 @@ truckReset(0,false);requestAnimationFrame(loop);
 $('m-err').textContent='Loading physics…';
 import(RAPIER_URL).then(async m=>{RAPIER=m.default||m;await RAPIER.init();buildPhysics();truckReset(0,false);startIntro();if($('m-err').textContent==='Loading physics…')$('m-err').textContent=''}).catch(e=>{console.error(e);$('m-err').textContent='Physics failed to load. Check your connection and reload.'});
 setTimeout(()=>{if(!INTRO.on&&INTRO.hitT<0)logoIn(innerWidth/2,innerHeight*.3)},9000);
+// ---------- map editor (secret button in the changelog) ----------
+const ED={on:false,L:null,tool:'track',sel:null,view:{cx:0,cz:0,s:2},drag:null,ptrs:new Map(),pinch:0,cut:null,msg:''};
+const edClone=o=>JSON.parse(JSON.stringify(o));
+function edSave(){try{localStorage.setItem('kohd_edit',JSON.stringify(ED.L))}catch(e){}}
+function edLoad(){try{const t=localStorage.getItem('kohd_edit');if(t){const L=JSON.parse(t);if(levelOk(L))return L}}catch(e){}return edClone(TEST_LEVEL||DEFAULT_LEVEL)}
+function edGeo(){const L=ED.L,M=spline(L.main,true,1),cum=s=>s,near=(x,z)=>{let b=1e18,bi=0;for(let i=0;i<M.n;i++){const d=(x-M.x[i])**2+(z-M.z[i])**2;if(d<b){b=d;bi=i}}return bi};
+ const at=s=>{s=((s%M.L)+M.L)%M.L;const i=Math.floor(s/M.ds)%M.n;return[M.x[i],M.z[i]]};
+ const cuts=(L.cuts||[]).map(c=>{const s0=near(c.a[0],c.a[1])*M.ds,s1=near(c.b[0],c.b[1])*M.ds;let lane=null;try{lane=spline([at(s0-8),at(s0),at(s0+5),...c.pts,at(s1-5),at(s1),at(s1+8)],false,1)}catch(e){}return{s0,s1,lane}});
+ return{M,cuts,near,at}}
+function edOpen(){ED.on=true;ED.L=edLoad();ED.sel=null;ED.cut=null;$('logp').style.display='none';$('menu').style.display='none';$('vbox').style.display='none';$('editor').style.display='block';edFit();edUI();edDraw()}
+function edClose(){ED.on=false;ED.cut=null;$('editor').style.display='none';$('menu').style.display='';$('vbox').style.display='flex';screen('m-main')}
+function edFit(){const L=ED.L,cv=$('edc');let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of L.main.concat(...(L.cuts||[]).map(c=>c.pts))){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1])}
+ const w=cv.clientWidth||innerWidth,h=cv.clientHeight||innerHeight;ED.view.cx=(x0+x1)/2;ED.view.cz=(z0+z1)/2;ED.view.s=Math.min(w/(x1-x0+50),h/(z1-z0+50))}
+const edS=(x,z)=>{const cv=$('edc'),v=ED.view;return[cv.clientWidth/2+(x-v.cx)*v.s,cv.clientHeight/2+(z-v.cz)*v.s]},edW=(X,Y)=>{const cv=$('edc'),v=ED.view;return[(X-cv.clientWidth/2)/v.s+v.cx,(Y-cv.clientHeight/2)/v.s+v.cz]};
+function edDraw(){if(!ED.on)return;const cv=$('edc'),d=Math.min(2,devicePixelRatio||1),w=cv.clientWidth,h=cv.clientHeight;if(cv.width!==Math.round(w*d)||cv.height!==Math.round(h*d)){cv.width=Math.round(w*d);cv.height=Math.round(h*d)}
+ const x=cv.getContext('2d');x.setTransform(d,0,0,d,0,0);x.fillStyle='#5f8f3a';x.fillRect(0,0,w,h);
+ const L=ED.L,G=edGeo(),v=ED.view;
+ // grid every 20 m
+ x.strokeStyle='rgba(0,0,0,.08)';x.lineWidth=1;const g0=edW(0,0),g1=edW(w,h);for(let gx=Math.floor(g0[0]/20)*20;gx<g1[0];gx+=20){const p=edS(gx,0);x.beginPath();x.moveTo(p[0],0);x.lineTo(p[0],h);x.stroke()}for(let gz=Math.floor(g0[1]/20)*20;gz<g1[1];gz+=20){const p=edS(0,gz);x.beginPath();x.moveTo(0,p[1]);x.lineTo(w,p[1]);x.stroke()}
+ const road=(lane,hw,closed)=>{if(!lane)return;const path=()=>{x.beginPath();for(let i=0;i<lane.n;i++){const p=edS(lane.x[i],lane.z[i]);i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])}if(closed)x.closePath()};x.lineJoin='round';x.lineCap='round';
+  path();x.strokeStyle='#2a2a2a';x.lineWidth=(hw*2+1.4)*v.s;x.stroke();path();x.strokeStyle='#b08a5e';x.lineWidth=hw*2*v.s;x.stroke()};
+ road(G.M,L.hw||10,true);for(const c of G.cuts)road(c.lane,L.cutHw||8.5,false);
+ // centre line + direction arrows
+ x.setLineDash([6,8]);x.strokeStyle='rgba(255,255,255,.45)';x.lineWidth=1.5;x.beginPath();for(let i=0;i<G.M.n;i++){const p=edS(G.M.x[i],G.M.z[i]);i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])}x.closePath();x.stroke();x.setLineDash([]);
+ for(let s=0;s<G.M.L;s+=60){const a=G.at(s),b=G.at(s+3),p=edS(a[0],a[1]),q=edS(b[0],b[1]),an=Math.atan2(q[1]-p[1],q[0]-p[0]);x.save();x.translate(p[0],p[1]);x.rotate(an);x.fillStyle='rgba(255,255,255,.7)';x.beginPath();x.moveTo(8,0);x.lineTo(-5,-5);x.lineTo(-5,5);x.closePath();x.fill();x.restore()}
+ // start line
+ {const st=L.start!=null?L.start:20,a=G.at(st),b=G.at(st+2),dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,nx=dz/l,nz=-dx/l,hw=(L.hw||10),p=edS(a[0]+nx*hw,a[1]+nz*hw),q=edS(a[0]-nx*hw,a[1]-nz*hw);
+  x.strokeStyle='#fff';x.lineWidth=4;x.setLineDash([5,5]);x.beginPath();x.moveTo(p[0],p[1]);x.lineTo(q[0],q[1]);x.stroke();x.setLineDash([]);const c=edS(a[0],a[1]);x.fillStyle='#fff';x.font='600 12px system-ui';x.fillText('START',c[0]+8,c[1]-8)}
+ // crates
+ for(let i=0;i<(L.crates||[]).length;i++){const p=edS(L.crates[i][0],L.crates[i][1]),sel=ED.sel&&ED.sel.k==='crate'&&ED.sel.i===i,r=Math.max(5,1.4*v.s);x.save();x.translate(p[0],p[1]);x.rotate(.5);x.fillStyle=sel?'#fff':'#ffb52e';x.strokeStyle='#3a1d00';x.lineWidth=2;x.fillRect(-r,-r,2*r,2*r);x.strokeRect(-r,-r,2*r,2*r);x.restore()}
+ // handles
+ const dot=(px,col,sel,r)=>{x.beginPath();x.arc(px[0],px[1],r||(sel?9:7),0,7);x.fillStyle=sel?'#fff':col;x.fill();x.lineWidth=2;x.strokeStyle='#111';x.stroke()};
+ if(ED.tool==='track')L.main.forEach((p,i)=>dot(edS(p[0],p[1]),'#ff5a2a',ED.sel&&ED.sel.k==='main'&&ED.sel.i===i));
+ if(ED.tool==='cut'){(L.cuts||[]).forEach((c,ci)=>{const sc=ED.sel&&ED.sel.ci===ci;dot(edS(c.a[0],c.a[1]),'#4fa0ff',sc&&ED.sel.k==='a',9);dot(edS(c.b[0],c.b[1]),'#4fa0ff',sc&&ED.sel.k==='b',9);c.pts.forEach((p,i)=>dot(edS(p[0],p[1]),'#9fd0ff',sc&&ED.sel.k==='cp'&&ED.sel.i===i))});
+  if(ED.cut){const c=ED.cut;if(c.a)dot(edS(c.a[0],c.a[1]),'#4fa0ff',true,9);x.strokeStyle='#fff';x.lineWidth=2;x.setLineDash([4,4]);x.beginPath();const P=(c.a?[c.a]:[]).concat(c.pts);P.forEach((p,i)=>{const s=edS(p[0],p[1]);i?x.lineTo(s[0],s[1]):x.moveTo(s[0],s[1])});x.stroke();x.setLineDash([]);c.pts.forEach(p=>dot(edS(p[0],p[1]),'#9fd0ff',false))}}
+ // scale bar
+ x.fillStyle='rgba(0,0,0,.45)';x.fillRect(10,h-30,50*v.s+16,22);x.fillStyle='#fff';x.fillRect(18,h-17,50*v.s,3);x.font='600 11px system-ui';x.fillText('50 m',20,h-21);
+ $('edmsg').textContent=ED.msg}
+function edUI(){for(const b of document.querySelectorAll('#edtools [data-t]'))b.classList.toggle('sel',b.dataset.t===ED.tool);
+ const help={track:'Drag the orange points to shape the loop. Tap the road to add a point. Select a point and tap Delete to remove it.',cut:'Drag blue points to reshape a shortcut. Tap New shortcut, tap where it leaves the track, tap to add bends, then tap where it rejoins.',crate:'Tap to place an item crate. Drag to move. Select one and tap Delete.',start:'Tap the track where the truck starts.'}[ED.tool];
+ $('edhelp').textContent=help;$('ednew').style.display=ED.tool==='cut'?'':'none';$('eddel').style.display=ED.tool==='start'?'none':'';
+ $('edw').value=ED.L.hw||10;$('edcw').value=ED.L.cutHw||8.5;$('edwv').textContent=Math.round((ED.L.hw||10)*2)+' m';$('edcwv').textContent=Math.round((ED.L.cutHw||8.5)*2)+' m';$('edname').value=ED.L.name||''}
+function edPick(X,Y){const L=ED.L,r=22,hit=(p)=>{const s=edS(p[0],p[1]);return Math.hypot(s[0]-X,s[1]-Y)<r};
+ if(ED.tool==='track'){for(let i=L.main.length-1;i>=0;i--)if(hit(L.main[i]))return{k:'main',i}}
+ if(ED.tool==='cut'){for(let ci=0;ci<(L.cuts||[]).length;ci++){const c=L.cuts[ci];for(let i=0;i<c.pts.length;i++)if(hit(c.pts[i]))return{k:'cp',ci,i};if(hit(c.a))return{k:'a',ci};if(hit(c.b))return{k:'b',ci}}}
+ if(ED.tool==='crate'){for(let i=(L.crates||[]).length-1;i>=0;i--)if(hit(L.crates[i]))return{k:'crate',i}}
+ return null}
+function edSnapMain(x,z){const G=edGeo(),i=G.near(x,z);return[Math.round(G.M.x[i]*10)/10,Math.round(G.M.z[i]*10)/10]}
+function edTap(X,Y){const L=ED.L,w=edW(X,Y),G=edGeo();ED.msg='';
+ if(ED.tool==='crate'){(L.crates=L.crates||[]).push([Math.round(w[0]*10)/10,Math.round(w[1]*10)/10]);ED.sel={k:'crate',i:L.crates.length-1}}
+ else if(ED.tool==='start'){const i=G.near(w[0],w[1]);L.start=Math.round(i*G.M.ds)}
+ else if(ED.tool==='track'){// insert a point on the road segment nearest the tap
+  const i=G.near(w[0],w[1]),d=Math.hypot(G.M.x[i]-w[0],G.M.z[i]-w[1]);if(d>(L.hw||10)+4){ED.sel=null;return}
+  let best=0,bd=1e18;for(let k=0;k<L.main.length;k++){const a=L.main[k],b=L.main[(k+1)%L.main.length],ex=b[0]-a[0],ez=b[1]-a[1],t=clamp(((w[0]-a[0])*ex+(w[1]-a[1])*ez)/(ex*ex+ez*ez||1),0,1),dd=(a[0]+ex*t-w[0])**2+(a[1]+ez*t-w[1])**2;if(dd<bd){bd=dd;best=k}}
+  L.main.splice(best+1,0,[Math.round(G.M.x[i]*10)/10,Math.round(G.M.z[i]*10)/10]);ED.sel={k:'main',i:best+1}}
+ else if(ED.tool==='cut'&&ED.cut){const c=ED.cut,on=Math.hypot(G.M.x[G.near(w[0],w[1])]-w[0],G.M.z[G.near(w[0],w[1])]-w[1])<(L.hw||10)+2;
+  if(!c.a){if(!on){ED.msg='Start the shortcut on the track.';return}c.a=edSnapMain(w[0],w[1])}
+  else if(on&&c.pts.length>=1&&Math.hypot(w[0]-c.a[0],w[1]-c.a[1])>30){c.b=edSnapMain(w[0],w[1]);(L.cuts=L.cuts||[]).push({a:c.a,b:c.b,pts:c.pts});ED.cut=null;ED.msg='Shortcut added. Traffic runs the same way as the main loop.'}
+  else c.pts.push([Math.round(w[0]*10)/10,Math.round(w[1]*10)/10])}
+ else ED.sel=null}
+function edDel(){const L=ED.L,s=ED.sel;if(ED.cut){ED.cut=null;ED.msg='Shortcut cancelled.';return}if(!s){ED.msg='Select something first.';return}
+ if(s.k==='main'){if(L.main.length<=5){ED.msg='The loop needs at least 5 points.';return}L.main.splice(s.i,1)}
+ else if(s.k==='crate')L.crates.splice(s.i,1);
+ else if(s.k==='cp'){const c=L.cuts[s.ci];if(c.pts.length>1)c.pts.splice(s.i,1);else L.cuts.splice(s.ci,1)}
+ else if(s.k==='a'||s.k==='b')L.cuts.splice(s.ci,1);
+ ED.sel=null}
+function edCode(){return'KOHD1:'+btoa(unescape(encodeURIComponent(JSON.stringify(ED.L))))}
+function edParse(t){t=String(t||'').trim();try{const L=t.startsWith('KOHD1:')?JSON.parse(decodeURIComponent(escape(atob(t.slice(6))))):JSON.parse(t);return levelOk(L)?L:null}catch(e){return null}}
+function edAfter(){edSave();edUI();edDraw()}
+{const cv=$('edc');
+ cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);ED.ptrs.set(e.pointerId,[e.offsetX,e.offsetY]);
+  if(ED.ptrs.size===2){const v=[...ED.ptrs.values()];ED.pinch=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);ED.drag=null;return}
+  const pk=edPick(e.offsetX,e.offsetY);ED.drag={pk,x:e.offsetX,y:e.offsetY,moved:false};if(pk)ED.sel=pk;edDraw()});
+ cv.addEventListener('pointermove',e=>{if(!ED.ptrs.has(e.pointerId))return;const o=ED.ptrs.get(e.pointerId);ED.ptrs.set(e.pointerId,[e.offsetX,e.offsetY]);
+  if(ED.ptrs.size===2){const v=[...ED.ptrs.values()],d=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);if(ED.pinch>0){ED.view.s=clamp(ED.view.s*d/ED.pinch,.3,20)}ED.pinch=d;edDraw();return}
+  const D=ED.drag;if(!D)return;if(Math.hypot(e.offsetX-D.x,e.offsetY-D.y)>4)D.moved=true;if(!D.moved)return;
+  if(D.pk){const w=edW(e.offsetX,e.offsetY),L=ED.L,r=p=>[Math.round(p[0]*10)/10,Math.round(p[1]*10)/10],pk=D.pk;
+   if(pk.k==='main')L.main[pk.i]=r(w);else if(pk.k==='crate')L.crates[pk.i]=r(w);else if(pk.k==='cp')L.cuts[pk.ci].pts[pk.i]=r(w);else if(pk.k==='a'||pk.k==='b')L.cuts[pk.ci][pk.k]=edSnapMain(w[0],w[1])}
+  else{ED.view.cx-=(e.offsetX-o[0])/ED.view.s;ED.view.cz-=(e.offsetY-o[1])/ED.view.s}edDraw()});
+ const up=e=>{if(!ED.ptrs.has(e.pointerId))return;ED.ptrs.delete(e.pointerId);if(ED.ptrs.size<2)ED.pinch=0;const D=ED.drag;ED.drag=null;if(!D)return;if(!D.moved&&!D.pk)edTap(D.x,D.y);edAfter()};
+ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();const w0=edW(e.offsetX,e.offsetY);ED.view.s=clamp(ED.view.s*Math.exp(-e.deltaY*.0015),.3,20);const w1=edW(e.offsetX,e.offsetY);ED.view.cx+=w0[0]-w1[0];ED.view.cz+=w0[1]-w1[1];edDraw()},{passive:false});
+ for(const b of document.querySelectorAll('#edtools [data-t]'))b.addEventListener('click',()=>{ED.tool=b.dataset.t;ED.sel=null;ED.cut=null;ED.msg='';edUI();edDraw()});
+ $('ednew').addEventListener('click',()=>{if((ED.L.cuts||[]).length>=4){ED.msg='Up to 4 shortcuts.';edDraw();return}ED.cut={a:null,pts:[]};ED.sel=null;ED.msg='Tap the track where the shortcut leaves it.';edDraw()});
+ $('eddel').addEventListener('click',()=>{edDel();edAfter()});
+ $('edfit').addEventListener('click',()=>{edFit();edDraw()});
+ $('edw').addEventListener('input',e=>{ED.L.hw=+e.target.value;edAfter()});$('edcw').addEventListener('input',e=>{ED.L.cutHw=+e.target.value;edAfter()});
+ $('edname').addEventListener('input',e=>{ED.L.name=e.target.value.slice(0,32);edSave()});
+ $('edreset').addEventListener('click',()=>{if(!confirmBox('Start over from the default map?'))return;ED.L=edClone(DEFAULT_LEVEL);ED.sel=null;edFit();edAfter()});
+ $('edtest').addEventListener('click',()=>{edSave();try{sessionStorage.setItem('kohd_test',JSON.stringify(ED.L));sessionStorage.setItem('kohd_autoplay','1')}catch(e){}location.reload()});
+ $('edexp').addEventListener('click',()=>{$('edio').style.display='flex';$('edtxt').value=edCode();$('edioh').textContent='Send this code (or the downloaded file) to share your map.';$('edtxt').select()});
+ $('edimp').addEventListener('click',()=>{$('edio').style.display='flex';$('edtxt').value='';$('edioh').textContent='Paste a map code, or open a .json map file.';$('edtxt').focus()});
+ $('edcopy').addEventListener('click',()=>{const t=$('edtxt');t.select();try{navigator.clipboard.writeText(t.value)}catch(e){document.execCommand('copy')}$('edioh').textContent='Copied.'});
+ $('eddl').addEventListener('click',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(ED.L,null,1)],{type:'application/json'}));a.download=((ED.L.name||'map').replace(/[^a-z0-9_-]+/gi,'-')||'map')+'.kohd.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)});
+ $('edload').addEventListener('click',()=>{const L=edParse($('edtxt').value);if(!L){$('edioh').textContent="That isn't a valid map code.";return}ED.L=L;ED.sel=null;$('edio').style.display='none';edFit();edAfter()});
+ $('edfile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{$('edtxt').value=t;$('edload').click()})});
+ $('edioclose').addEventListener('click',()=>{$('edio').style.display='none'});
+ $('edexit').addEventListener('click',edClose);
+ $('b-edit').addEventListener('click',edOpen);
+ addEventListener('resize',()=>{if(ED.on)edDraw()})}
+function confirmBox(q){try{return confirm(q)}catch(e){return true}}
+// a test drive from the editor: the page reloads on the edited map and goes straight into Play vs AI
+if(TEST_LEVEL){const b=document.createElement('div');b.id='testbar';b.innerHTML='<b>Testing: '+String(TEST_LEVEL.name||'your map').replace(/[<>&]/g,'')+'</b><button id="tb-edit">Back to editor</button><button id="tb-end">End test</button>';document.body.appendChild(b);
+ $('tb-edit').addEventListener('click',()=>{try{sessionStorage.removeItem('kohd_test');sessionStorage.setItem('kohd_reopen','1')}catch(e){}location.reload()});
+ $('tb-end').addEventListener('click',()=>{try{sessionStorage.removeItem('kohd_test')}catch(e){}location.reload()});
+ for(const id of['b-find','b-host']){const el=$(id);if(el){el.disabled=true;el.style.opacity=.45}}}
+
+// after a test-drive reload: go straight into Play vs AI, or back into the editor
+{const go=()=>{if(!physReady){setTimeout(go,200);return}let ap=null,ro=null;try{ap=sessionStorage.getItem('kohd_autoplay');ro=sessionStorage.getItem('kohd_reopen');sessionStorage.removeItem('kohd_autoplay');sessionStorage.removeItem('kohd_reopen')}catch(e){}
+ if(ap&&TEST_LEVEL)startPractice();else if(ro)edOpen()};setTimeout(go,300)}
 </script>
 </body></html>

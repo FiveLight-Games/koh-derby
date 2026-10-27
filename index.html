@@ -853,7 +853,7 @@ truckV.g.traverse(o=>{if(o.isMesh)o.castShadow=true});scene.add(truckV.g);
 try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb',gl=>{
  const m=gl.scene,w=new THREE.Group(),bx=new THREE.Box3(),sz=new THREE.Vector3(),c=new THREE.Vector3();
  m.rotation.y=Math.PI/2;w.add(m);w.updateMatrixWorld(true);bx.setFromObject(m).getSize(sz);
- m.scale.setScalar(HAULER.L/sz.z);w.updateMatrixWorld(true);bx.setFromObject(m).getCenter(c);
+ m.scale.setScalar(HAULER.L*1.1/sz.z);w.updateMatrixWorld(true);bx.setFromObject(m).getCenter(c);
  m.position.set(-c.x,truckV.base-bx.min.y,-c.z);
  m.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const mt=o.material;if(mt&&mt.map)mt.map.encoding=THREE.LinearEncoding});
  for(const ch of truckV.g.children)ch.visible=false;truckV.g.add(w);

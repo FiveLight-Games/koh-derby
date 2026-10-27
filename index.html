@@ -850,7 +850,7 @@ for(const sx of[1,-1]){const o=new THREE.Group();o.position.set(sx*(HAULER.W/2+.
 truckV.g.traverse(o=>{if(o.isMesh)o.castShadow=true});scene.add(truckV.g);
 // custom hauler model: towtruck.glb (long axis X, front facing -X). Scaled to the hauler's length and sat on its wheel line.
 // The built-in hauler stays as the fallback until the model loads (or if it fails to).
-try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb?v=dually1',gl=>{
+try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb?v=dually2',gl=>{
  const m=gl.scene,w=new THREE.Group(),bx=new THREE.Box3(),sz=new THREE.Vector3(),c=new THREE.Vector3();
  m.rotation.y=Math.PI/2;w.add(m);w.updateMatrixWorld(true);bx.setFromObject(m).getSize(sz);
  m.scale.setScalar(HAULER.L*1.1/sz.z);w.updateMatrixWorld(true);bx.setFromObject(m).getCenter(c);
@@ -859,6 +859,10 @@ try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb?v=dually1',gl=
  const noMip=t=>{if(!t)return;t.generateMipmaps=false;t.mipmaps=[];t.minFilter=THREE.LinearFilter;t.magFilter=THREE.LinearFilter;t.needsUpdate=true};
  m.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=false;const mt=o.material;if(!mt)return;if(mt.map)mt.map.encoding=THREE.LinearEncoding;
   for(const k of['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap'])noMip(mt[k])});
+ // wheel_FL/FR/RL/RR are pivoted at the hub (axle = model Z = hauler X). Each one copies the spin (and steer, for the
+ // fronts) of the matching built-in hauler wheel, which updateTruckVis keeps updating even while hidden.
+ truckV.glbW=[];m.traverse(o=>{const k=/^wheel_([FR])([LR])$/.exec(o.name);if(!k)return;const front=k[1]==='F',side=k[2]==='L'?1:-1;
+  const src=truckV.wheels.find(q=>q.front===front&&q.side===side);if(src){o.rotation.order='YZX';truckV.glbW.push({o,src,front,k:HAULER.R/(0.1555*m.scale.x)})}});  // k: built-in wheel radius / model tyre radius, so the tread rolls at road speed
  for(const ch of truckV.g.children)ch.visible=false;truckV.g.add(w);
 },undefined,e=>console.warn('towtruck.glb failed to load, using built-in hauler',e))}catch(e){}
 const trailerG=new THREE.Group();scene.add(trailerG);const RAMPV=[];const trailerWheels=[];
@@ -1494,6 +1498,7 @@ function updateTruckVis(dt){
  if(!physReady)return;
  setPose(truckV.g,TRK);setPose(trailerG,TRL);
  const tw=TRK.V.wl;for(let i=0;i<6;i++){const w=truckV.wheels[i],vw=tw[i<4?i:i-2];w.o.position.y=vw.y-Math.min(vw.susp,vw.rest);if(i<4)vw.spin+=vw.vlo*dt/HAULER.R;w.m.rotation.x=vw.spin;if(w.front)w.o.rotation.y=TK.steer}
+ if(truckV.glbW)for(const q of truckV.glbW)q.o.rotation.set(0,q.front?q.src.o.rotation.y:0,q.src.m.rotation.x*q.k);
  for(let i=0;i<4;i++){const w=trailerWheels[i],vw=TRL.V.wl[i];w.o.position.y=vw.y-Math.min(vw.susp,vw.rest);vw.spin+=vw.vlo*dt/.36;w.m.rotation.x=vw.spin}
  const sp=Math.abs(TRL.vx*TRL.s+TRL.vz*TRL.co);
  for(const R0 of RAMPV){const b=R0.body,t=b.translation(),q=b.rotation();R0.g.position.set(t.x,t.y,t.z);R0.g.quaternion.set(q.x,q.y,q.z,q.w);

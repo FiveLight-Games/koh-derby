@@ -164,6 +164,8 @@ input.vs{width:100%;accent-color:#ffb52e;height:28px}
 .card .big.red,.gtop #g-done{height:56px;border-radius:30px!important;background:radial-gradient(circle at 40% 30%,#ff6a50,#b8231a 60%,#6d120c)!important;border:5px solid #2a2a2a!important;box-shadow:0 5px 0 #111,0 8px 12px rgba(0,0,0,.5)!important;color:#fff!important;font:900 22px Inter,system-ui,sans-serif!important;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 2px 0 #6d120c;margin-top:16px}
 .card .big.red:active,.gtop #g-done:active{transform:translateY(3px);box-shadow:0 2px 0 #111!important}
 .gtop{margin-bottom:8px}.gtop b{background:#efe3b8;color:#1a1a1a;transform:rotate(-2deg);padding:3px 14px;font:700 20px Oswald,'DejaVu Sans Condensed',sans-serif;text-transform:uppercase;letter-spacing:.06em;box-shadow:0 3px 6px rgba(0,0,0,.35)}
+.gtop #g-done{position:relative;overflow:hidden;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.gtop #g-done::after{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--hold,0%);background:rgba(255,255,255,.35);pointer-events:none}
 .gtop #g-done{height:40px;margin:0;font-size:15px!important;border-width:3px!important;padding:0 18px}
 .sw button{border-color:rgba(0,0,0,.35)!important}.sw button.sel{border:3px solid #1a1a1a!important;box-shadow:0 0 0 2px #ff8a2a}
 #joym{position:relative}
@@ -555,14 +557,16 @@ const MODELS=[
  {name:'Wagon',cab:{w:1.68,h:.6,l:2.85,z:-.45,rf:.36,rr:.05},doors:4,trunk:false,h:{vs:1.5,yaw:1.05,mass:1450,acc:1.05,top:28,steer:1.08,mu:1.17},note:'All-rounder'},
  {name:'Muscle',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:1.7,yaw:1.05,mass:1500,acc:1.38,top:29,steer:.92,mu:1.08,rwd:true},note:'Fastest acceleration, RWD'},
  {name:'Pickup',cab:{w:1.62,h:.6,l:1.45,z:.42,rf:.32,rr:.04},doors:2,trunk:false,bed:true,h:{vs:1.95,yaw:1.35,mass:2100,acc:1.25,top:26,steer:.88,mu:1.12,rwd:true},note:'Heaviest, hard to push around, RWD'},
- // drawn from a Meshy .glb (see attachGLB); handling copied from Muscle. Paint and dents don't apply to it.
- {name:'Mustang',glb:'mustang.glb?v=1',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:1.7,yaw:1.05,mass:1500,acc:1.38,top:29,steer:.92,mu:1.08,rwd:true},note:'Meshy model, Muscle handling, RWD'}];
+ // secret car (must stay last): hidden from the garage and from bots until unlocked by holding Garage > Done for 5 s.
+ // Drawn from a Meshy .glb (see attachGLB); paint and dents don't apply to it. Handling maxes every garage stat bar.
+ {name:'Mustang',secret:true,glb:'mustang.glb?v=1',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:.85,yaw:.6,mass:2200,acc:2.05,top:31,steer:1.4,mu:1.32,rwd:true},note:'Secret car, everything maxed, RWD'}];
+const PUBLIC_M=MODELS.filter(m=>!m.secret).length;let secretOn=false;try{secretOn=localStorage.getItem('kohd_secret')==='1'}catch(e){}
 const CAR={L:4.4,W:1.88,H:.55,clr:.22,R:.37,mass:1400,eng:1400*7,top:27.3,rev:9,mu:1.15,vsat:1.6,hcg:.5,hp:100,hh:.66};
 const STRIPES=['None','Racing','Side'],RIMS=['Spoke','Steel','Dish'],SPOILERS=['None','Lip','Wing'];
 const ACCENTS=[0x2e2e2e,0xdfe3e8,0xd8b04a,0xd6302a,0xf4f4f4,0x2f86ff,0x35c46a,0xff7a1a],ORNAMENTS=['None','Longhorns','Eagle','Skull','Flames'],ROOFS=['None','Rack','Lights'],FRONTS=['Stock','Bull bar'],TINTS=['Dark','Light','Blue'],TINT_C=[0x1b2632,0x6a7a88,0x1f3f6a];
 function parseCfg(t){const a=String(t||'').split('.').map(Number),v=(i,n)=>Number.isFinite(a[i])?((a[i]%n)+n)%n:0;return{m:v(0,MODELS.length),p:v(1,PAINTS.length),s:v(2,3),sc:v(3,PAINTS.length),r:v(4,3),rc:v(5,RIMCOLS.length),w:v(6,3),ac:v(7,ACCENTS.length),ho:v(8,ORNAMENTS.length),rf:v(9,ROOFS.length),fr:v(10,FRONTS.length),wt:v(11,TINTS.length)}}
 function cfgStr(c){return[c.m,c.p,c.s,c.sc,c.r,c.rc,c.w,c.ac,c.ho,c.rf,c.fr,c.wt].join('.')}
-function randCfg(){const r=n=>rand(0,n)|0;return cfgStr({m:r(MODELS.length),p:r(12),s:r(3),sc:r(12),r:r(3),rc:r(4),w:r(3),ac:r(ACCENTS.length),ho:Math.random()<.5?0:r(ORNAMENTS.length),rf:Math.random()<.6?0:r(ROOFS.length),fr:Math.random()<.7?0:1,wt:r(3)})}
+function randCfg(){const r=n=>rand(0,n)|0;return cfgStr({m:r(PUBLIC_M),p:r(12),s:r(3),sc:r(12),r:r(3),rc:r(4),w:r(3),ac:r(ACCENTS.length),ho:Math.random()<.5?0:r(ORNAMENTS.length),rf:Math.random()<.6?0:r(ROOFS.length),fr:Math.random()<.7?0:1,wt:r(3)})}
 function carSpec(cfg){const M=MODELS[cfg.m],h=M.h;return Object.assign({},CAR,{cab:M.cab,doors:M.doors,trunk:M.trunk,scoop:M.scoop,bed:M.bed,name:M.name,glb:M.glb,mass:h.mass,eng:1400*7*h.acc,top:h.top,steer:h.steer,mu:h.mu,rwd:!!h.rwd,vsat:h.vs,yaw:h.yaw})}
 const RIM_MATS=RIMCOLS.map(c=>mStd(c,{roughness:.28,metalness:.85}));
 function stripeMat(base,st,dir){/*paint with a stripe*/const cv=document.createElement('canvas');cv.width=cv.height=64;const x=cv.getContext('2d');const hx=n=>'#'+n.toString(16).padStart(6,'0');x.fillStyle=hx(base);x.fillRect(0,0,64,64);x.fillStyle=hx(st);
@@ -1721,7 +1725,7 @@ $('b-exit').addEventListener('click',()=>{if(R&&R.offline&&!TEST_LEVEL)offlineLo
 // ---------- rooms / net ----------
 const MAXP=8,PROTO=2;let dir=null,dirReady=false,dirMode='',dirLast='';
 let myJoined=0,chReady=false,sb=null,ch=null,net=false,isHost=true,hostId=null,players=[],R=null,roomCode='',offS=[],clockOff=0,shownWin=0,sendAcc=0;
-const myId=rid();let myName=store('pursuit_name')||('Driver'+((Math.random()*90+10)|0)),myCls=store('pursuit_car')||'1.0.0.6.0.0.0';
+const myId=rid();let myName=store('pursuit_name')||('Driver'+((Math.random()*90+10)|0)),myCls=store('pursuit_car')||'1.0.0.6.0.0.0';{const c=parseCfg(myCls);if(c.m>=PUBLIC_M&&!secretOn){c.m=MODELS.findIndex(m=>m.name==='Muscle');myCls=cfgStr(c)}}
 const BOTN=['Dusty','Rusty','Mags','Tex','Bubba','Gravel','Hank','Skid'];
 const hostNow=()=>Date.now()+(isHost?0:clockOff);
 const truckTime=()=>R&&R.phase==='play'?(hostNow()-R.t0)/1000:-5;
@@ -1874,11 +1878,20 @@ function buildShow(){if(show){scene.remove(show.g);show.g.traverse(o=>{if(o.isMe
 function garageUI(){const cfg=parseCfg(myCls),hx=n=>'#'+n.toString(16).padStart(6,'0');
  const seg=(id,names,key)=>{const el=$(id);el.innerHTML='';names.forEach((n,i)=>{const b=document.createElement('button');b.textContent=n;if(cfg[key]===i)b.classList.add('sel');b.onclick=()=>setCfg(key,i);el.appendChild(b)})};
  const sw=(id,cols,key)=>{const el=$(id);el.innerHTML='';cols.forEach((c,i)=>{const b=document.createElement('button');b.style.background=hx(c);if(cfg[key]===i)b.classList.add('sel');b.setAttribute('aria-label','color '+i);b.onclick=()=>setCfg(key,i);el.appendChild(b)})};
- seg('g-m',MODELS.map(m=>m.name),'m');$('g-m').classList.add('gseg6');{const H=MODELS[cfg.m].h,rows=[['Accel',(1400*7*H.acc/H.mass)/9],['Top speed',(H.top-24)/7],['Steering',(H.steer/H.vs/H.yaw)/1.7],['Grip',(H.mu-.95)/.36],['Weight',H.mass/2200]];$('g-st').innerHTML=rows.map(r=>'<span>'+r[0]+'</span><i style="width:'+Math.round(clamp(r[1],.08,1)*100)+'%"></i>').join('');$('g-note').textContent=MODELS[cfg.m].note+(H.rwd?'':' · FWD')}sw('g-p',PAINTS,'p');seg('g-s',STRIPES,'s');sw('g-sc',PAINTS,'sc');$('g-sc').style.display=cfg.s?'flex':'none';seg('g-r',RIMS,'r');sw('g-rc',RIMCOLS,'rc');seg('g-w',SPOILERS,'w');sw('g-ac',ACCENTS,'ac');seg('g-ho',ORNAMENTS,'ho');seg('g-rf',ROOFS,'rf');seg('g-fr',FRONTS,'fr');seg('g-wt',TINTS,'wt')}
+ seg('g-m',MODELS.slice(0,secretOn?MODELS.length:PUBLIC_M).map(m=>m.name),'m');$('g-m').classList.add('gseg6');{const H=MODELS[cfg.m].h,rows=[['Accel',(1400*7*H.acc/H.mass)/9],['Top speed',(H.top-24)/7],['Steering',(H.steer/H.vs/H.yaw)/1.7],['Grip',(H.mu-.95)/.36],['Weight',H.mass/2200]];$('g-st').innerHTML=rows.map(r=>'<span>'+r[0]+'</span><i style="width:'+Math.round(clamp(r[1],.08,1)*100)+'%"></i>').join('');$('g-note').textContent=MODELS[cfg.m].note+(H.rwd?'':' · FWD')}sw('g-p',PAINTS,'p');seg('g-s',STRIPES,'s');sw('g-sc',PAINTS,'sc');$('g-sc').style.display=cfg.s?'flex':'none';seg('g-r',RIMS,'r');sw('g-rc',RIMCOLS,'rc');seg('g-w',SPOILERS,'w');sw('g-ac',ACCENTS,'ac');seg('g-ho',ORNAMENTS,'ho');seg('g-rf',ROOFS,'rf');seg('g-fr',FRONTS,'fr');seg('g-wt',TINTS,'wt')}
 function setCfg(k,v){const c=parseCfg(myCls);c[k]=v;myCls=cfgStr(c);store('pursuit_car',myCls);garageUI();buildShow();if(ch&&chReady)ch.track({id:myId,name:myName,cls:myCls,joined:myJoined,spec})}
 function openGarage(){endIntro();$('vbox').style.display='none';garageOn=true;$('menu').style.display='none';$('garage').style.display='block';garageUI();buildShow()}
 function closeGarage(){$('vbox').style.display='flex';garageOn=false;garageVO=-1;camera.clearViewOffset();camera.updateProjectionMatrix();$('garage').style.display='none';$('menu').style.display='';bakeSoon();if(show){scene.remove(show.g);show=null}}
-$('b-garage').addEventListener('click',openGarage);$('g-done').addEventListener('click',closeGarage);
+$('b-garage').addEventListener('click',openGarage);{const d=$('g-done');let t0=0,raf=0,eat=false;
+ const stop=()=>{t0=0;cancelAnimationFrame(raf);d.style.setProperty('--hold','0%')};
+ const tick=()=>{if(!t0)return;const e=performance.now()-t0;d.style.setProperty('--hold',e<1000?'0%':Math.min(100,(e-1000)/40)+'%');  // fill only shows after 1 s
+  if(e>=5000){stop();eat=true;if(!secretOn){secretOn=true;store('kohd_secret','1')}setCfg('m',MODELS.length-1);
+   const nm=$('g-name');nm.textContent='MUSTANG UNLOCKED';setTimeout(()=>{if(garageOn)nm.textContent=MODELS[parseCfg(myCls).m].name},2500);return}
+  raf=requestAnimationFrame(tick)};
+ d.addEventListener('pointerdown',()=>{eat=false;t0=performance.now();raf=requestAnimationFrame(tick)});
+ for(const ev of['pointerup','pointerleave','pointercancel'])d.addEventListener(ev,stop);
+ d.addEventListener('contextmenu',e=>e.preventDefault());
+ d.addEventListener('click',()=>{if(eat){eat=false;return}closeGarage()})}
 
 // ---------- hud ----------
 let hudT=0;

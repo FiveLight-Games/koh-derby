@@ -51,6 +51,7 @@ body.ingame #b-fs2,body.ingame #mvol{display:none!important}
 .gcard{max-width:520px!important;margin:0 auto;max-height:44vh;overflow-y:auto;padding:10px 12px!important}
 .gcard label{margin:8px 0 4px!important}.gcard .seg button{height:34px!important;font-size:13px!important}.gcard .sw button{width:26px;height:26px}.gcard .hint{margin-top:8px}
 .gseg6 button{padding:0 2px!important;font-size:12px!important}
+.gseg6{flex-wrap:wrap}
 #g-st{display:grid;grid-template-columns:auto 1fr;gap:3px 8px;font-size:11px;margin-top:8px;align-items:center}#g-st i{display:block;height:6px;border-radius:3px;background:#e0a33a}#g-st span{opacity:.75}
 .gtop{display:flex;align-items:center;justify-content:space-between}.gtop b{font-size:18px}
 .sw{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}.sw button{width:30px;height:30px;border-radius:50%!important;border:2px solid rgba(255,255,255,.2)!important;padding:0!important}
@@ -553,14 +554,16 @@ const MODELS=[
  {name:'Hatch',cab:{w:1.66,h:.6,l:2.45,z:-.6,rf:.38,rr:.14},doors:4,trunk:false,h:{vs:1.4,yaw:.9,mass:1250,acc:.95,top:26.5,steer:1.15,mu:1.28},note:'Most grip'},
  {name:'Wagon',cab:{w:1.68,h:.6,l:2.85,z:-.45,rf:.36,rr:.05},doors:4,trunk:false,h:{vs:1.5,yaw:1.05,mass:1450,acc:1.05,top:28,steer:1.08,mu:1.17},note:'All-rounder'},
  {name:'Muscle',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:1.7,yaw:1.05,mass:1500,acc:1.38,top:29,steer:.92,mu:1.08,rwd:true},note:'Fastest acceleration, RWD'},
- {name:'Pickup',cab:{w:1.62,h:.6,l:1.45,z:.42,rf:.32,rr:.04},doors:2,trunk:false,bed:true,h:{vs:1.95,yaw:1.35,mass:2100,acc:1.25,top:26,steer:.88,mu:1.12,rwd:true},note:'Heaviest, hard to push around, RWD'}];
+ {name:'Pickup',cab:{w:1.62,h:.6,l:1.45,z:.42,rf:.32,rr:.04},doors:2,trunk:false,bed:true,h:{vs:1.95,yaw:1.35,mass:2100,acc:1.25,top:26,steer:.88,mu:1.12,rwd:true},note:'Heaviest, hard to push around, RWD'},
+ // drawn from a Meshy .glb (see attachGLB); handling copied from Muscle. Paint and dents don't apply to it.
+ {name:'Mustang',glb:'mustang.glb?v=1',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:1.7,yaw:1.05,mass:1500,acc:1.38,top:29,steer:.92,mu:1.08,rwd:true},note:'Meshy model, Muscle handling, RWD'}];
 const CAR={L:4.4,W:1.88,H:.55,clr:.22,R:.37,mass:1400,eng:1400*7,top:27.3,rev:9,mu:1.15,vsat:1.6,hcg:.5,hp:100,hh:.66};
 const STRIPES=['None','Racing','Side'],RIMS=['Spoke','Steel','Dish'],SPOILERS=['None','Lip','Wing'];
 const ACCENTS=[0x2e2e2e,0xdfe3e8,0xd8b04a,0xd6302a,0xf4f4f4,0x2f86ff,0x35c46a,0xff7a1a],ORNAMENTS=['None','Longhorns','Eagle','Skull','Flames'],ROOFS=['None','Rack','Lights'],FRONTS=['Stock','Bull bar'],TINTS=['Dark','Light','Blue'],TINT_C=[0x1b2632,0x6a7a88,0x1f3f6a];
 function parseCfg(t){const a=String(t||'').split('.').map(Number),v=(i,n)=>Number.isFinite(a[i])?((a[i]%n)+n)%n:0;return{m:v(0,MODELS.length),p:v(1,PAINTS.length),s:v(2,3),sc:v(3,PAINTS.length),r:v(4,3),rc:v(5,RIMCOLS.length),w:v(6,3),ac:v(7,ACCENTS.length),ho:v(8,ORNAMENTS.length),rf:v(9,ROOFS.length),fr:v(10,FRONTS.length),wt:v(11,TINTS.length)}}
 function cfgStr(c){return[c.m,c.p,c.s,c.sc,c.r,c.rc,c.w,c.ac,c.ho,c.rf,c.fr,c.wt].join('.')}
 function randCfg(){const r=n=>rand(0,n)|0;return cfgStr({m:r(MODELS.length),p:r(12),s:r(3),sc:r(12),r:r(3),rc:r(4),w:r(3),ac:r(ACCENTS.length),ho:Math.random()<.5?0:r(ORNAMENTS.length),rf:Math.random()<.6?0:r(ROOFS.length),fr:Math.random()<.7?0:1,wt:r(3)})}
-function carSpec(cfg){const M=MODELS[cfg.m],h=M.h;return Object.assign({},CAR,{cab:M.cab,doors:M.doors,trunk:M.trunk,scoop:M.scoop,bed:M.bed,name:M.name,mass:h.mass,eng:1400*7*h.acc,top:h.top,steer:h.steer,mu:h.mu,rwd:!!h.rwd,vsat:h.vs,yaw:h.yaw})}
+function carSpec(cfg){const M=MODELS[cfg.m],h=M.h;return Object.assign({},CAR,{cab:M.cab,doors:M.doors,trunk:M.trunk,scoop:M.scoop,bed:M.bed,name:M.name,glb:M.glb,mass:h.mass,eng:1400*7*h.acc,top:h.top,steer:h.steer,mu:h.mu,rwd:!!h.rwd,vsat:h.vs,yaw:h.yaw})}
 const RIM_MATS=RIMCOLS.map(c=>mStd(c,{roughness:.28,metalness:.85}));
 function stripeMat(base,st,dir){/*paint with a stripe*/const cv=document.createElement('canvas');cv.width=cv.height=64;const x=cv.getContext('2d');const hx=n=>'#'+n.toString(16).padStart(6,'0');x.fillStyle=hx(base);x.fillRect(0,0,64,64);x.fillStyle=hx(st);
  if(dir==='v'){x.fillRect(19,0,9,64);x.fillRect(36,0,9,64)}else{x.fillRect(0,25,64,12)}
@@ -674,7 +677,40 @@ function buildModelVehicle(S,color,vis,M){
   const inner=new THREE.Mesh(new THREE.CircleGeometry(.036,8),darkM);inner.position.set(0,-.05,0);inner.rotation.x=Math.PI/2;tip.add(inner);tip.castShadow=true;if(rbD){tip.position.sub(rbD.obj.position);rbD.obj.add(tip)}else g.add(tip)}
  const ex=[ey,Math.min(...ezs)-.08];
  return{g,parts,det,wheels,hh,base,top:A.belt,ex}}
+// ---------- Meshy .glb cars ----------
+// The built-in car is still built (physics, damage, wheels) but hidden, and the .glb is drawn in its place. The .glb
+// faces -X with its long axis on X; wheel nodes wheel_FL/FR/RL/RR are pivoted at the hub (axle on the model's Z,
+// extras.radius = tyre radius in model units) and follow the hidden wheels every frame (glbWheels).
+const GLB={},GLB_QM=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),Math.PI/2),GLB_QMI=GLB_QM.clone().invert();
+function glbGet(url,cb){let e=GLB[url];
+ if(!e){e=GLB[url]={q:[],tpl:null};
+  const fail=err=>{console.warn(url+' failed to load, using the built-in car',err);e.q=null};
+  try{new THREE.GLTFLoader().load(url,gl=>{
+   // Meshy textures are atlases of tiny UV islands; mipmaps blend neighbouring islands into seams, so sample full size only
+   gl.scene.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=false;const mt=o.material;if(!mt)return;if(mt.map)mt.map.encoding=THREE.LinearEncoding;
+    for(const k of['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap']){const t=mt[k];if(t){t.generateMipmaps=false;t.mipmaps=[];t.minFilter=THREE.LinearFilter;t.magFilter=THREE.LinearFilter;t.needsUpdate=true}}});
+   e.tpl=gl.scene;const q=e.q;e.q=null;for(const f of q)f(e.tpl)},undefined,fail)}catch(err){fail(err)}}
+ if(e.tpl)cb(e.tpl);else if(e.q)e.q.push(cb)}
+function attachGLB(V,S){
+ for(const w of V.wheels)w.p0=w.o.position.clone();
+ if(!THREE.GLTFLoader)return;
+ glbGet(S.glb,tpl=>{
+  const m=tpl.clone(true),w=new THREE.Group(),bx=new THREE.Box3(),sz=new THREE.Vector3(),c=new THREE.Vector3();
+  m.traverse(o=>{if(o.isMesh)o.material=o.material.clone()});  // own materials, so ghost/chrome effects only touch this car
+  m.quaternion.copy(GLB_QM);w.add(m);w.updateMatrixWorld(true);bx.setFromObject(m).getSize(sz);
+  m.scale.setScalar(S.L/sz.z);w.updateMatrixWorld(true);bx.setFromObject(m).getCenter(c);m.position.set(-c.x,V.base-bx.min.y,-c.z);
+  const gw=[];m.traverse(o=>{const k=/^wheel_([FR])([LR])$/.exec(o.name);if(!k)return;
+   const src=V.wheels.find(q=>q.front===(k[1]==='F')&&q.side===(k[2]==='L'?1:-1));
+   if(src)gw.push({o,src,p0:o.position.clone(),s:m.scale.x,k:(src.r||S.R)/((o.userData.radius||.155)*m.scale.x)})});
+  for(const ch of V.g.children)ch.visible=false;V.g.add(w);V.wheels.glb=gw;glbWheels(gw)})}
+// copy each hidden wheel's pose (steer, hover tilt, spin, suspension travel, Monster Truck size) onto its .glb wheel
+const _gq=new THREE.Quaternion(),_gq2=new THREE.Quaternion(),_ge=new THREE.Euler(),_gv=new THREE.Vector3();
+function glbWheels(gw){for(const q of gw){const w=q.src;q.o.visible=w.on;if(!w.on)continue;
+ _gq.copy(w.o.quaternion).multiply(_gq2.setFromEuler(_ge.set(w.m.rotation.x*q.k,0,0)));
+ q.o.quaternion.copy(GLB_QMI).multiply(_gq).multiply(GLB_QM);
+ _gv.subVectors(w.o.position,w.p0).applyQuaternion(GLB_QMI).divideScalar(q.s);q.o.position.copy(q.p0).add(_gv);q.o.scale.copy(w.m.scale)}}
 function buildVehicle(S,color,chrome,vis){
+ if(S.glb&&!S._glbInner){const V=buildVehicle(Object.assign({},S,{_glbInner:true}),color,chrome,vis);attachGLB(V,S);return V}
  if(vis&&!chrome&&typeof CARMODELS!=='undefined'&&CARMODELS[S.name])return buildModelVehicle(S,color,vis,CARMODELS[S.name]);
  const g=new THREE.Group();g.rotation.order='YXZ';
  const C=S.cab,hh=S.hh||(S.clr+S.H+C.h)/2,base=-hh,W2=S.W-.12,L2=S.L-.34,bodyY=base+S.clr+S.H/2,top=base+S.clr+S.H;
@@ -1471,6 +1507,7 @@ function updateCars(dt){
    const hov=remote?(c.fxBits&2):(c.hoverT>0);w.o.rotation.z+=((hov?w.side*Math.PI/2:0)-w.o.rotation.z)*Math.min(1,dt*10);
    if(vw&&!remote){w.o.position.y=vw.y-Math.min(vw.susp,vw.rest)+(w.dy||0);vw.spin+=(vw.contact?vw.vlo:vw.vlo*=.99)*dt/(w.r||c.S.R);w.m.rotation.x=vw.spin;if(w.front)w.o.rotation.y=c.wrecked?w.o.rotation.y:c.delta}
    else{c.spin+=fwd*dt/c.S.R;w.m.rotation.x=c.spin;if(w.front&&!c.wrecked)w.o.rotation.y+=(-sv*.45-w.o.rotation.y)*Math.min(1,dt*10)}}
+  if(c.wheels.glb)glbWheels(c.wheels.glb);
   for(const p of c.det){if(p.type!=='door'||!p.loose||p.off)continue;
    const tq=-p.side*fwd*c.w*.6-fwd*.35*Math.sin(p.ang)+rand(-1,1)*Math.abs(fwd)*.15;p.angV+=(tq-2.2*p.angV)*dt;p.ang+=p.angV*dt;
    if(p.ang<0){p.ang=0;p.angV=-p.angV*.3}

@@ -850,7 +850,7 @@ for(const sx of[1,-1]){const o=new THREE.Group();o.position.set(sx*(HAULER.W/2+.
 truckV.g.traverse(o=>{if(o.isMesh)o.castShadow=true});scene.add(truckV.g);
 // custom hauler model: towtruck.glb (long axis X, front facing -X). Scaled to the hauler's length and sat on its wheel line.
 // The built-in hauler stays as the fallback until the model loads (or if it fails to).
-try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb',gl=>{
+try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb?v=dually1',gl=>{
  const m=gl.scene,w=new THREE.Group(),bx=new THREE.Box3(),sz=new THREE.Vector3(),c=new THREE.Vector3();
  m.rotation.y=Math.PI/2;w.add(m);w.updateMatrixWorld(true);bx.setFromObject(m).getSize(sz);
  m.scale.setScalar(HAULER.L*1.1/sz.z);w.updateMatrixWorld(true);bx.setFromObject(m).getCenter(c);

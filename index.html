@@ -557,8 +557,7 @@ const MODELS=[
  {name:'Wagon',cab:{w:1.68,h:.6,l:2.85,z:-.45,rf:.36,rr:.05},doors:4,trunk:false,h:{vs:1.5,yaw:1.05,mass:1450,acc:1.05,top:28,steer:1.08,mu:1.17},note:'All-rounder'},
  {name:'Muscle',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:1.7,yaw:1.05,mass:1500,acc:1.38,top:29,steer:.92,mu:1.08,rwd:true},note:'Fastest acceleration, RWD'},
  {name:'Pickup',cab:{w:1.62,h:.6,l:1.45,z:.42,rf:.32,rr:.04},doors:2,trunk:false,bed:true,h:{vs:1.95,yaw:1.35,mass:2100,acc:1.25,top:26,steer:.88,mu:1.12,rwd:true},note:'Heaviest, hard to push around, RWD'},
- // secret car (must stay last): hidden from the garage and from bots until unlocked by holding Garage > Done for 5 s.
- // Drawn from a Meshy .glb (see attachGLB); paint and dents don't apply to it. Handling maxes every garage stat bar.
+ // drawn from a Meshy .glb (see attachGLB); paint and dents don't apply to it. Keep this entry last.
  {name:'Mustang',secret:true,glb:'mustang.glb?v=3',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:.85,yaw:.6,mass:2200,acc:2.05,top:31,steer:1.4,mu:1.32,rwd:true},note:'Secret car, everything maxed, RWD'}];
 const PUBLIC_M=MODELS.filter(m=>!m.secret).length;let secretOn=false;try{secretOn=localStorage.getItem('kohd_secret')==='1'}catch(e){}
 const CAR={L:4.4,W:1.88,H:.55,clr:.22,R:.37,mass:1400,eng:1400*7,top:27.3,rev:9,mu:1.15,vsat:1.6,hcg:.5,hp:100,hh:.66};
@@ -1884,7 +1883,7 @@ function openGarage(){endIntro();$('vbox').style.display='none';garageOn=true;$(
 function closeGarage(){$('vbox').style.display='flex';garageOn=false;garageVO=-1;camera.clearViewOffset();camera.updateProjectionMatrix();$('garage').style.display='none';$('menu').style.display='';bakeSoon();if(show){scene.remove(show.g);show=null}}
 $('b-garage').addEventListener('click',openGarage);{const d=$('g-done');let t0=0,raf=0,eat=false;
  const stop=()=>{t0=0;cancelAnimationFrame(raf);d.style.setProperty('--hold','0%')};
- const tick=()=>{if(!t0)return;const e=performance.now()-t0;d.style.setProperty('--hold',e<1000?'0%':Math.min(100,(e-1000)/40)+'%');  // fill only shows after 1 s
+ const tick=()=>{if(!t0)return;const e=performance.now()-t0;d.style.setProperty('--hold',e<1000?'0%':Math.min(100,(e-1000)/40)+'%');
   if(e>=5000){stop();eat=true;if(!secretOn){secretOn=true;store('kohd_secret','1')}setCfg('m',MODELS.length-1);
    const nm=$('g-name');nm.textContent='MUSTANG UNLOCKED';setTimeout(()=>{if(garageOn)nm.textContent=MODELS[parseCfg(myCls).m].name},2500);return}
   raf=requestAnimationFrame(tick)};

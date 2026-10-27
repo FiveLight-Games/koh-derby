@@ -559,7 +559,7 @@ const MODELS=[
  {name:'Pickup',cab:{w:1.62,h:.6,l:1.45,z:.42,rf:.32,rr:.04},doors:2,trunk:false,bed:true,h:{vs:1.95,yaw:1.35,mass:2100,acc:1.25,top:26,steer:.88,mu:1.12,rwd:true},note:'Heaviest, hard to push around, RWD'},
  // secret car (must stay last): hidden from the garage and from bots until unlocked by holding Garage > Done for 5 s.
  // Drawn from a Meshy .glb (see attachGLB); paint and dents don't apply to it. Handling maxes every garage stat bar.
- {name:'Mustang',secret:true,glb:'mustang.glb?v=2',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:.85,yaw:.6,mass:2200,acc:2.05,top:31,steer:1.4,mu:1.32,rwd:true},note:'Secret car, everything maxed, RWD'}];
+ {name:'Mustang',secret:true,glb:'mustang.glb?v=3',cab:{w:1.58,h:.5,l:1.75,z:-.55,rf:.45,rr:.42},doors:2,trunk:true,scoop:true,h:{vs:.85,yaw:.6,mass:2200,acc:2.05,top:31,steer:1.4,mu:1.32,rwd:true},note:'Secret car, everything maxed, RWD'}];
 const PUBLIC_M=MODELS.filter(m=>!m.secret).length;let secretOn=false;try{secretOn=localStorage.getItem('kohd_secret')==='1'}catch(e){}
 const CAR={L:4.4,W:1.88,H:.55,clr:.22,R:.37,mass:1400,eng:1400*7,top:27.3,rev:9,mu:1.15,vsat:1.6,hcg:.5,hp:100,hh:.66};
 const STRIPES=['None','Racing','Side'],RIMS=['Spoke','Steel','Dish'],SPOILERS=['None','Lip','Wing'];
@@ -890,7 +890,7 @@ for(const sx of[1,-1]){const o=new THREE.Group();o.position.set(sx*(HAULER.W/2+.
 truckV.g.traverse(o=>{if(o.isMesh)o.castShadow=true});scene.add(truckV.g);
 // custom hauler model: towtruck.glb (long axis X, front facing -X). Scaled to the hauler's length and sat on its wheel line.
 // The built-in hauler stays as the fallback until the model loads (or if it fails to).
-try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb?v=dually2',gl=>{
+try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb?v=dually3',gl=>{
  const m=gl.scene,w=new THREE.Group(),bx=new THREE.Box3(),sz=new THREE.Vector3(),c=new THREE.Vector3();
  m.rotation.y=Math.PI/2;w.add(m);w.updateMatrixWorld(true);bx.setFromObject(m).getSize(sz);
  m.scale.setScalar(HAULER.L*1.1/sz.z);w.updateMatrixWorld(true);bx.setFromObject(m).getCenter(c);

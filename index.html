@@ -855,7 +855,10 @@ try{if(THREE.GLTFLoader)new THREE.GLTFLoader().load('towtruck.glb',gl=>{
  m.rotation.y=Math.PI/2;w.add(m);w.updateMatrixWorld(true);bx.setFromObject(m).getSize(sz);
  m.scale.setScalar(HAULER.L*1.1/sz.z);w.updateMatrixWorld(true);bx.setFromObject(m).getCenter(c);
  m.position.set(-c.x,truckV.base-bx.min.y,-c.z);
- m.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const mt=o.material;if(mt&&mt.map)mt.map.encoding=THREE.LinearEncoding});
+ // the texture is an atlas of tiny UV islands; mipmaps blend neighbouring islands into pale/dark seams, so sample full size only
+ const noMip=t=>{if(!t)return;t.generateMipmaps=false;t.mipmaps=[];t.minFilter=THREE.LinearFilter;t.magFilter=THREE.LinearFilter;t.needsUpdate=true};
+ m.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=false;const mt=o.material;if(!mt)return;if(mt.map)mt.map.encoding=THREE.LinearEncoding;
+  for(const k of['map','normalMap','roughnessMap','metalnessMap','aoMap','emissiveMap'])noMip(mt[k])});
  for(const ch of truckV.g.children)ch.visible=false;truckV.g.add(w);
 },undefined,e=>console.warn('towtruck.glb failed to load, using built-in hauler',e))}catch(e){}
 const trailerG=new THREE.Group();scene.add(trailerG);const RAMPV=[];const trailerWheels=[];

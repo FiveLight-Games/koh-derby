@@ -869,7 +869,7 @@ let S0=LEVEL.start!=null?LEVEL.start:20;const HITCH=3.4,TONGUE=6.36,DECK_HW=1.15
 const RANG=Math.atan2(DH-.05,RL),RLEN=Math.hypot(RL,DH-.05),TRK_Y=1.11,HITCH_Y=-.56,TONGUE_Y=.55;
 // model files live next to the page on the live site; anywhere else (the demo file opened from chat) fetch them from the live site
 const ASSET_BASE=/\.github\.io$/.test(location.hostname)?'':'https://fivelight-games.github.io/koh-derby/';
-const truckV=buildVehicle(HAULER,0xe9e5dc,true);
+const truckV=buildVehicle(HAULER,0xe9e5dc,true);truckV.g.visible=false;
 truckV.det.forEach(p=>p.off=true);
 for(const sx of[1,-1]){const o=new THREE.Group();o.position.set(sx*(HAULER.W/2+.12),truckV.base+HAULER.R,-(HAULER.L-.34)/2+HAULER.R+.42);truckV.g.add(o);const m=makeWheel(HAULER.R,sx);o.add(m);truckV.wheels.push({o,m,front:false,side:sx,on:true})}
 truckV.g.traverse(o=>{if(o.isMesh)o.castShadow=true});scene.add(truckV.g);
@@ -1532,7 +1532,7 @@ function updateFx(dt){
  spGeo.attributes.position.needsUpdate=true;updPool(PUFF,dt);updPool(FIRE,dt);updateGibs(dt)}
 function updateTruckVis(dt){
  // the rig stays hidden until physics has placed it on the road (otherwise it sits in the infield for a moment on load)
- {const on=physReady;if(trailerG.visible!==on){trailerG.visible=on;truckV.g.visible=on;for(const R0 of RAMPV)R0.g.visible=on}}
+ {const on=physReady;if(trailerG.visible!==on||truckV.g.visible!==on){trailerG.visible=on;truckV.g.visible=on;for(const R0 of RAMPV)R0.g.visible=on}}
  if(!physReady)return;
  setPose(truckV.g,TRK);setPose(trailerG,TRL);
  const tw=TRK.V.wl;for(let i=0;i<6;i++){const w=truckV.wheels[i],vw=tw[i<4?i:i-2];w.o.position.y=vw.y-Math.min(vw.susp,vw.rest);if(i<4)vw.spin+=vw.vlo*dt/HAULER.R;w.m.rotation.x=vw.spin;if(w.front)w.o.rotation.y=TK.steer}
